@@ -1,0 +1,131 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --mw-primary: #2563eb;
+    --mw-accent: #1e40af;
+    --mw-primary-light: #dbeafe;
+}
+
+* { font-family: 'Inter', system-ui, -apple-system, sans-serif; }
+
+body { background: #f1f5f9; color: #0f172a; }
+
+/* Buttons */
+.btn { display:inline-flex; align-items:center; justify-content:center; gap:.5rem; padding:.6rem 1.1rem; border-radius:.6rem; font-weight:600; font-size:.9rem; transition:all .15s ease; cursor:pointer; border:none; }
+.btn-primary { background:var(--mw-primary); color:#fff; }
+.btn-primary:hover { background:var(--mw-accent); }
+.btn-outline { background:transparent; border:1px solid #cbd5e1; color:#334155; }
+.btn-outline:hover { background:#f8fafc; }
+.btn-danger { background:#dc2626; color:#fff; }
+.btn-danger:hover { background:#b91c1c; }
+.btn-success { background:#16a34a; color:#fff; }
+.btn-success:hover { background:#15803d; }
+.btn:disabled { opacity:.5; cursor:not-allowed; }
+
+/* Cards */
+.card { background:#fff; border-radius:.85rem; box-shadow:0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04); border:1px solid #eef2f6; }
+.card-body { padding:1.25rem; }
+
+/* Inputs */
+.input, select.input, textarea.input { width:100%; padding:.6rem .8rem; border:1px solid #cbd5e1; border-radius:.6rem; font-size:.9rem; background:#fff; transition:border .15s; }
+.input:focus { outline:none; border-color:var(--mw-primary); box-shadow:0 0 0 3px rgba(37,99,235,.12); }
+label.label { display:block; font-size:.8rem; font-weight:600; color:#334155; margin-bottom:.35rem; }
+
+/* Badges */
+.badge { display:inline-flex; align-items:center; padding:.2rem .6rem; border-radius:999px; font-size:.72rem; font-weight:600; }
+.badge-success { background:#dcfce7; color:#166534; }
+.badge-warning { background:#fef3c7; color:#92400e; }
+.badge-danger { background:#fee2e2; color:#991b1b; }
+.badge-info { background:#dbeafe; color:#1e40af; }
+.badge-muted { background:#f1f5f9; color:#475569; }
+
+/* Sidebar nav */
+.nav-link { display:flex; align-items:center; gap:.65rem; padding:.6rem .85rem; border-radius:.6rem; color:#475569; font-weight:500; font-size:.88rem; transition:all .12s; }
+.nav-link:hover { background:#eff6ff; color:var(--mw-primary); }
+.nav-link.active { background:var(--mw-primary); color:#fff; }
+
+/* Tables */
+.tbl { width:100%; border-collapse:collapse; font-size:.85rem; }
+.tbl th { text-align:left; padding:.7rem .8rem; background:#f8fafc; color:#475569; font-weight:600; border-bottom:1px solid #e2e8f0; }
+.tbl td { padding:.7rem .8rem; border-bottom:1px solid #f1f5f9; }
+.tbl tr:hover td { background:#f8fafc; }
+
+/* Stat tiles */
+.stat-tile { background:#fff; border-radius:.85rem; padding:1.1rem 1.25rem; border:1px solid #eef2f6; box-shadow:0 1px 2px rgba(0,0,0,.04); }
+.stat-label { font-size:.75rem; color:#64748b; font-weight:600; text-transform:uppercase; letter-spacing:.03em; }
+.stat-value { font-size:1.6rem; font-weight:700; color:#0f172a; margin-top:.2rem; }
+
+/* Mobile sidebar */
+@media (max-width: 1024px) {
+    #sidebar { transform: translateX(-100%); transition: transform .25s ease; position:fixed; z-index:50; }
+    #sidebar.open { transform: translateX(0); }
+    #sidebar-backdrop { display:none; }
+    #sidebar-backdrop.open { display:block; }
+}
+
+/* Scrollbar polish */
+::-webkit-scrollbar { width:8px; height:8px; }
+::-webkit-scrollbar-thumb { background:#cbd5e1; border-radius:8px; }
+
+/* Auth gradient */
+.auth-gradient { background: linear-gradient(135deg, var(--mw-primary) 0%, var(--mw-accent) 100%); }
+
+/* Misc */
+.gradient-text { background: linear-gradient(135deg, var(--mw-primary), var(--mw-accent)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+
+/* ============ Airtrendmedia Stories Bar ============ */
+.fb-stories-bar {
+    display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px;
+    margin-bottom: 16px; scroll-snap-type: x mandatory;
+}
+.fb-stories-bar::-webkit-scrollbar { height: 0; }
+.fb-story-create {
+    flex-shrink: 0; width: 112px; height: 192px; border-radius: 16px;
+    overflow: hidden; position: relative; cursor: pointer;
+    background: var(--fb-card); box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    scroll-snap-align: start;
+}
+.fb-story-create-img { height: 128px; overflow: hidden; background: linear-gradient(135deg, #e0e7ff, #bfdbfe); }
+.fb-story-create-img img { width: 100%; height: 100%; object-fit: cover; }
+.fb-story-create-cta {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    display: flex; flex-direction: column; align-items: center; padding-bottom: 8px;
+}
+.fb-story-create-plus {
+    width: 36px; height: 36px; border-radius: 50%; background: var(--fb-blue);
+    color: #fff; display: flex; align-items: center; justify-content: center;
+    font-size: 22px; font-weight: 600; margin-top: -18px; border: 4px solid var(--fb-card);
+}
+.fb-story-create-cta span { font-size: 12px; font-weight: 600; margin-top: 4px; }
+.fb-story-card {
+    flex-shrink: 0; width: 112px; height: 192px; border-radius: 16px;
+    overflow: hidden; position: relative; cursor: pointer;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1); scroll-snap-align: start;
+}
+.fb-story-img { width: 100%; height: 100%; object-fit: cover; }
+.fb-story-ring {
+    position: absolute; top: 8px; left: 8px; padding: 2px;
+    border-radius: 50%; background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+}
+.fb-story-ring img { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--fb-card); display: block; }
+.fb-story-name {
+    position: absolute; bottom: 8px; left: 8px; right: 8px; color: #fff;
+    font-size: 12px; font-weight: 600; text-shadow: 0 1px 3px rgba(0,0,0,0.7);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+/* ============ Airtrendmedia Sponsored Feed Ad ============ */
+.fb-sponsored-card { overflow: hidden; }
+.fb-sponsored-head { display: flex; align-items: center; gap: 10px; padding: 12px; }
+.fb-sponsored-avatar {
+    width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; color: #fff; background: linear-gradient(135deg, #7c3aed, #2563eb);
+}
+.fb-sponsored-tag {
+    background: #eef2ff; color: #4f46e5; font-size: 10px; font-weight: 700;
+    padding: 1px 6px; border-radius: 4px; text-transform: uppercase;
+}
+.fb-sponsored-media { width: 100%; max-height: 320px; object-fit: cover; display: block; }
+.fb-sponsored-foot { padding: 12px; }
+.fb-sponsored-desc { color: var(--fb-text-secondary); }
