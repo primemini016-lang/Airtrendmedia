@@ -1045,6 +1045,43 @@ class AdminController extends Controller
         return back()->with('success', 'Appearance & custom code updated successfully.');
     }
 
+    /* =========================================================
+     * ERROR SCREEN CONTENT MANAGEMENT (admin "god-mode")
+     * Controls the branded "We Couldn't Process Your Request."
+     * page shown when a destination doesn't exist / can't fetch.
+     * ========================================================= */
+    public function errorScreenUpdate(Request $request)
+    {
+        $request->validate([
+            'error_heading'       => 'nullable|string|max:200',
+            'error_subtext'       => 'nullable|string|max:600',
+            'error_accent_color'  => 'nullable|string|max:20',
+            'error_show_code'     => 'nullable|boolean',
+        ]);
+
+        SiteSetting::set('error_heading',      $request->input('error_heading', "We Couldn't Process Your Request."), 'appearance');
+        SiteSetting::set('error_subtext',      $request->input('error_subtext', 'The page you\'re looking for may have moved, is temporarily unavailable, or couldn\'t be loaded right now. Please try again in a moment.'), 'appearance');
+        SiteSetting::set('error_accent_color', $request->input('error_accent_color', '#2563eb'), 'appearance');
+        SiteSetting::set('error_show_code',    $request->boolean('error_show_code') ? '1' : '0', 'appearance');
+
+        SiteSetting::flushCache();
+
+        return back()->with('success', 'Error screen content updated successfully.');
+    }
+
+    public function uploadErrorLogo(Request $request)
+    {
+        $request->validate(['error_logo' => 'required|image|mimes:png,jpg,jpeg,svg,webp|max:2048']);
+        $existing = SiteSetting::get('error_logo');
+        if ($existing) {
+            Storage::disk('public')->delete($existing);
+        }
+        $path = $request->file('error_logo')->store('logos', 'public');
+        SiteSetting::set('error_logo', $path, 'appearance');
+        SiteSetting::flushCache();
+        return back()->with('success', 'Error screen logo updated successfully.');
+    }
+
     public function uploadLogo(Request $request)
     {
         $request->validate(['logo' => 'required|image|mimes:png,jpg,jpeg,svg,webp|max:2048']);

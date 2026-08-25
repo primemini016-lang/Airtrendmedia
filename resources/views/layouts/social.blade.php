@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    @php $favSetting = app(\App\Services\SettingService::class)->all(); @endphp
     <meta name="theme-color" content="{{ $favSetting->theme_color ?? '#1877F2' }}">
     <link rel="manifest" href="{{ asset('manifest.json') }}">
     <link rel="apple-touch-icon" href="{{ asset('images/icon-192.png') }}">
-    @php $favSetting = app(\App\Services\SettingService::class)->all(); @endphp
     @if(!empty($favSetting->favicon))<link rel="icon" href="{{ Storage::url($favSetting->favicon) }}">@else<link rel="icon" href="{{ asset('images/favicon.png') }}">@endif
     <title>@yield('title', 'Airtrendmedia') — Social</title>
     <script>

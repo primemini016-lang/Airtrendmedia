@@ -3,7 +3,10 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -38,5 +41,133 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+
+        /*
+        |--------------------------------------------------------------------------
+        | Branded, user-friendly error handling
+        |--------------------------------------------------------------------------
+        | We NEVER expose raw exception details to end users — that irritates
+        | the experience and leaks internals. Instead, every uncaught error is
+        | logged (for the admin to review in storage/logs) and rendered through
+        | the branded "We Couldn't Process Your Request." screen, which uses
+        | the site logo + the admin-managed content from Appearance → Error
+        | Screen. The branded screen only appears when a destination does not
+        | exist or could not be fetched.
+        |
+        | - API/JSON/AJAX requests get a clean JSON error (status + message).
+        | - Web requests get the branded error view.
+        | - NotFoundHttpException (404) → branded screen.
+        | - Maintenance (503) → Laravel's built-in maintenance view is kept.
+        */
+        $exceptions->render(function (\Throwable $e, Request $request) {
+
+            // Skip the installer so the wizard can show its own validation
+            // errors normally during /install.
+            if ($request->is('install') || $request->is('install/*')) {
+                return null;
+            }
+
+            /*
+            |----------------------------------------------------------------------
+            | Pass-through exceptions (let Laravel handle them normally)
+            |----------------------------------------------------------------------
+            | These exception types already produce correct, user-friendly
+            | behaviour and must NOT be hijacked by the branded error screen:
+            |
+            |  - ValidationException      -> redirects back with field errors
+            |                                  (or 422 JSON for API).
+            |  - HttpResponseException    -> carries an explicit Response the
+            |                                  controller chose (redirects, etc).
+            |  - AuthenticationException  -> redirects to login (web) / 401 (api).
+            |  - AuthorizationException   -> 403, often with a custom message.
+            |
+            | Returning null tells Laravel to keep its built-in rendering.
+            */
+            if ($e instanceof \Illuminate\Validation\ValidationException) {
+                return null;
+            }
+            if ($e instanceof \Illuminate\Http\Exceptions\HttpResponseException) {
+                return null;
+            }
+            if ($e instanceof \Illuminate\Auth\AuthenticationException) {
+                return null;
+            }
+            if ($e instanceof \Illuminate\Auth\Access\AuthorizationException) {
+                return null;
+            }
+
+            // Determine the HTTP status code.
+            $status = 500;
+            if ($e instanceof HttpExceptionInterface) {
+                $status = $e->getStatusCode();
+            } elseif (method_exists($e, 'getStatusCode')) {
+                $status = $e->getStatusCode();
+            }
+
+            // Maintenance mode is handled by Laravel itself (503 page).
+            if ($status === 503) {
+                return null;
+            }
+
+            /*
+            |----------------------------------------------------------------------
+            | Friendly HTTP errors (404, 405, 419, etc.) for WEB requests
+            |----------------------------------------------------------------------
+            | The branded "We Couldn't Process Your Request." screen is shown for
+            | destinations that do not exist or could not be fetched (404 / 405 /
+            | 419 / other client 4xx) and for genuine server errors (500+).
+            | 422 validation is already handled above (pass-through).
+            */
+            $isApi = $request->expectsJson() || $request->is('api') || $request->is('api/*');
+
+            // CSRF token mismatch (419) -> friendly branded screen.
+            if ($e instanceof \Illuminate\Session\TokenMismatchException) {
+                $status = 419;
+            }
+
+            // --- JSON / API responses: never leak internals ---
+            if ($isApi) {
+                $safeMessages = [
+                    400 => 'Bad request.',
+                    401 => 'Unauthenticated.',
+                    403 => 'You do not have permission to do that.',
+                    404 => 'The requested resource could not be found.',
+                    405 => 'This action is not allowed.',
+                    419 => 'Your session has expired. Please refresh and try again.',
+                    429 => 'Too many requests. Please slow down.',
+                ];
+                return response()->json([
+                    'success' => false,
+                    'message' => $safeMessages[$status] ?? 'We couldn\'t process your request. Please try again later.',
+                    'status'  => $status,
+                ], $status);
+            }
+
+            // --- Web responses: branded error screen ---
+            try {
+                return response()->view('errors.generic', [
+                    'status'    => $status,
+                    'exception' => $e,
+                ], $status);
+            } catch (\Throwable $renderError) {
+                // If even the error view can't render (e.g. view cache issue,
+                // DB down), fall back to a minimal static page so users never
+                // see a raw PHP/Laravel stack trace.
+                return response()->make(
+                    '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">'
+                    .'<meta name="viewport" content="width=device-width,initial-scale=1">'
+                    .'<title>We Couldn\'t Process Your Request.</title></head>'
+                    .'<body style="font-family:Segoe UI,system-ui,sans-serif;background:#f8fafc;'
+                    .'color:#0f172a;display:flex;min-height:100vh;align-items:center;justify-content:center;margin:0;padding:1.5rem;">'
+                    .'<div style="max-width:480px;text-align:center">'
+                    .'<h1 style="font-size:1.6rem;margin-bottom:.6rem">We Couldn\'t Process Your Request.</h1>'
+                    .'<p style="color:#64748b;line-height:1.6">The page you\'re looking for may have moved, is temporarily unavailable, or couldn\'t be loaded right now.</p>'
+                    .'<p style="margin-top:1.5rem"><a href="'.e(url('/')).'" style="background:#2563eb;color:#fff;padding:.7rem 1.4rem;border-radius:10px;text-decoration:none;font-weight:600">Back to Home</a></p>'
+                    .'</div></body></html>',
+                    $status,
+                    ['Content-Type' => 'text/html; charset=UTF-8']
+                );
+            }
+        });
+
     })->create();

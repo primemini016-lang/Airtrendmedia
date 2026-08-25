@@ -299,6 +299,10 @@ Route::middleware('installed')->group(function () {
             Route::post('/appearance/logo', [AdminController::class, 'uploadLogo'])->name('appearance.logo');
             Route::post('/appearance/favicon', [AdminController::class, 'uploadFavicon'])->name('appearance.favicon');
 
+            // Error screen content management (logo, heading, subtext, color)
+            Route::post('/appearance/error-screen', [AdminController::class, 'errorScreenUpdate'])->name('appearance.error-screen');
+            Route::post('/appearance/error-screen-logo', [AdminController::class, 'uploadErrorLogo'])->name('appearance.error-screen-logo');
+
             // Email / SMTP settings
             Route::get('/email-settings', [AdminController::class, 'emailSettings'])->name('email-settings');
             Route::post('/email-settings', [AdminController::class, 'emailSettingsUpdate'])->name('email-settings.update');

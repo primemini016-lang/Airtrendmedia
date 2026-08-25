@@ -28,3 +28,6 @@ composer.phar
 /node_modules/
 .DS_Store
 Thumbs.db
+
+# Installation state (runtime)
+storage/app/installed.json
