@@ -55,13 +55,21 @@ class DashboardController extends Controller
 
         $myActiveTasks = $user->tasks()->where('status', 1)->latest()->limit(5)->get();
 
+        // Pending tasks: tasks the user posted that are pending approval (status=0)
+        $pendingTasks = $user->tasks()->where('status', 0)->latest()->limit(5)->get();
+
+        // Pending proofs submitted by the user (awaiting employer review, status=0)
+        $pendingBookings = TaskProof::where('user_id', $user->id)
+            ->where('status', 0)->with('task')->latest()->limit(5)->get();
+
         $pendingProofs = TaskProof::whereHas('task', fn ($q) => $q->where('user_id', $user->id))
             ->where('status', 0)->count();
 
         $pendingWithdrawals = $user->withdrawals()->where('status', 0)->count();
 
         return view('user.dashboard', compact(
-            'user', 'openBookings', 'myActiveTasks', 'pendingProofs', 'pendingWithdrawals'
+            'user', 'openBookings', 'myActiveTasks', 'pendingTasks', 'pendingBookings',
+            'pendingProofs', 'pendingWithdrawals'
         ));
     }
 
@@ -721,6 +729,45 @@ class DashboardController extends Controller
     /* =========================================================
      * Messages (support chat with admin)
      * ========================================================= */
+    /* =========================================================
+     * Notifications
+     * ========================================================= */
+    public function notifications(Request $request)
+    {
+        $user = auth('web')->user();
+        $notifications = $user->notifications()->latest()->paginate(15);
+
+        return view('user.notifications', compact('notifications'));
+    }
+
+    public function markNotificationRead(Request $request, $notification)
+    {
+        $user = auth('web')->user();
+        $notif = Notification::where('user_id', $user->id)->where('id', $notification)->first();
+
+        if ($notif && !$notif->is_read) {
+            $notif->update(['is_read' => true]);
+        }
+
+        return response()->json(['success' => true]);
+    }
+
+    public function markAllNotificationsRead(Request $request)
+    {
+        $user = auth('web')->user();
+        Notification::where('user_id', $user->id)->where('is_read', false)->update(['is_read' => true]);
+
+        return response()->json(['success' => true]);
+    }
+
+    public function unreadNotificationCount(Request $request)
+    {
+        $user = auth('web')->user();
+        $count = $user->notifications()->where('is_read', false)->count();
+
+        return response()->json(['count' => $count]);
+    }
+
     public function messages()
     {
         $user = auth('web')->user();

@@ -56,7 +56,7 @@ class ChatController extends Controller
         }
 
         $suggestedUsers = User::where('id', '!=', $user->id)
-            ->where('status', 1)
+            ->where('banned', false)
             ->whereDoesntHave('conversations', function ($q) use ($user) {
                 $q->whereHas('participants', function ($qp) use ($user) {
                     $qp->where('user_id', $user->id);
@@ -372,7 +372,7 @@ class ChatController extends Controller
         }
 
         $users = User::where('id', '!=', $user->id)
-            ->where('status', 1)
+            ->where('banned', false)
             ->where(function ($sq) use ($q) {
                 $sq->where('name', 'like', "%{$q}%")
                    ->orWhere('username', 'like', "%{$q}%");

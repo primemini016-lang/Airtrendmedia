@@ -178,10 +178,10 @@ Route::middleware('installed')->group(function () {
             Route::get('/messenger/search', [ChatController::class, 'searchUsers'])->name('social.chat.search');
 
             // ===== Facebook Clone — Profiles =====
-            Route::get('/profile/{username}', [ProfileController::class, 'show'])->name('social.profile');
             Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('social.profile.edit');
             Route::post('/profile/update', [ProfileController::class, 'update'])->name('social.profile.update');
             Route::post('/profile/avatar', [ProfileController::class, 'updateAvatar'])->name('social.profile.avatar');
+            Route::get('/profile/{username}', [ProfileController::class, 'show'])->name('social.profile');
             Route::post('/profile/{creator}/stars', [ProfileController::class, 'sendStar'])->name('social.stars');
             Route::get('/people', [ProfileController::class, 'suggestions'])->name('social.suggestions');
             Route::get('/friends', [ProfileController::class, 'friends'])->name('social.friends');

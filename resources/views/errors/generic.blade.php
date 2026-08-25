@@ -22,8 +22,6 @@ $heading    = 'We Couldn\'t Process Your Request.';
 $subtext    = 'The page you\'re looking for may have moved, is temporarily unavailable, or couldn\'t be loaded right now. Please try again in a moment.';
 $accent     = '#2563eb';   // website primary blue
 $logoUrl    = asset('images/logo.png');
-$showCode   = true;
-$statusCode = $status ?? ($exception ? 500 : 500);
 
 // Try to pull admin-managed content. Everything is wrapped in try/catch so a
 // broken DB never breaks the error page itself.
@@ -36,8 +34,6 @@ try {
     if (!empty($ac)) { $accent = $ac; }
     $lg = SiteSetting::get('error_logo');
     if (!empty($lg)) { $logoUrl = Storage::url($lg); }
-    $sc = SiteSetting::get('error_show_code');
-    if ($sc !== null && $sc !== '') { $showCode = filter_var($sc, FILTER_VALIDATE_BOOLEAN); }
 } catch (\Throwable $e) {
     // Ignore — use defaults.
 }
@@ -78,15 +74,6 @@ $contactUrl = url('/contact');
             object-fit: contain;
             filter: drop-shadow(0 10px 24px rgba(37,99,235,0.25));
         }
-        .code-badge {
-            display: inline-flex; align-items: center; justify-content: center;
-            min-width: 64px; height: 64px; padding: 0 1rem;
-            border-radius: 18px;
-            background: var(--brand);
-            color: #fff; font-weight: 700; font-size: 1.6rem; letter-spacing: .5px;
-            margin-bottom: 1.25rem;
-            box-shadow: 0 12px 28px rgba(37,99,235,0.30);
-        }
         h1 {
             font-size: clamp(1.6rem, 4vw, 2.1rem);
             font-weight: 800; line-height: 1.25; color: #0f172a;
@@ -117,15 +104,8 @@ $contactUrl = url('/contact');
     <div class="wrap">
         <img src="{{ $logoUrl }}" alt="{{ $siteName }}" class="logo">
 
-        @if($showCode)
-        <div class="code-badge">{{ (int) $statusCode }}</div>
-        @endif
-
         <h1>{{ $heading }}</h1>
         <p class="lead">{{ $subtext }}</p>
-        @if($showCode)
-        <p class="sub">If the problem persists, our team has been notified and is on it.</p>
-        @endif
 
         <div class="actions">
             <a href="{{ $homeUrl }}" class="btn btn-primary">

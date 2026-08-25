@@ -26,6 +26,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script>tailwind.config = { darkMode: 'class' }</script>
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    {{-- Alpine.js — required for all dropdown menus (Create, Messenger, Notifications, Profile) --}}
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     {{-- Facebook-style design system --}}
     <style>
         :root {
@@ -122,16 +124,17 @@
         $unreadNotifs = $authUser ? $authUser->notifications()->where('is_read', false)->count() : 0;
         $unreadMsgs = 0;
         if ($authUser) {
+            // Count conversations with unread messages (messages newer than last_read_at, not sent by me)
             $unreadMsgs = \App\Models\ConversationParticipant::where('user_id', $authUser->id)
-                ->where('last_read_at', '<', \Illuminate\Support\Carbon::now())
-                ->whereHas('conversation', function($q) use ($authUser) {
-                    $q->whereHas('messages', function($mq) use ($authUser) {
-                        $mq->where('sender_id', '!=', $authUser->id)
-                          ->where('created_at', '>', \App\Models\ConversationParticipant::where('user_id', $authUser->id)->where('conversation_id', $mq->getQualified('conversation_id'))->value('last_read_at') ?? '1970-01-01');
-                    });
+                ->where(function ($q) use ($authUser) {
+                    $q->whereNull('last_read_at')
+                      ->orWhereHas('conversation.messages', function ($mq) use ($authUser) {
+                          $mq->where('sender_id', '!=', $authUser->id)
+                             ->whereColumn('chat_messages.created_at', '>', 'conversation_participants.last_read_at');
+                      });
                 })->count();
         }
-        $friendRequests = $authUser ? $authUser->followers()->whereDoesntHave('followers', function($q) use ($authUser) { $q->where('user_id', $authUser->id); })->count() : 0;
+        $friendRequests = $authUser ? $authUser->followers()->where('is_accepted', false)->count() : 0;
         $currentRoute = request()->route() ? request()->route()->getName() : '';
     @endphp
 
@@ -188,6 +191,12 @@
 
             {{-- RIGHT: Notifications + Messages + Profile --}}
             <div class="flex items-center gap-2 flex-1 justify-end max-w-xs">
+                {{-- Theme toggle (dark/light) --}}
+                <button onclick="document.documentElement.classList.toggle('dark'); localStorage.setItem('site-theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');" class="w-10 h-10 rounded-full flex items-center justify-center fb-hover-bg" style="background: var(--fb-hover);" title="Toggle theme">
+                    <svg class="w-5 h-5 block dark:hidden" style="color: var(--fb-text);" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                    <svg class="w-5 h-5 hidden dark:block" style="color: var(--fb-text);" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                </button>
+
                 {{-- Create menu (Facebook "+" button) --}}
                 <div x-data="{ open: false }" class="relative">
                     <button @click="open = !open" class="w-10 h-10 rounded-full flex items-center justify-center fb-hover-bg" style="background: var(--fb-hover);" title="Create">

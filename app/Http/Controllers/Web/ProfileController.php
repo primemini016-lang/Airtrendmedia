@@ -249,11 +249,11 @@ class ProfileController extends Controller
             return redirect()->route('login');
         }
 
-        $followingIds = $user->following()->pluck('users.id')->toArray();
+        $followingIds = $user->following()->pluck('following_id')->toArray();
         $followingIds[] = $user->id;
 
         $suggestions = User::whereNotIn('id', $followingIds)
-            ->where('status', 1)
+            ->where('banned', false)
             ->inRandomOrder()
             ->paginate(24);
 

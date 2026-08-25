@@ -28,7 +28,7 @@ class SocialController extends Controller
         }
 
         // Build feed: posts from user + people they follow, plus pages/groups they're in
-        $followingIds = $user->following()->pluck('users.id')->toArray();
+        $followingIds = $user->following()->pluck('following_id')->toArray();
         $pageIds = $user->pageMemberships()->pluck('social_page_members.page_id')->toArray();
         $groupIds = $user->groupMemberships()->where('status', 'approved')->pluck('social_group_members.group_id')->toArray();
 

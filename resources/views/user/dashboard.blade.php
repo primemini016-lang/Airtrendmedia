@@ -40,6 +40,65 @@
     </div>
 </div>
 
+<!-- Pending Tasks Section -->
+@if($pendingTasks->isNotEmpty() || $pendingBookings->isNotEmpty() || $pendingProofs > 0 || $pendingWithdrawals > 0)
+<div class="card mb-6 border-l-4 border-l-amber-400">
+    <div class="card-body">
+        <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
+            <x-icon name="clock" class="w-5 h-5 text-amber-500" />
+            Pending Items
+        </h3>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {{-- Pending tasks (posted by user, awaiting admin approval) --}}
+            <div class="border border-slate-100 rounded-lg p-4 {{ $pendingTasks->isNotEmpty() ? 'bg-amber-50' : '' }}">
+                <p class="text-xs text-slate-500 mb-1">Tasks Awaiting Approval</p>
+                <p class="text-2xl font-bold {{ $pendingTasks->isNotEmpty() ? 'text-amber-600' : 'text-slate-300' }}">{{ $pendingTasks->count() }}</p>
+                @if($pendingTasks->isNotEmpty())
+                <a href="{{ route('user.offers', ['status' => 'pending']) }}" class="text-xs text-blue-600 hover:underline mt-2 block">View pending tasks →</a>
+                @endif
+            </div>
+            {{-- Pending bookings (submitted proof, awaiting employer review) --}}
+            <div class="border border-slate-100 rounded-lg p-4 {{ $pendingBookings->isNotEmpty() ? 'bg-amber-50' : '' }}">
+                <p class="text-xs text-slate-500 mb-1">Proofs Under Review</p>
+                <p class="text-2xl font-bold {{ $pendingBookings->isNotEmpty() ? 'text-amber-600' : 'text-slate-300' }}">{{ $pendingBookings->count() }}</p>
+                @if($pendingBookings->isNotEmpty())
+                <a href="{{ route('user.bookings', ['status' => 'submitted']) }}" class="text-xs text-blue-600 hover:underline mt-2 block">View pending proofs →</a>
+                @endif
+            </div>
+            {{-- Pending proofs (proofs submitted on user's tasks, awaiting review) --}}
+            <div class="border border-slate-100 rounded-lg p-4 {{ $pendingProofs > 0 ? 'bg-amber-50' : '' }}">
+                <p class="text-xs text-slate-500 mb-1">Proofs to Review</p>
+                <p class="text-2xl font-bold {{ $pendingProofs > 0 ? 'text-amber-600' : 'text-slate-300' }}">{{ $pendingProofs }}</p>
+                @if($pendingProofs > 0)
+                <a href="{{ route('user.offers') }}" class="text-xs text-blue-600 hover:underline mt-2 block">Review proofs →</a>
+                @endif
+            </div>
+            {{-- Pending withdrawals --}}
+            <div class="border border-slate-100 rounded-lg p-4 {{ $pendingWithdrawals > 0 ? 'bg-amber-50' : '' }}">
+                <p class="text-xs text-slate-500 mb-1">Withdrawals Pending</p>
+                <p class="text-2xl font-bold {{ $pendingWithdrawals > 0 ? 'text-amber-600' : 'text-slate-300' }}">{{ $pendingWithdrawals }}</p>
+                @if($pendingWithdrawals > 0)
+                <a href="{{ route('user.transactions') }}" class="text-xs text-blue-600 hover:underline mt-2 block">View transactions →</a>
+                @endif
+            </div>
+        </div>
+        @if($pendingTasks->isNotEmpty())
+        <div class="mt-4 border-t border-slate-100 pt-4">
+            <p class="text-sm font-semibold text-slate-700 mb-2">Tasks awaiting admin approval:</p>
+            <div class="space-y-2">
+                @foreach($pendingTasks as $task)
+                <div class="flex items-center justify-between gap-3 text-sm">
+                    <span class="text-slate-600 truncate">{{ $task->title }}</span>
+                    <span class="text-amber-600 font-semibold text-xs whitespace-nowrap">Pending</span>
+                </div>
+                @endforeach
+            </div>
+        </div>
+        @endif
+    </div>
+</div>
+@endif
+
 <div class="grid lg:grid-cols-3 gap-6">
     <!-- Quick actions -->
     <div class="card">

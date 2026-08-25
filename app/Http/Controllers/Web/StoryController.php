@@ -17,7 +17,7 @@ class StoryController extends Controller
     {
         $user = auth('web')->user();
 
-        $followedIds = $user->following()->pluck('users.id')->push($user->id)->unique();
+        $followedIds = $user->following()->pluck('following_id')->push($user->id)->unique();
 
         $stories = Story::with('user:id,username,name,image')
             ->whereIn('user_id', $followedIds)
