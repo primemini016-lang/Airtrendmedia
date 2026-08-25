@@ -25,6 +25,36 @@ require __DIR__.'/../vendor/autoload.php';
 
 /*
 |--------------------------------------------------------------------------
+| Auto-Create .env File (For Fresh Deployments)
+|--------------------------------------------------------------------------
+|
+| On shared hosting (e.g. GoogieHost) there is no SSH/Composer access, so
+| the .env file – which is excluded from the deployment ZIP for security –
+| does not exist on first upload.  Without an APP_KEY Laravel cannot boot
+| and the web installer never runs.  This block copies .env.example to
+| .env and injects a freshly generated APP_KEY so the installer wizard
+| can load.  The installer later overwrites DB and APP settings.
+|
+*/
+
+if (! file_exists(__DIR__.'/../.env')) {
+    $examplePath = __DIR__.'/../.env.example';
+    $envPath     = __DIR__.'/../.env';
+
+    if (file_exists($examplePath)) {
+        copy($examplePath, $envPath);
+    }
+
+    if (function_exists('random_bytes')) {
+        $key         = 'base64:'.base64_encode(random_bytes(32));
+        $envContents = file_get_contents($envPath);
+        $envContents = preg_replace('/^APP_KEY=.*/m', 'APP_KEY='.$key, $envContents);
+        file_put_contents($envPath, $envContents);
+    }
+}
+
+/*
+|--------------------------------------------------------------------------
 | Turn On The Lights
 |--------------------------------------------------------------------------
 |

@@ -177,13 +177,14 @@ class InstallController extends Controller
     {
         $stub = File::get(base_path('.env.example'));
         $env = strtr($stub, [
-            'APP_NAME=MiniWorkers'     => 'APP_NAME='.$db['app_name'],
-            'APP_URL=http://localhost' => 'APP_URL='.$db['app_url'],
-            'DB_HOST=127.0.0.1'        => 'DB_HOST='.$db['db_host'],
-            'DB_PORT=3306'             => 'DB_PORT='.$db['db_port'],
-            'DB_DATABASE=miniworkers'  => 'DB_DATABASE='.$db['db_database'],
-            'DB_USERNAME=root'         => 'DB_USERNAME='.$db['db_username'],
-            'DB_PASSWORD='             => 'DB_PASSWORD='.$db['db_password'],
+            'APP_NAME=MiniWorkers'              => 'APP_NAME='.$db['app_name'],
+            'APP_URL=https://airtrendmedia.com' => 'APP_URL='.$db['app_url'],
+            'APP_URL=http://localhost'          => 'APP_URL='.$db['app_url'],
+            'DB_HOST=127.0.0.1'                 => 'DB_HOST='.$db['db_host'],
+            'DB_PORT=3306'                      => 'DB_PORT='.$db['db_port'],
+            'DB_DATABASE=miniworkers'           => 'DB_DATABASE='.$db['db_database'],
+            'DB_USERNAME=root'                  => 'DB_USERNAME='.$db['db_username'],
+            'DB_PASSWORD='                      => 'DB_PASSWORD='.$db['db_password'],
         ]);
         File::put(base_path('.env'), $env);
     }
