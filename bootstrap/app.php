@@ -38,6 +38,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'verified'    => \App\Http\Middleware\UserVerified::class,
             'activated'   => \App\Http\Middleware\WebActivated::class,
             'installed'   => \App\Http\Middleware\ApplicationInstalled::class,
+            'installer.key' => \App\Http\Middleware\EnsureAppKeyForInstaller::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
@@ -64,6 +65,41 @@ return Application::configure(basePath: dirname(__DIR__))
             // Skip the installer so the wizard can show its own validation
             // errors normally during /install.
             if ($request->is('install') || $request->is('install/*')) {
+
+                // CRITICAL: On a fresh deployment the .env ships with an
+                // empty APP_KEY, but SESSION_ENCRYPT=true means the session
+                // service provider tries to resolve the encrypter and throws
+                // a fatal MissingAppKeyException BEFORE any middleware or
+                // controller can run. We catch it here, generate a key,
+                // and redirect back so the page reloads with a valid key
+                // and the installer wizard can finally load.
+                if ($e instanceof \Illuminate\Encryption\MissingAppKeyException) {
+                    try {
+                        \Illuminate\Support\Facades\Artisan::call('key:generate', ['--force' => true]);
+                        \Illuminate\Support\Facades\Artisan::call('config:clear');
+                    } catch (\Throwable $keyErr) {
+                        // Manual fallback: write a random key into .env.
+                        $envPath = base_path('.env');
+                        if (!file_exists($envPath)) {
+                            $example = base_path('.env.example');
+                            if (file_exists($example)) {
+                                @copy($example, $envPath);
+                            }
+                        }
+                        if (file_exists($envPath)) {
+                            $randKey = 'base64:'.base64_encode(\Illuminate\Encryption\Encrypter::generateKey('AES-256-CBC'));
+                            $content = (string) file_get_contents($envPath);
+                            if (preg_match('/^APP_KEY=.*$/m', $content)) {
+                                $content = preg_replace('/^APP_KEY=.*$/m', 'APP_KEY='.$randKey, $content);
+                            } else {
+                                $content .= "\nAPP_KEY=".$randKey."\n";
+                            }
+                            file_put_contents($envPath, $content);
+                        }
+                    }
+                    return redirect()->to($request->fullUrl());
+                }
+
                 return null;
             }
 

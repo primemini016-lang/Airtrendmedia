@@ -28,8 +28,11 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 
-// Installer (bypasses the "installed" middleware)
-Route::group(['prefix' => 'install'], function () {
+// Installer (bypasses the "installed" middleware).
+// The 'installer.key' middleware guarantees a usable APP_KEY exists
+// before the wizard loads — without it the encrypted-session service
+// provider throws a fatal MissingAppKeyException on a fresh deploy.
+Route::group(['prefix' => 'install', 'middleware' => ['installer.key']], function () {
     Route::get('/', [InstallController::class, 'index'])->name('install.start');
     Route::get('/requirements', [InstallController::class, 'requirements'])->name('install.requirements');
     Route::get('/database', [InstallController::class, 'database'])->name('install.database');

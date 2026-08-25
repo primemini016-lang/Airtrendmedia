@@ -91,6 +91,14 @@ class InstallController extends Controller
             // Non-fatal: keys may already be present.
         }
 
+        // CRITICAL: After writing .env and generating keys, the running
+        // application still holds the OLD in-memory config (from before
+        // the .env was written). Artisan::call() reuses the same kernel,
+        // so migrate:fresh would run against stale DB credentials. We
+        // must reload the .env values into the config repository and
+        // reconnect the DB so the migration uses the new credentials.
+        $this->reloadEnvironment();
+
         // Run migrations + seeders.
         try {
             Artisan::call('migrate:fresh', ['--force' => true, '--seed' => true]);
@@ -175,39 +183,141 @@ class InstallController extends Controller
 
     private function writeEnv(array $db): void
     {
-        $stub = File::get(base_path('.env.example'));
-        $env = strtr($stub, [
-            'APP_NAME=MiniWorkers'              => 'APP_NAME='.$db['app_name'],
-            'APP_URL=https://airtrendmedia.com' => 'APP_URL='.$db['app_url'],
-            'APP_URL=http://localhost'          => 'APP_URL='.$db['app_url'],
-            'DB_HOST=127.0.0.1'                 => 'DB_HOST='.$db['db_host'],
-            'DB_PORT=3306'                      => 'DB_PORT='.$db['db_port'],
-            'DB_DATABASE=miniworkers'           => 'DB_DATABASE='.$db['db_database'],
-            'DB_USERNAME=root'                  => 'DB_USERNAME='.$db['db_username'],
-            'DB_PASSWORD='                      => 'DB_PASSWORD='.$db['db_password'],
+        // Update the existing .env in place, preserving any keys that
+        // were already generated (e.g. APP_KEY auto-created by the
+        // installer middleware on first load). This is far more robust
+        // than rebuilding from .env.example with fragile string matching,
+        // which previously wiped out the APP_KEY and broke the session.
+        $this->updateEnv([
+            'APP_NAME'     => $db['app_name'],
+            'APP_URL'      => $db['app_url'],
+            'APP_ENV'      => 'production',
+            'APP_DEBUG'    => 'false',
+            'APP_INSTALL'  => 'false',
+            'DB_CONNECTION'=> 'mysql',
+            'DB_HOST'      => $db['db_host'],
+            'DB_PORT'      => $db['db_port'],
+            'DB_DATABASE'  => $db['db_database'],
+            'DB_USERNAME'  => $db['db_username'],
+            'DB_PASSWORD'  => $db['db_password'] ?? '',
         ]);
-        File::put(base_path('.env'), $env);
     }
 
+    /**
+     * Set or replace one or more key=value lines in the .env file,
+     * preserving every other line (including APP_KEY / JWT_SECRET).
+     */
     private function updateEnv(array $data): void
     {
         $envPath = base_path('.env');
-        if (! File::exists($envPath)) {
-            return;
+
+        if (! file_exists($envPath)) {
+            // Fall back to .env.example if .env does not exist yet.
+            if (file_exists(base_path('.env.example'))) {
+                File::copy(base_path('.env.example'), $envPath);
+            } else {
+                File::put($envPath, '');
+            }
         }
+
         $content = File::get($envPath);
+
         foreach ($data as $key => $value) {
             $value = (string) $value;
-            // Quote values containing spaces.
-            if (preg_match('/\s/', $value) && ! preg_match('/^".*"$/', $value)) {
-                $value = '"'.$value.'"';
+            // Quote values that contain spaces or special chars.
+            if (preg_match('/[\s#"]/', $value) && $value !== '') {
+                $value = '"'.str_replace('"', '\\"', $value).'"';
             }
-            if (preg_match('/^'.$key.'=.*/m', $content)) {
-                $content = preg_replace('/^'.$key.'=.*/m', $key.'='.$value, $content);
+            $pattern = '/^'.$key.'=.*/m';
+            $replacement = $key.'='.$value;
+            if (preg_match($pattern, $content)) {
+                $content = preg_replace($pattern, $replacement, $content);
             } else {
-                $content .= "\n".$key.'='.$value;
+                $content = rtrim($content)."\n".$replacement."\n";
             }
         }
+
         File::put($envPath, $content);
+    }
+
+    /**
+     * Reload .env values into the running application's config and
+     * purge the database connection so subsequent Artisan calls (such
+     * as migrate:fresh) use the freshly-written credentials.
+     *
+     * Without this, Artisan::call() reuses the in-memory config that
+     * was loaded at the start of the request — before writeEnv() wrote
+     * the new DB credentials — so migrations would run against the old
+     * (often empty/invalid) connection and silently fail.
+     */
+    private function reloadEnvironment(): void
+    {
+        // Re-read the .env file into the application's environment
+        // using the same Dotenv loader Laravel uses at boot. We use
+        // createUnsafeMutable so that already-set env values from the
+        // initial boot (with the old/empty .env) are overwritten with
+        // the freshly-written credentials.
+        try {
+            if (file_exists(base_path('.env'))) {
+                $dotenv = \Dotenv\Dotenv::createUnsafeMutable(base_path(), '.env');
+                $dotenv->safeLoad();
+            }
+        } catch (\Throwable $e) {
+            // Non-fatal — we'll set the critical values manually below.
+        }
+
+        // Explicitly set the critical config values. We read directly
+        // from the .env file (via parseEnvFile) rather than env() because
+        // env() may return stale cached values from the initial boot.
+        $envValues = $this->parseEnvFile(base_path('.env'));
+
+        app('config')->set([
+            'database.default' => $envValues['DB_CONNECTION'] ?? 'mysql',
+            'database.connections.mysql.host'     => $envValues['DB_HOST'] ?? '127.0.0.1',
+            'database.connections.mysql.port'     => $envValues['DB_PORT'] ?? '3306',
+            'database.connections.mysql.database' => $envValues['DB_DATABASE'] ?? '',
+            'database.connections.mysql.username' => $envValues['DB_USERNAME'] ?? '',
+            'database.connections.mysql.password' => $envValues['DB_PASSWORD'] ?? '',
+            'app.key' => $envValues['APP_KEY'] ?? '',
+        ]);
+
+        // Purge any existing DB connection so the next query reconnects
+        // using the new credentials.
+        try {
+            DB::purge();
+        } catch (\Throwable $e) {
+            // Ignore — connection may not exist yet.
+        }
+    }
+
+    /**
+     * Parse a .env file into an associative array of key => value.
+     * This reads the file directly, bypassing any caching.
+     */
+    private function parseEnvFile(string $path): array
+    {
+        $values = [];
+        if (! file_exists($path)) {
+            return $values;
+        }
+        $lines = file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        foreach ($lines as $line) {
+            $line = trim($line);
+            if ($line === '' || str_starts_with($line, '#')) {
+                continue;
+            }
+            if (! str_contains($line, '=')) {
+                continue;
+            }
+            [$key, $value] = explode('=', $line, 2);
+            $key = trim($key);
+            $value = trim($value);
+            // Remove surrounding quotes.
+            if (strlen($value) >= 2 && ($value[0] === '"' || $value[0] === "'") && $value[-1] === $value[0]) {
+                $value = substr($value, 1, -1);
+            }
+            $values[$key] = $value;
+        }
+        return $values;
     }
 }
