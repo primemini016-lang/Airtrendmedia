@@ -1123,7 +1123,8 @@ class AdminController extends Controller
             'mail_from_address'=> SiteSetting::get('mail_from_address', config('mail.from.address', '')),
             'mail_from_name'   => SiteSetting::get('mail_from_name', config('mail.from.name', '')),
         ];
-        return view('admin.email-settings', compact('config'));
+        $appSetting = AppSetting::find(1);
+        return view('admin.email-settings', compact('config', 'appSetting'));
     }
 
     public function emailSettingsUpdate(Request $request)
@@ -1137,13 +1138,24 @@ class AdminController extends Controller
             'mail_encryption'  => 'nullable|in:tls,ssl,null',
             'mail_from_address'=> 'required|email|max:200',
             'mail_from_name'   => 'required|string|max:120',
+            'need_verification'=> 'nullable|boolean',
         ]);
 
         foreach ($validated as $key => $value) {
             if ($key === 'mail_encryption' && $value === 'null') {
                 $value = null;
             }
+            if ($key === 'need_verification') {
+                continue; // handled via AppSetting below
+            }
             SiteSetting::set($key, $value, 'email');
+        }
+
+        // Toggle email verification on registration (AppSetting single-row).
+        $appSetting = AppSetting::find(1);
+        if ($appSetting) {
+            $appSetting->update(['need_verification' => ! empty($validated['need_verification'])]);
+            $this->settings->flush();
         }
 
         // Also write to .env so the mailer picks it up immediately.

@@ -61,6 +61,19 @@
 
             <hr class="my-6 border-slate-200">
 
+            <h4 class="font-bold text-slate-800 mb-2">Registration Email Verification</h4>
+            <p class="text-sm text-slate-500 mb-3">By default new users are <strong>auto-activated and auto-logged-in</strong> on registration (no email code needed). Enable the option below <em>after</em> your SMTP is configured if you want to require users to verify their email address with a code before they can log in.</p>
+            <form action="{{ route('admin.email-settings.update') }}" method="POST">
+                @csrf
+                <input type="hidden" name="mail_mailer" value="{{ $config['mail_mailer'] ?? 'smtp' }}">
+                <input type="hidden" name="mail_from_address" value="{{ $config['mail_from_address'] ?? 'noreply@airtrendmedia.com' }}">
+                <input type="hidden" name="mail_from_name" value="{{ $config['mail_from_name'] ?? 'AirtrendMedia' }}">
+                <label class="flex items-center text-sm text-slate-700 gap-2"><input type="checkbox" name="need_verification" value="1" {{ ($appSetting->need_verification ?? false) ? 'checked' : '' }} class="rounded border-slate-300 text-blue-600"> Require email verification code on registration</label>
+                <button class="btn btn-outline mt-3">Save Verification Setting</button>
+            </form>
+
+            <hr class="my-6 border-slate-200">
+
             <h4 class="font-bold text-slate-800 mb-3">Send Test Email</h4>
             <form action="{{ route('admin.email-settings.test') }}" method="POST" class="flex gap-2 flex-wrap items-end">
                 @csrf

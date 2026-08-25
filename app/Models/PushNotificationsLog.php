@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PushNotificationsLog extends Model
 {
+    protected $table = 'push_notifications_log';
+
     protected $fillable = [
         'type', 'user_id', 'title', 'body', 'image_url', 'slides', 'url',
         'icon', 'badge', 'data', 'provider', 'recipients',

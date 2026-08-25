@@ -16,7 +16,10 @@ return new class extends Migration
             $table->string('favicon')->nullable();
             $table->string('url')->nullable();
             $table->foreignId('default_currency_id')->nullable()->constrained('currencies')->nullOnDelete();
-            $table->boolean('need_verification')->default(true);
+            // Default OFF: users are auto-activated + auto-logged-in on
+            // registration. Admin can enable email verification from
+            // Site Settings once SMTP is configured.
+            $table->boolean('need_verification')->default(false);
             $table->boolean('saas')->default(true);            // allow users to create tasks/offers
             $table->boolean('manual_payment')->default(true);
             $table->decimal('withdraw_com', 8, 2)->default(10.00);

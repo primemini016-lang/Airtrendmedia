@@ -64,7 +64,7 @@
                 <div class="mb-3"><label class="label">Announcement Text</label><input type="text" name="ann_text" class="input" value="{{ $s->ann_text }}"></div>
                 <div class="space-y-2">
                     <label class="flex items-center text-sm text-slate-600"><input type="checkbox" name="ann_status" value="1" {{ $s->ann_status ? 'checked' : '' }} class="rounded border-slate-300 text-blue-600 mr-2"> Show announcement bar</label>
-                    <label class="flex items-center text-sm text-slate-600"><input type="checkbox" name="need_verification" value="1" {{ $s->need_verification ? 'checked' : '' }} class="rounded border-slate-300 text-blue-600 mr-2"> Require email verification on registration</label>
+                    <label class="flex items-center text-sm text-slate-600"><input type="checkbox" name="need_verification" value="1" {{ $s->need_verification ? 'checked' : '' }} class="rounded border-slate-300 text-blue-600 mr-2"> Require email verification on registration (off = auto-activate + auto-login by default; enable after SMTP is set)</label>
                 </div>
             </div>
         </div>

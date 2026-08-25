@@ -22,7 +22,7 @@
         </div>
         <div class="card">
             <div class="card-body">
-                <form action="{{ route('admin.verification.auto-approval') }}" method="POST" class="flex items-center justify-between">
+                <form action="{{ route('admin.verification.settings') }}" method="POST" class="flex items-center justify-between">
                     @csrf
                     <span class="text-sm font-semibold text-slate-700 dark:text-slate-200">Toggle Auto-Approve</span>
                     <label class="relative inline-flex items-center cursor-pointer">

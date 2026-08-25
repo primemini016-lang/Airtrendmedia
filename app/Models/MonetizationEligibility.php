@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\DB;
 
 class MonetizationEligibility extends Model
 {
+    protected $table = 'monetization_eligibility';
+
     protected $fillable = [
         'user_id', 'is_eligible', 'content_monetization', 'fan_subscriptions',
         'stars_enabled', 'followers_count', 'paid_followers', 'eligible_views',

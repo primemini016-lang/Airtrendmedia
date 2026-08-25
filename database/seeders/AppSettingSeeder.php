@@ -19,7 +19,7 @@ class AppSettingSeeder extends Seeder
                 'logotext'         => 'MiniWorkers',
                 'url'              => config('app.url'),
                 'default_currency_id' => $defaultCurrency?->id,
-                'need_verification'=> true,
+                'need_verification'=> false,
                 'saas'             => true,
                 'manual_payment'   => true,
                 'withdraw_com'     => 10.00,

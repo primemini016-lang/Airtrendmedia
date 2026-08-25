@@ -166,6 +166,23 @@
         const isDark = document.documentElement.classList.toggle('dark');
         localStorage.setItem('admin-theme', isDark ? 'dark' : 'light');
     });
+
+    // Auto-close the mobile sidebar when a nav link is clicked so the
+    // destination page content is not hidden behind the open sidebar.
+    (function () {
+        var sidebar = document.getElementById('sidebar');
+        var backdrop = document.getElementById('sidebar-backdrop');
+        if (!sidebar) return;
+        sidebar.querySelectorAll('a.nav-link-admin').forEach(function (link) {
+            link.addEventListener('click', function () {
+                // Only collapse on small screens (lg breakpoint = 1024px)
+                if (window.innerWidth < 1024) {
+                    sidebar.classList.add('-translate-x-full');
+                    if (backdrop) backdrop.classList.add('hidden');
+                }
+            });
+        });
+    })();
     </script>
     @endpush
     @stack('scripts')
