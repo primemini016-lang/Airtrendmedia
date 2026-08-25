@@ -3,6 +3,23 @@
 @section('heading', 'Dashboard')
 
 @section('content')
+{{-- Trial countdown banner --}}
+@if(auth('web')->user()?->isOnTrial())
+    @php $daysLeft = auth('web')->user()->trialDaysLeft(); @endphp
+    <div class="card bg-gradient-to-r from-amber-50 to-orange-50 border-amber-300 mb-6">
+        <div class="card-body flex items-center gap-4 flex-wrap">
+            <div class="inline-flex w-12 h-12 rounded-xl bg-amber-500 items-center justify-center text-white flex-shrink-0">
+                <x-icon name="clock" class="w-6 h-6" />
+            </div>
+            <div class="flex-1 min-w-0">
+                <h3 class="font-bold text-amber-800">Free Trial Active — {{ $daysLeft }} day(s) remaining</h3>
+                <p class="text-sm text-amber-700">You're on a 3-day free trial. Pay the $5 activation fee before your trial ends to keep full access.</p>
+            </div>
+            <a href="{{ route('user.activate') }}" class="btn btn-primary text-sm flex-shrink-0">Activate Now</a>
+        </div>
+    </div>
+@endif
+
 <!-- Stats -->
 <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
     <div class="stat-tile">
@@ -37,7 +54,7 @@
                 <a href="{{ route('user.profile') }}" class="btn btn-outline text-xs">Profile</a>
             </div>
             @if($pendingProofs > 0)
-            <a href="{{ route('user.offers') }}" class="mt-4 block px-3 py-2 rounded-lg bg-amber-50 text-amber-700 text-sm font-semibold text-center">{{ $pendingProofs }} proof(s) awaiting your review →</a>
+            <a href="{{ route('user.offers') }}" class="mt-4 block px-3 py-2 rounded-lg bg-amber-50 text-amber-700 text-sm font-semibold text-center">{{ $pendingProofs }} proof(s) awaiting your review <x-icon name="arrow-right" class="w-4 h-4 inline" /></a>
             @endif
             @if($pendingWithdrawals > 0)
             <p class="mt-2 text-center text-xs text-slate-400">{{ $pendingWithdrawals }} withdrawal(s) pending approval</p>
@@ -93,7 +110,7 @@
                 @endforeach
             </div>
             @else
-            <p class="text-slate-400 text-center py-8 text-sm">No active bookings. <a href="{{ route('user.tasks') }}" class="text-blue-600 hover:underline">Browse tasks →</a></p>
+            <p class="text-slate-400 text-center py-8 text-sm">No active bookings. <a href="{{ route('user.tasks') }}" class="text-blue-600 hover:underline">Browse tasks <x-icon name="arrow-right" class="w-4 h-4 inline" /></a></p>
             @endif
         </div>
     </div>

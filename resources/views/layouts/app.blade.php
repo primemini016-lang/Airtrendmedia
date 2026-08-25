@@ -64,6 +64,7 @@
                 <a href="{{ route('browse') }}" class="px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-blue-600 rounded-lg hover:bg-blue-50 dark:hover:bg-slate-700">Browse Tasks</a>
                 <a href="{{ route('gigs.browse') }}" class="px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-blue-600 rounded-lg hover:bg-blue-50 dark:hover:bg-slate-700">Gigs</a>
                 <a href="{{ route('marketplace') }}" class="px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-blue-600 rounded-lg hover:bg-blue-50 dark:hover:bg-slate-700">Marketplace</a>
+                <a href="{{ route('blog.index') }}" class="px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-blue-600 rounded-lg hover:bg-blue-50 dark:hover:bg-slate-700">Blog</a>
                 <a href="{{ route('faqs') }}" class="px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-blue-600 rounded-lg hover:bg-blue-50 dark:hover:bg-slate-700">FAQ</a>
                 <a href="{{ route('affiliate.info') }}" class="px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-blue-600 rounded-lg hover:bg-blue-50 dark:hover:bg-slate-700">Affiliate</a>
             </nav>
@@ -120,6 +121,8 @@
                     <li><a href="{{ route('marketplace') }}" class="hover:text-white">Marketplace</a></li>
                     <li><a href="{{ route('register') }}" class="hover:text-white">Become a Worker</a></li>
                     <li><a href="{{ route('affiliate.info') }}" class="hover:text-white">Affiliate Program</a></li>
+                    <li><a href="{{ route('blog.index') }}" class="hover:text-white">Blog</a></li>
+                    <li><a href="{{ route('social.feed') }}" class="hover:text-white">Community Feed</a></li>
                 </ul>
             </div>
             <div>

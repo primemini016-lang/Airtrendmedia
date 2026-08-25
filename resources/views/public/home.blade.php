@@ -67,7 +67,7 @@
 <section class="max-w-7xl mx-auto px-4 sm:px-6 py-10">
     <div class="flex items-center justify-between mb-6">
         <h2 class="text-2xl font-bold text-slate-800">Latest Tasks</h2>
-        <a href="{{ route('browse') }}" class="text-blue-600 text-sm font-semibold hover:underline">View all →</a>
+        <a href="{{ route('browse') }}" class="text-blue-600 text-sm font-semibold hover:underline">View all <x-icon name="arrow-right" class="w-4 h-4 inline" /></a>
     </div>
     <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
         @foreach($liveTasks as $task)

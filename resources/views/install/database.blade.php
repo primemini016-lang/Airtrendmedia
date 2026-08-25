@@ -24,11 +24,11 @@
         </div>
     </div>
 
-    <div class="bg-amber-50 rounded-lg p-3 text-xs text-amber-700 mb-4">⚠ This will run <code>migrate:fresh --seed</code>, which creates all tables and default data. Make sure your database is empty or you don't mind losing existing data.</div>
+    <div class="bg-amber-50 rounded-lg p-3 text-xs text-amber-700 mb-4"><x-icon name="complaints" class="w-4 h-4 inline" /> This will run <code>migrate:fresh --seed</code>, which creates all tables and default data. Make sure your database is empty or you don't mind losing existing data.</div>
 
     <div class="flex gap-3">
-        <a href="{{ route('install.requirements') }}" class="btn btn-outline flex-1">← Back</a>
-        <button type="submit" class="btn btn-primary flex-1">Connect & Migrate →</button>
+        <a href="{{ route('install.requirements') }}" class="btn btn-outline flex-1"><x-icon name="arrow-left" class="w-4 h-4 inline" /> Back</a>
+        <button type="submit" class="btn btn-primary flex-1">Connect & Migrate <x-icon name="arrow-right" class="w-4 h-4 inline" /></button>
     </div>
 </form>
 @endsection

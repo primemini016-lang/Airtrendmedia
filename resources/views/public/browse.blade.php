@@ -46,7 +46,7 @@
     <div class="mt-6">{{ $tasks->links() }}</div>
     @else
     <div class="card p-12 text-center text-slate-400">
-        <p class="text-4xl mb-3">📭</p>
+        <p class="text-4xl mb-3"><x-icon name="send" class="w-4 h-4 inline" /></p>
         <p>No tasks found. Check back soon or try a different search.</p>
     </div>
     @endif

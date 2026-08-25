@@ -47,7 +47,7 @@
                         <p class="text-xs text-slate-500 mt-1">{{ Str::limit($n->body, 100) }}</p>
                         <div class="flex items-center gap-2 mt-1">
                             <span class="badge badge-muted text-[10px]">{{ ucfirst($n->type) }}</span>
-                            @if($n->user)<span class="text-xs text-slate-400">→ {{ $n->user->username }}</span>@endif
+                            @if($n->user)<span class="text-xs text-slate-400"><x-icon name="arrow-right" class="w-4 h-4 inline" /> {{ $n->user->username }}</span>@endif
                             @if($n->is_read)<span class="text-xs text-green-600">Read</span>@else<span class="text-xs text-blue-600">Unread</span>@endif
                         </div>
                     </div>

@@ -29,9 +29,9 @@
 
     @if(!empty($contactEmail) || !empty($phone) || !empty($address))
     <div class="grid sm:grid-cols-3 gap-4 mt-6">
-        @if(!empty($contactEmail))<div class="card p-4 text-center"><div class="text-2xl mb-1">✉️</div><p class="text-xs text-slate-400">Email</p><p class="text-sm font-semibold text-slate-700">{{ $contactEmail }}</p></div>@endif
-        @if(!empty($phone))<div class="card p-4 text-center"><div class="text-2xl mb-1">📞</div><p class="text-xs text-slate-400">Phone</p><p class="text-sm font-semibold text-slate-700">{{ $phone }}</p></div>@endif
-        @if(!empty($address))<div class="card p-4 text-center"><div class="text-2xl mb-1">📍</div><p class="text-xs text-slate-400">Address</p><p class="text-sm font-semibold text-slate-700">{{ $address }}</p></div>@endif
+        @if(!empty($contactEmail))<div class="card p-4 text-center"><div class="text-2xl mb-1"><x-icon name="email" class="w-4 h-4 inline" /></div><p class="text-xs text-slate-400">Email</p><p class="text-sm font-semibold text-slate-700">{{ $contactEmail }}</p></div>@endif
+        @if(!empty($phone))<div class="card p-4 text-center"><div class="text-2xl mb-1"><x-icon name="contact" class="w-4 h-4 inline" /></div><p class="text-xs text-slate-400">Phone</p><p class="text-sm font-semibold text-slate-700">{{ $phone }}</p></div>@endif
+        @if(!empty($address))<div class="card p-4 text-center"><div class="text-2xl mb-1"><x-icon name="bookmark" class="w-4 h-4 inline" /></div><p class="text-xs text-slate-400">Address</p><p class="text-sm font-semibold text-slate-700">{{ $address }}</p></div>@endif
     </div>
     @endif
 </div>

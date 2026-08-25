@@ -21,21 +21,21 @@
                     <div>
                         <label class="label">Icon (emoji)</label>
                         <select name="icon" class="input">
-                            <option value="briefcase">💼 General</option>
-                            <option value="facebook">📘 Facebook</option>
-                            <option value="twitter">🐦 Twitter / X</option>
-                            <option value="instagram">📷 Instagram</option>
-                            <option value="youtube">▶️ YouTube</option>
-                            <option value="tiktok">🎵 TikTok</option>
-                            <option value="linkedin">💼 LinkedIn</option>
-                            <option value="telegram">✈️ Telegram</option>
-                            <option value="whatsapp">💬 WhatsApp</option>
-                            <option value="writing">✍️ Writing</option>
-                            <option value="design">🎨 Design</option>
-                            <option value="marketing">📈 Marketing</option>
-                            <option value="music">🎵 Music</option>
-                            <option value="video">🎬 Video</option>
-                            <option value="tech">💻 Technology</option>
+                            <option value="briefcase"><x-icon name="briefcase" class="w-4 h-4 inline" /> General</option>
+                            <option value="facebook"><x-icon name="facebook" class="w-4 h-4 inline" /> Facebook</option>
+                            <option value="twitter"><x-icon name="twitter" class="w-4 h-4 inline" /> Twitter / X</option>
+                            <option value="instagram"><x-icon name="image" class="w-4 h-4 inline" /> Instagram</option>
+                            <option value="youtube"><x-icon name="youtube" class="w-4 h-4 inline" /> YouTube</option>
+                            <option value="tiktok"><x-icon name="music" class="w-4 h-4 inline" /> TikTok</option>
+                            <option value="linkedin"><x-icon name="briefcase" class="w-4 h-4 inline" /> LinkedIn</option>
+                            <option value="telegram"><x-icon name="telegram" class="w-4 h-4 inline" /> Telegram</option>
+                            <option value="whatsapp"><x-icon name="messages" class="w-4 h-4 inline" /> WhatsApp</option>
+                            <option value="writing"><x-icon name="writing" class="w-4 h-4 inline" /> Writing</option>
+                            <option value="design"><x-icon name="design" class="w-4 h-4 inline" /> Design</option>
+                            <option value="marketing"><x-icon name="marketing" class="w-4 h-4 inline" /> Marketing</option>
+                            <option value="music"><x-icon name="music" class="w-4 h-4 inline" /> Music</option>
+                            <option value="video"><x-icon name="video" class="w-4 h-4 inline" /> Video</option>
+                            <option value="tech"><x-icon name="tech" class="w-4 h-4 inline" /> Technology</option>
                         </select>
                     </div>
                     <div>

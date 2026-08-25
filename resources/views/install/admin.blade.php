@@ -18,11 +18,11 @@
         <div><label class="label">Confirm Password <span class="text-red-500">*</span></label><input type="password" name="password_confirmation" class="input" required minlength="8"></div>
     </div>
 
-    <div class="bg-blue-50 rounded-lg p-3 text-xs text-slate-600 mb-4">ℹ️ After this step, the <code>installed.json</code> marker file is created and the installer is locked. You can log in at <code>/admin/login</code>.</div>
+    <div class="bg-blue-50 rounded-lg p-3 text-xs text-slate-600 mb-4">ℹ After this step, the <code>installed.json</code> marker file is created and the installer is locked. You can log in at <code>/admin/login</code>.</div>
 
     <div class="flex gap-3">
-        <a href="{{ route('install.app') }}" class="btn btn-outline flex-1">← Back</a>
-        <button type="submit" class="btn btn-primary flex-1" onclick="return confirm('Create the admin account and finish installation?')">Create Admin & Finish →</button>
+        <a href="{{ route('install.app') }}" class="btn btn-outline flex-1"><x-icon name="arrow-left" class="w-4 h-4 inline" /> Back</a>
+        <button type="submit" class="btn btn-primary flex-1" onclick="return confirm('Create the admin account and finish installation?')">Create Admin & Finish <x-icon name="arrow-right" class="w-4 h-4 inline" /></button>
     </div>
 </form>
 @endsection

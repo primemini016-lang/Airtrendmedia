@@ -5,7 +5,7 @@
 <div class="max-w-md mx-auto px-4 py-12">
     <div class="card">
         <div class="card-body text-center">
-            <div class="inline-flex w-14 h-14 rounded-2xl bg-blue-50 items-center justify-center text-2xl mb-3">🔐</div>
+            <div class="inline-flex w-14 h-14 rounded-2xl bg-blue-50 items-center justify-center text-2xl mb-3"><x-icon name="lock" class="w-4 h-4 inline" /></div>
             <h1 class="text-2xl font-bold text-slate-800">Enter Reset Code</h1>
             <p class="text-slate-500 text-sm mb-6">Enter the code sent to <strong>{{ $email }}</strong> and your new password.</p>
             <form method="POST">

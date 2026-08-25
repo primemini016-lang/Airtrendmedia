@@ -30,8 +30,8 @@
                     <label class="label">Branch</label>
                     <input type="text" name="branch" class="input" value="{{ $branch }}" placeholder="main">
                 </div>
-                <button class="btn btn-primary w-full" id="update-btn">⬇ Download &amp; Apply Update</button>
-                <p class="text-xs text-amber-600 mt-2">⚠ This process may take several minutes. Do not navigate away.</p>
+                <button class="btn btn-primary w-full" id="update-btn"><x-icon name="star" class="w-4 h-4 inline" /> Download &amp; Apply Update</button>
+                <p class="text-xs text-amber-600 mt-2"><x-icon name="complaints" class="w-4 h-4 inline" /> This process may take several minutes. Do not navigate away.</p>
             </form>
         </div>
     </div>

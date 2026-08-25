@@ -13,7 +13,7 @@
 </div>
 
 @if($complaints->isEmpty())
-    <div class="card text-center py-16"><div class="text-5xl mb-3">⚖️</div><h3 class="font-bold text-slate-800">No complaints</h3><p class="text-slate-500 mt-1">All clear — no disputes to resolve.</p></div>
+    <div class="card text-center py-16"><div class="text-5xl mb-3"><x-icon name="complaints" class="w-4 h-4 inline" /></div><h3 class="font-bold text-slate-800">No complaints</h3><p class="text-slate-500 mt-1">All clear — no disputes to resolve.</p></div>
 @else
     <div class="grid md:grid-cols-2 gap-4">
         @foreach($complaints as $c)

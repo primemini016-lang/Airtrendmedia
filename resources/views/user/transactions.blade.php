@@ -20,7 +20,7 @@
 
 @if($transactions->isEmpty())
     <div class="card text-center py-16">
-        <div class="text-5xl mb-3">🧾</div>
+        <div class="text-5xl mb-3"><x-icon name="transactions" class="w-4 h-4 inline" /></div>
         <h3 class="text-lg font-bold text-slate-800">No transactions yet</h3>
         <p class="text-slate-500 mt-1">Your financial activity will appear here.</p>
     </div>

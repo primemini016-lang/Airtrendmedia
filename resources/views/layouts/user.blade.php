@@ -48,17 +48,28 @@
                 <span class="font-bold text-slate-800 dark:text-slate-100">{{ $siteName }}</span>
             </div>
             <nav class="flex-1 overflow-y-auto p-3 space-y-1">
-                <a href="{{ route('user.dashboard') }}" class="nav-link {{ request()->routeIs('user.dashboard') ? 'active' : '' }}"><span>📊</span> Dashboard</a>
-                <a href="{{ route('user.tasks') }}" class="nav-link {{ request()->routeIs('user.tasks') || request()->routeIs('user.task') ? 'active' : '' }}"><span>🔍</span> Browse Tasks</a>
-                <a href="{{ route('user.bookings') }}" class="nav-link {{ request()->routeIs('user.bookings') ? 'active' : '' }}"><span>📝</span> My Bookings</a>
-                <a href="{{ route('user.offers') }}" class="nav-link {{ request()->routeIs('user.offers') || request()->routeIs('user.task.proofs') || request()->routeIs('user.task.create') ? 'active' : '' }}"><span>💼</span> My Offers</a>
-                <a href="{{ route('user.notifications') }}" class="nav-link {{ request()->routeIs('user.notifications') ? 'active' : '' }}"><span>🔔</span> Notifications</a>
-                <a href="{{ route('user.wallet') }}" class="nav-link {{ request()->routeIs('user.wallet') ? 'active' : '' }}"><span>💵</span> Wallet</a>
-                <a href="{{ route('user.withdraw') }}" class="nav-link {{ request()->routeIs('user.withdraw') ? 'active' : '' }}"><span>🏦</span> Withdraw</a>
-                <a href="{{ route('user.transactions') }}" class="nav-link {{ request()->routeIs('user.transactions') ? 'active' : '' }}"><span>🧾</span> Transactions</a>
-                <a href="{{ route('user.affiliate') }}" class="nav-link {{ request()->routeIs('user.affiliate') ? 'active' : '' }}"><span>🤝</span> Affiliate</a>
-                <a href="{{ route('user.messages') }}" class="nav-link {{ request()->routeIs('user.messages') ? 'active' : '' }}"><span>💬</span> Support</a>
-                <a href="{{ route('user.profile') }}" class="nav-link {{ request()->routeIs('user.profile') ? 'active' : '' }}"><span>👤</span> Profile</a>
+                <a href="{{ route('user.dashboard') }}" class="nav-link {{ request()->routeIs('user.dashboard') ? 'active' : '' }}"><span><x-icon name="dashboard" class="w-4 h-4" /></span> Dashboard</a>
+                <a href="{{ route('user.tasks') }}" class="nav-link {{ request()->routeIs('user.tasks') || request()->routeIs('user.task') ? 'active' : '' }}"><span><x-icon name="browse" class="w-4 h-4" /></span> Browse Tasks</a>
+                <a href="{{ route('user.bookings') }}" class="nav-link {{ request()->routeIs('user.bookings') ? 'active' : '' }}"><span><x-icon name="bookings" class="w-4 h-4" /></span> My Bookings</a>
+                <a href="{{ route('user.offers') }}" class="nav-link {{ request()->routeIs('user.offers') || request()->routeIs('user.task.proofs') || request()->routeIs('user.task.create') ? 'active' : '' }}"><span><x-icon name="briefcase" class="w-4 h-4" /></span> My Offers</a>
+                <a href="{{ route('user.notifications') }}" class="nav-link {{ request()->routeIs('user.notifications') ? 'active' : '' }}"><span><x-icon name="notifications" class="w-4 h-4" /></span> Notifications</a>
+                <a href="{{ route('user.wallet') }}" class="nav-link {{ request()->routeIs('user.wallet') ? 'active' : '' }}"><span><x-icon name="wallet" class="w-4 h-4" /></span> Wallet</a>
+                <a href="{{ route('user.withdraw') }}" class="nav-link {{ request()->routeIs('user.withdraw') ? 'active' : '' }}"><span><x-icon name="withdraw" class="w-4 h-4" /></span> Withdraw</a>
+                <a href="{{ route('user.transactions') }}" class="nav-link {{ request()->routeIs('user.transactions') ? 'active' : '' }}"><span><x-icon name="transactions" class="w-4 h-4" /></span> Transactions</a>
+                <a href="{{ route('user.affiliate') }}" class="nav-link {{ request()->routeIs('user.affiliate') ? 'active' : '' }}"><span><x-icon name="affiliate" class="w-4 h-4" /></span> Affiliate</a>
+                <a href="{{ route('user.messages') }}" class="nav-link {{ request()->routeIs('user.messages') ? 'active' : '' }}"><span><x-icon name="messages" class="w-4 h-4" /></span> Support</a>
+                <a href="{{ route('user.profile') }}" class="nav-link {{ request()->routeIs('user.profile') ? 'active' : '' }}"><span><x-icon name="profile" class="w-4 h-4" /></span> Profile</a>
+
+                {{-- Community / Facebook Clone --}}
+                <div class="px-3 py-2 text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Community</div>
+                <a href="{{ route('social.feed') }}" class="nav-link {{ request()->routeIs('social.feed') ? 'active' : '' }}"><span><x-icon name="news-feed" class="w-4 h-4" /></span> News Feed</a>
+                <a href="{{ route('social.chat') }}" class="nav-link {{ request()->routeIs('social.chat') ? 'active' : '' }}"><span><x-icon name="messenger" class="w-4 h-4" /></span> Messenger</a>
+                <a href="{{ route('social.suggestions') }}" class="nav-link {{ request()->routeIs('social.suggestions') || request()->routeIs('social.friends') ? 'active' : '' }}"><span><x-icon name="friend-suggestions" class="w-4 h-4" /></span> Friends</a>
+                <a href="{{ route('social.pages') }}" class="nav-link {{ request()->routeIs('social.pages') || request()->routeIs('social.page.show') || request()->routeIs('social.pages.mine') ? 'active' : '' }}"><span><x-icon name="flag" class="w-4 h-4" /></span> Pages</a>
+                <a href="{{ route('social.groups') }}" class="nav-link {{ request()->routeIs('social.groups') || request()->routeIs('social.group.show') || request()->routeIs('social.groups.mine') ? 'active' : '' }}"><span><x-icon name="user-group" class="w-4 h-4" /></span> Groups</a>
+                <a href="{{ route('social.explore') }}" class="nav-link {{ request()->routeIs('social.explore') ? 'active' : '' }}"><span><x-icon name="search" class="w-4 h-4" /></span> Explore</a>
+                <a href="{{ route('social.monetization') }}" class="nav-link {{ request()->routeIs('social.monetization') ? 'active' : '' }}"><span><x-icon name="monetization" class="w-4 h-4" /></span> Monetization</a>
+                <a href="{{ route('blog.index') }}" class="nav-link {{ request()->routeIs('blog.index') || request()->routeIs('blog.show') ? 'active' : '' }}"><span><x-icon name="document-text" class="w-4 h-4" /></span> Blog</a>
             </nav>
             <div class="p-3 border-t border-slate-200 dark:border-slate-700">
                 <div class="flex items-center gap-3 px-2 py-2 mb-2">
@@ -71,7 +82,7 @@
                 <a href="{{ route('user.affiliate') }}" class="block text-xs text-center text-blue-600 dark:text-blue-400 hover:underline mb-2">Referral code: {{ $user?->referral_code }}</a>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <button class="nav-link w-full text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30"><span>⏻</span> Logout</button>
+                    <button class="nav-link w-full text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30"><span><x-icon name="logout" class="w-4 h-4" /></span> Logout</button>
                 </form>
             </div>
         </aside>
@@ -88,7 +99,7 @@
                 </div>
                 <div class="flex items-center gap-3">
                     @if(session('impersonate'))
-                        <a href="{{ route('stop-impersonating') }}" class="btn btn-danger text-xs">⏹ Stop Impersonating</a>
+                        <a href="{{ route('stop-impersonating') }}" class="btn btn-danger text-xs"><x-icon name="x" class="w-3 h-3" /> Stop Impersonating</a>
                     @endif
                     <div class="hidden sm:block px-3 py-1.5 rounded-lg bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-semibold text-sm">Balance: {{ number_format((float)($user?->balance ?? 0),2) }} USD</div>
                     <!-- Notification Bell -->

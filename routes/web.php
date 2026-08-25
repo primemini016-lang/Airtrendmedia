@@ -7,6 +7,13 @@ use App\Http\Controllers\Web\MarketplaceController;
 use App\Http\Controllers\Web\GigController;
 use App\Http\Controllers\Web\User\DashboardController as UserDashboard;
 use App\Http\Controllers\Web\Admin\AdminController;
+use App\Http\Controllers\Web\BlogController;
+use App\Http\Controllers\Web\SocialController;
+use App\Http\Controllers\Web\SocialPageController;
+use App\Http\Controllers\Web\GroupController;
+use App\Http\Controllers\Web\ChatController;
+use App\Http\Controllers\Web\ProfileController;
+use App\Http\Controllers\Web\MonetizationController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -47,6 +54,10 @@ Route::middleware('installed')->group(function () {
     Route::get('/gigs', [GigController::class, 'index'])->name('gigs.browse');
     Route::get('/gigs/{gig}', [GigController::class, 'show'])->name('gigs.show');
 
+    // Blog (public browse — Phoenix-style full screen)
+    Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
+    Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
+
     // Auth (web session-based for the blade frontend)
     Route::get('/login', [WebAuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [WebAuthController::class, 'login']);
@@ -75,6 +86,7 @@ Route::middleware('installed')->group(function () {
         Route::get('/activate', [UserDashboard::class, 'activate'])->name('user.activate');
         Route::post('/activate/initiate', [UserDashboard::class, 'initiateActivation']);
         Route::get('/activate/verify', [UserDashboard::class, 'verifyActivation'])->name('user.activate.verify');
+        Route::post('/activate/trial', [UserDashboard::class, 'startTrial'])->name('user.activate.trial');
 
         Route::middleware('activated')->group(function () {
             Route::get('/dashboard', [UserDashboard::class, 'index'])->name('user.dashboard');
@@ -101,6 +113,77 @@ Route::middleware('installed')->group(function () {
             Route::post('/profile/image', [UserDashboard::class, 'updateImage'])->name('user.profile.image');
             Route::get('/messages', [UserDashboard::class, 'messages'])->name('user.messages');
             Route::post('/messages', [UserDashboard::class, 'sendMessage'])->name('user.messages.send');
+
+            // ===== Blog interactions (auth required) =====
+            Route::post('/blog/{slug}/like', [BlogController::class, 'toggleLike'])->name('blog.like');
+            Route::post('/blog/{slug}/rate', [BlogController::class, 'rate'])->name('blog.rate');
+            Route::post('/blog/{slug}/comment', [BlogController::class, 'comment'])->name('blog.comment');
+            Route::post('/blog/{slug}/share', [BlogController::class, 'share'])->name('blog.share');
+
+            // ===== Facebook Clone — Social Feed =====
+            Route::get('/social', [SocialController::class, 'feed'])->name('social.feed');
+            Route::post('/social/post', [SocialController::class, 'createPost'])->name('social.feed.post');
+            Route::post('/social/post/{post}/like', [SocialController::class, 'toggleLike'])->name('social.like');
+            Route::post('/social/post/{post}/comment', [SocialController::class, 'comment'])->name('social.comment');
+            Route::post('/social/comment/{comment}/like', [SocialController::class, 'toggleCommentLike'])->name('social.comment.like');
+            Route::post('/social/post/{post}/share', [SocialController::class, 'share'])->name('social.share');
+            Route::delete('/social/post/{post}', [SocialController::class, 'deletePost'])->name('social.delete');
+            Route::get('/social/post/{post}/comments', [SocialController::class, 'getComments'])->name('social.comments');
+            Route::post('/social/follow/{target}', [SocialController::class, 'toggleFollow'])->name('social.follow');
+            Route::get('/explore', [SocialController::class, 'explore'])->name('social.explore');
+
+            // ===== Facebook Clone — Pages =====
+            Route::get('/pages', [SocialPageController::class, 'index'])->name('social.pages');
+            Route::get('/pages/create', [SocialPageController::class, 'create'])->name('social.pages.create');
+            Route::post('/pages', [SocialPageController::class, 'store'])->name('social.pages.store');
+            Route::get('/pages/mine', [SocialPageController::class, 'myPages'])->name('social.pages.mine');
+            Route::get('/pages/{page:slug}', [SocialPageController::class, 'show'])->name('social.page.show');
+            Route::get('/pages/{page:slug}/edit', [SocialPageController::class, 'edit'])->name('social.page.edit');
+            Route::post('/pages/{page:slug}', [SocialPageController::class, 'update'])->name('social.page.update');
+            Route::delete('/pages/{page:slug}', [SocialPageController::class, 'destroy'])->name('social.page.destroy');
+            Route::post('/pages/{page}/join', [SocialPageController::class, 'join'])->name('social.pages.join');
+            Route::post('/pages/{page}/leave', [SocialPageController::class, 'leave'])->name('social.pages.leave');
+
+            // ===== Facebook Clone — Groups =====
+            Route::get('/groups', [GroupController::class, 'index'])->name('social.groups');
+            Route::get('/groups/create', [GroupController::class, 'create'])->name('social.groups.create');
+            Route::post('/groups', [GroupController::class, 'store'])->name('social.groups.store');
+            Route::get('/groups/mine', [GroupController::class, 'myGroups'])->name('social.groups.mine');
+            Route::get('/groups/{group:slug}', [GroupController::class, 'show'])->name('social.group.show');
+            Route::get('/groups/{group:slug}/edit', [GroupController::class, 'edit'])->name('social.group.edit');
+            Route::post('/groups/{group:slug}', [GroupController::class, 'update'])->name('social.group.update');
+            Route::delete('/groups/{group:slug}', [GroupController::class, 'destroy'])->name('social.group.destroy');
+            Route::post('/groups/{group}/join', [GroupController::class, 'join'])->name('social.groups.join');
+            Route::post('/groups/{group}/leave', [GroupController::class, 'leave'])->name('social.groups.leave');
+            Route::post('/groups/{group}/members/{memberId}/approve', [GroupController::class, 'approveMember'])->name('social.groups.member.approve');
+            Route::post('/groups/{group}/members/{memberId}/remove', [GroupController::class, 'removeMember'])->name('social.groups.member.remove');
+
+            // ===== Facebook Clone — Messenger / Chat =====
+            Route::get('/messenger', [ChatController::class, 'index'])->name('social.chat');
+            Route::get('/messenger/start/{targetUser}', [ChatController::class, 'startConversation'])->name('social.chat.start');
+            Route::post('/messenger/{conversation}/send', [ChatController::class, 'send'])->name('social.chat.send');
+            Route::get('/messenger/{conversation}/fetch', [ChatController::class, 'fetchMessages'])->name('social.chat.fetch');
+            Route::get('/messenger/unread', [ChatController::class, 'unreadCount'])->name('social.chat.unread');
+            Route::post('/messenger/group', [ChatController::class, 'createGroup'])->name('social.chat.group');
+            Route::delete('/messenger/message/{message}', [ChatController::class, 'deleteMessage'])->name('social.chat.delete');
+            Route::get('/messenger/search', [ChatController::class, 'searchUsers'])->name('social.chat.search');
+
+            // ===== Facebook Clone — Profiles =====
+            Route::get('/profile/{username}', [ProfileController::class, 'show'])->name('social.profile');
+            Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('social.profile.edit');
+            Route::post('/profile/update', [ProfileController::class, 'update'])->name('social.profile.update');
+            Route::post('/profile/avatar', [ProfileController::class, 'updateAvatar'])->name('social.profile.avatar');
+            Route::post('/profile/{creator}/stars', [ProfileController::class, 'sendStar'])->name('social.stars');
+            Route::get('/people', [ProfileController::class, 'suggestions'])->name('social.suggestions');
+            Route::get('/friends', [ProfileController::class, 'friends'])->name('social.friends');
+
+            // ===== Facebook Clone — Monetization =====
+            Route::get('/monetization', [MonetizationController::class, 'dashboard'])->name('social.monetization');
+            Route::post('/monetization/apply', [MonetizationController::class, 'apply'])->name('social.monetization.apply');
+            Route::post('/monetization/subscription', [MonetizationController::class, 'setupSubscription'])->name('social.monetization.subscription');
+            Route::post('/monetization/withdraw', [MonetizationController::class, 'withdraw'])->name('social.monetization.withdraw');
+            Route::post('/monetization/subscribe/{creator}', [MonetizationController::class, 'subscribe'])->name('social.monetization.subscribe');
+            Route::post('/monetization/subscription/{subscription}/cancel', [MonetizationController::class, 'cancelSubscription'])->name('social.monetization.cancel');
         });
     });
 
@@ -200,6 +283,15 @@ Route::middleware('installed')->group(function () {
             // Notifications (broadcast)
             Route::get('/notifications', [AdminController::class, 'adminNotifications'])->name('notifications');
             Route::post('/notifications/broadcast', [AdminController::class, 'sendBroadcastNotification'])->name('notifications.broadcast');
+
+            // Blog management
+            Route::get('/blog', [BlogController::class, 'adminIndex'])->name('blog');
+            Route::post('/blog', [BlogController::class, 'adminStore'])->name('blog.store');
+            Route::get('/blog/{post}/edit', [BlogController::class, 'adminEdit'])->name('blog.edit');
+            Route::post('/blog/{post}', [BlogController::class, 'adminUpdate'])->name('blog.update');
+            Route::delete('/blog/{post}', [BlogController::class, 'adminDelete'])->name('blog.delete');
+            Route::post('/blog/categories', [BlogController::class, 'adminCategoryStore'])->name('blog.category.store');
+            Route::delete('/blog/categories/{category}', [BlogController::class, 'adminCategoryDelete'])->name('blog.category.delete');
         });
     });
 });

@@ -52,7 +52,7 @@
                             @if($u->banned)<span class="badge badge-danger">Banned</span>@elseif($u->is_active)<span class="badge badge-success">Active</span>@else<span class="badge badge-warning">Inactive</span>@endif
                         </td>
                         <td class="text-slate-500 text-sm">{{ $u->created_at->format('M d, Y') }}</td>
-                        <td><a href="{{ route('admin.users.show', $u) }}" class="text-blue-600 hover:underline text-sm font-semibold">Manage →</a></td>
+                        <td><a href="{{ route('admin.users.show', $u) }}" class="text-blue-600 hover:underline text-sm font-semibold">Manage <x-icon name="arrow-right" class="w-4 h-4 inline" /></a></td>
                     </tr>
                 @empty
                     <tr><td colspan="6" class="text-center text-slate-400 py-8">No users found.</td></tr>

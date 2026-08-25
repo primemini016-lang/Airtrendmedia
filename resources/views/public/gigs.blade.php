@@ -42,15 +42,15 @@
                 <img src="{{ Storage::url($gig->image) }}" class="w-full h-40 object-cover" alt="{{ $gig->title }}">
             @else
                 <div class="w-full h-40 bg-gradient-to-br from-blue-100 to-indigo-200 flex items-center justify-center text-4xl">
-                    @if($gig->social_platform === 'facebook')📘
-                    @elseif($gig->social_platform === 'twitter')🐦
-                    @elseif($gig->social_platform === 'instagram')📸
-                    @elseif($gig->social_platform === 'youtube')▶️
-                    @elseif($gig->social_platform === 'tiktok')🎵
-                    @elseif($gig->social_platform === 'linkedin')💼
-                    @elseif($gig->social_platform === 'telegram')✈️
-                    @elseif($gig->social_platform === 'whatsapp')💬
-                    @else💼@endif
+                    @if($gig->social_platform === 'facebook')<x-icon name="facebook" class="w-4 h-4 inline" />
+                    @elseif($gig->social_platform === 'twitter')<x-icon name="twitter" class="w-4 h-4 inline" />
+                    @elseif($gig->social_platform === 'instagram')<x-icon name="image" class="w-4 h-4 inline" />
+                    @elseif($gig->social_platform === 'youtube')<x-icon name="youtube" class="w-4 h-4 inline" />
+                    @elseif($gig->social_platform === 'tiktok')<x-icon name="music" class="w-4 h-4 inline" />
+                    @elseif($gig->social_platform === 'linkedin')<x-icon name="briefcase" class="w-4 h-4 inline" />
+                    @elseif($gig->social_platform === 'telegram')<x-icon name="telegram" class="w-4 h-4 inline" />
+                    @elseif($gig->social_platform === 'whatsapp')<x-icon name="messages" class="w-4 h-4 inline" />
+                    @else<x-icon name="briefcase" class="w-4 h-4 inline" />@endif
                 </div>
             @endif
             <div class="p-4 flex flex-col flex-1">
@@ -64,6 +64,10 @@
                     <span class="text-blue-600 font-bold text-lg">${{ number_format((float)$gig->price, 2) }}</span>
                     <span class="text-xs text-slate-400">{{ $gig->user?->username ?? 'Anonymous' }}</span>
                 </div>
+                <div class="flex items-center gap-3 mt-2 text-xs text-slate-400">
+                    <span class="flex items-center gap-1"><x-icon name="view" class="w-3.5 h-3.5" /> {{ number_format($gig->views ?? 0) }}</span>
+                    <span class="flex items-center gap-1"><x-icon name="cart" class="w-3.5 h-3.5" /> {{ number_format($gig->sales ?? 0) }} sales</span>
+                </div>
             </div>
         </a>
         @endforeach
@@ -71,7 +75,7 @@
     <div class="mt-6">{{ $gigs->links() }}</div>
     @else
     <div class="card p-12 text-center text-slate-400">
-        <p class="text-4xl mb-3">💼</p>
+        <p class="text-4xl mb-3"><x-icon name="briefcase" class="w-4 h-4 inline" /></p>
         <p>No gigs found yet. Check back soon!</p>
     </div>
     @endif

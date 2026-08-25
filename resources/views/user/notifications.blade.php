@@ -14,7 +14,7 @@
 
 @if($notifications->isEmpty())
 <div class="card p-12 text-center text-slate-400 dark:text-slate-500">
-    <p class="text-4xl mb-3">🔔</p>
+    <p class="text-4xl mb-3"><x-icon name="notifications" class="w-4 h-4 inline" /></p>
     <p>No notifications yet. You'll be notified about job posts, approvals, payments, and more.</p>
 </div>
 @else
@@ -23,11 +23,11 @@
     <div class="card {{ $n->is_read ? '' : 'border-l-4 border-l-blue-500' }}" data-id="{{ $n->id }}">
         <div class="card-body flex items-start gap-3">
             <div class="text-2xl shrink-0">
-                @if($n->type === 'job')📋
-                @elseif($n->type === 'payment')💵
-                @elseif($n->type === 'message')💬
-                @elseif($n->type === 'system')⚙️
-                @else🔔@endif
+                @if($n->type === 'job')<x-icon name="tasks" class="w-4 h-4 inline" />
+                @elseif($n->type === 'payment')<x-icon name="wallet" class="w-4 h-4 inline" />
+                @elseif($n->type === 'message')<x-icon name="messages" class="w-4 h-4 inline" />
+                @elseif($n->type === 'system')<x-icon name="settings" class="w-4 h-4 inline" />
+                @else<x-icon name="notifications" class="w-4 h-4 inline" />@endif
             </div>
             <div class="flex-1 min-w-0">
                 <div class="flex items-center justify-between gap-2">
@@ -36,7 +36,7 @@
                 </div>
                 <p class="text-sm text-slate-600 dark:text-slate-300 mt-1">{{ $n->body }}</p>
                 <div class="flex items-center gap-3 mt-2">
-                    @if($n->url)<a href="{{ $n->url }}" class="text-xs text-blue-600 dark:text-blue-400 hover:underline">View →</a>@endif
+                    @if($n->url)<a href="{{ $n->url }}" class="text-xs text-blue-600 dark:text-blue-400 hover:underline">View <x-icon name="arrow-right" class="w-4 h-4 inline" /></a>@endif
                     @if(!$n->is_read)<button onclick="markRead({{ $n->id }})" class="text-xs text-slate-400 hover:text-blue-600">Mark as read</button>@endif
                 </div>
             </div>

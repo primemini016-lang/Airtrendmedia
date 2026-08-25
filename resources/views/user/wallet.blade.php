@@ -51,16 +51,16 @@
             <h3 class="font-bold text-slate-800 mb-3">Quick Actions</h3>
             <div class="space-y-2">
                 <a href="{{ route('user.withdraw') }}" class="flex items-center justify-between p-3 rounded-lg bg-slate-50 hover:bg-blue-50 transition">
-                    <span class="font-semibold text-slate-700">🏧 Withdraw Funds</span>
-                    <span class="text-blue-600">→</span>
+                    <span class="font-semibold text-slate-700"><x-icon name="wallet" class="w-4 h-4 inline" /> Withdraw Funds</span>
+                    <span class="text-blue-600"><x-icon name="arrow-right" class="w-4 h-4 inline" /></span>
                 </a>
                 <a href="{{ route('user.transactions') }}" class="flex items-center justify-between p-3 rounded-lg bg-slate-50 hover:bg-blue-50 transition">
-                    <span class="font-semibold text-slate-700">🧾 View Transactions</span>
-                    <span class="text-blue-600">→</span>
+                    <span class="font-semibold text-slate-700"><x-icon name="transactions" class="w-4 h-4 inline" /> View Transactions</span>
+                    <span class="text-blue-600"><x-icon name="arrow-right" class="w-4 h-4 inline" /></span>
                 </a>
                 <a href="{{ route('user.task.create') }}" class="flex items-center justify-between p-3 rounded-lg bg-slate-50 hover:bg-blue-50 transition">
-                    <span class="font-semibold text-slate-700">📢 Create a Task</span>
-                    <span class="text-blue-600">→</span>
+                    <span class="font-semibold text-slate-700"><x-icon name="ads" class="w-4 h-4 inline" /> Create a Task</span>
+                    <span class="text-blue-600"><x-icon name="arrow-right" class="w-4 h-4 inline" /></span>
                 </a>
             </div>
         </div>

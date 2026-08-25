@@ -36,6 +36,6 @@
         </ul>
     </div>
 
-    <a href="{{ route('install.requirements') }}" class="btn btn-primary w-full">Start Installation →</a>
+    <a href="{{ route('install.requirements') }}" class="btn btn-primary w-full">Start Installation <x-icon name="arrow-right" class="w-4 h-4 inline" /></a>
 </div>
 @endsection

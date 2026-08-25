@@ -19,8 +19,8 @@
         <label class="label">Sort</label>
         <select name="sort" class="input">
             <option value="newest" @selected(request('sort')=='newest')>Newest</option>
-            <option value="price_high" @selected(request('sort')=='price_high')>Price: High→Low</option>
-            <option value="price_low" @selected(request('sort')=='price_low')>Price: Low→High</option>
+            <option value="price_high" @selected(request('sort')=='price_high')>Price: High<x-icon name="arrow-right" class="w-4 h-4 inline" />Low</option>
+            <option value="price_low" @selected(request('sort')=='price_low')>Price: Low<x-icon name="arrow-right" class="w-4 h-4 inline" />High</option>
         </select>
     </div>
     <button class="btn btn-primary">Filter</button>
@@ -46,6 +46,6 @@
 </div>
 <div class="mt-6">{{ $tasks->links() }}</div>
 @else
-<div class="card p-12 text-center text-slate-400"><p class="text-4xl mb-3">📭</p><p>No tasks available right now. Check back soon!</p></div>
+<div class="card p-12 text-center text-slate-400"><p class="text-4xl mb-3"><x-icon name="send" class="w-4 h-4 inline" /></p><p>No tasks available right now. Check back soon!</p></div>
 @endif
 @endsection

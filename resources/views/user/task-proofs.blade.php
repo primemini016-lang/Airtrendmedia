@@ -5,7 +5,7 @@
 
 @section('content')
 <div class="mb-5">
-    <a href="{{ route('user.offers') }}" class="text-blue-600 hover:underline text-sm">← Back to My Offers</a>
+    <a href="{{ route('user.offers') }}" class="text-blue-600 hover:underline text-sm"><x-icon name="arrow-left" class="w-4 h-4 inline" /> Back to My Offers</a>
 </div>
 
 <div class="card mb-6">
@@ -35,7 +35,7 @@
 
 @if($proofs->isEmpty())
     <div class="card text-center py-16">
-        <div class="text-5xl mb-3">📷</div>
+        <div class="text-5xl mb-3"><x-icon name="image" class="w-4 h-4 inline" /></div>
         <h3 class="text-lg font-bold text-slate-800">No proofs submitted yet</h3>
         <p class="text-slate-500 mt-1">When workers submit proofs of completion, they will appear here for your review.</p>
     </div>

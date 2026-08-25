@@ -43,7 +43,7 @@
 <div class="card max-w-2xl mt-6">
     <div class="card-body">
         <h4 class="font-bold text-slate-800 mb-2">Where to get your keys</h4>
-        <p class="text-sm text-slate-600">Log in to your <a href="https://dashboard.paystack.com/settings/developer" target="_blank" class="text-blue-600 hover:underline">Paystack Dashboard → Settings → API Keys &amp; Webhooks</a>. Use test keys for development and live keys for production.</p>
+        <p class="text-sm text-slate-600">Log in to your <a href="https://dashboard.paystack.com/settings/developer" target="_blank" class="text-blue-600 hover:underline">Paystack Dashboard <x-icon name="arrow-right" class="w-4 h-4 inline" /> Settings <x-icon name="arrow-right" class="w-4 h-4 inline" /> API Keys &amp; Webhooks</a>. Use test keys for development and live keys for production.</p>
     </div>
 </div>
 @endsection

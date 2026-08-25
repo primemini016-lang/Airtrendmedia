@@ -38,7 +38,7 @@
             @if($listing->image)
                 <img src="{{ Storage::url($listing->image) }}" class="w-full h-40 object-cover" alt="{{ $listing->title }}">
             @else
-                <div class="w-full h-40 bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center text-4xl">🛒</div>
+                <div class="w-full h-40 bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center text-4xl"><x-icon name="marketplace" class="w-4 h-4 inline" /></div>
             @endif
             <div class="p-4 flex flex-col flex-1">
                 <div class="flex items-center justify-between mb-2">
@@ -55,6 +55,10 @@
                     <span class="text-blue-600 font-bold text-lg">${{ number_format((float)$listing->price, 2) }}</span>
                     <span class="text-xs text-slate-400">{{ $listing->user?->username ?? 'Anonymous' }}</span>
                 </div>
+                <div class="flex items-center gap-3 mt-2 text-xs text-slate-400">
+                    <span class="flex items-center gap-1"><x-icon name="view" class="w-3.5 h-3.5" /> {{ number_format($listing->views ?? 0) }}</span>
+                    <span class="flex items-center gap-1"><x-icon name="location" class="w-3.5 h-3.5" /> {{ $listing->location ?? 'N/A' }}</span>
+                </div>
             </div>
         </a>
         @endforeach
@@ -62,7 +66,7 @@
     <div class="mt-6">{{ $listings->links() }}</div>
     @else
     <div class="card p-12 text-center text-slate-400">
-        <p class="text-4xl mb-3">🛒</p>
+        <p class="text-4xl mb-3"><x-icon name="marketplace" class="w-4 h-4 inline" /></p>
         <p>No listings found yet. Check back soon!</p>
     </div>
     @endif

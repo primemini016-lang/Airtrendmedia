@@ -30,6 +30,6 @@
             </form>
         </div>
     </div>
-    <p class="text-center text-slate-400 text-sm mt-4"><a href="{{ route('home') }}" class="hover:text-blue-600">← Back to site</a></p>
+    <p class="text-center text-slate-400 text-sm mt-4"><a href="{{ route('home') }}" class="hover:text-blue-600"><x-icon name="arrow-left" class="w-4 h-4 inline" /> Back to site</a></p>
 </div>
 @endsection

@@ -5,7 +5,7 @@
 
 @section('content')
 <div class="mb-4">
-    <a href="{{ route('admin.users') }}" class="text-blue-600 hover:underline text-sm">← Back to Users</a>
+    <a href="{{ route('admin.users') }}" class="text-blue-600 hover:underline text-sm"><x-icon name="arrow-left" class="w-4 h-4 inline" /> Back to Users</a>
 </div>
 
 <div class="grid lg:grid-cols-3 gap-6 mb-6">
@@ -40,13 +40,13 @@
                     @csrf
                     <input type="hidden" name="banned" value="{{ $user->banned ? 0 : 1 }}">
                     <button class="btn {{ $user->banned ? 'btn-success' : 'btn-danger' }} w-full" onclick="return confirm('{{ $user->banned ? 'Unblock' : 'Block' }} this user?')">
-                        {{ $user->banned ? '✓ Unblock User' : '🚫 Block User' }}
+                        {{ $user->banned ? '<x-icon name="check" class="w-4 h-4 inline" /> Unblock User' : '<x-icon name="x" class="w-4 h-4 inline" /> Block User' }}
                     </button>
                 </form>
                 <form action="{{ route('admin.users.activate', $user) }}" method="POST">
                     @csrf
                     <button class="btn btn-outline w-full" onclick="return confirm('Manually activate this user account?')" {{ $user->is_active ? 'disabled' : '' }}>
-                        ✓ Activate Account
+                        <x-icon name="check" class="w-4 h-4 inline" /> Activate Account
                     </button>
                 </form>
             </div>

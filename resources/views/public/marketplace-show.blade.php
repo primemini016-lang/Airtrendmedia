@@ -3,7 +3,7 @@
 
 @section('content')
 <div class="max-w-5xl mx-auto px-4 sm:px-6 py-8">
-    <a href="{{ route('marketplace') }}" class="text-sm text-blue-600 hover:underline mb-4 inline-block">← Back to Marketplace</a>
+    <a href="{{ route('marketplace') }}" class="text-sm text-blue-600 hover:underline mb-4 inline-block"><x-icon name="arrow-left" class="w-4 h-4 inline" /> Back to Marketplace</a>
 
     <div class="grid lg:grid-cols-2 gap-8">
         <!-- Image -->
@@ -11,7 +11,7 @@
             @if($listing->image)
                 <img src="{{ Storage::url($listing->image) }}" class="w-full rounded-xl shadow-md object-cover max-h-96" alt="{{ $listing->title }}">
             @else
-                <div class="w-full h-96 rounded-xl bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center text-6xl">🛒</div>
+                <div class="w-full h-96 rounded-xl bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center text-6xl"><x-icon name="marketplace" class="w-4 h-4 inline" /></div>
             @endif
             @if($listing->gallery && is_array($listing->gallery))
                 <div class="grid grid-cols-4 gap-2 mt-3">
@@ -37,7 +37,7 @@
             <p class="text-3xl font-bold text-blue-600 mb-4">${{ number_format((float)$listing->price, 2) }}</p>
 
             @if($listing->location)
-            <p class="text-sm text-slate-500 mb-3">📍 {{ $listing->location }}</p>
+            <p class="text-sm text-slate-500 mb-3"><x-icon name="bookmark" class="w-4 h-4 inline" /> {{ $listing->location }}</p>
             @endif
 
             <div class="card p-4 mb-4">
@@ -51,7 +51,10 @@
                     @if($listing->user?->image)<img src="{{ Storage::url($listing->user->image) }}" class="w-12 h-12 rounded-full object-cover" alt="">@else<div class="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold">{{ strtoupper(substr($listing->user?->username ?? 'U',0,1)) }}</div>@endif
                     <div>
                         <p class="font-semibold text-slate-800">{{ $listing->user?->username ?? 'Anonymous' }}</p>
-                        <p class="text-xs text-slate-400">{{ $listing->created_at->format('M j, Y') }} · {{ $listing->views }} views</p>
+                        <p class="text-xs text-slate-400 flex items-center gap-3">
+                            <span>{{ $listing->created_at->format('M j, Y') }}</span>
+                            <span class="flex items-center gap-1"><x-icon name="view" class="w-3.5 h-3.5" /> {{ $listing->views }} views</span>
+                        </p>
                     </div>
                 </div>
             </div>
@@ -87,7 +90,7 @@
         <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
             @foreach($related as $item)
             <a href="{{ route('marketplace.show', $item) }}" class="card overflow-hidden hover:shadow-md transition">
-                @if($item->image)<img src="{{ Storage::url($item->image) }}" class="w-full h-32 object-cover" alt="">@else<div class="w-full h-32 bg-blue-100 flex items-center justify-center text-3xl">🛒</div>@endif
+                @if($item->image)<img src="{{ Storage::url($item->image) }}" class="w-full h-32 object-cover" alt="">@else<div class="w-full h-32 bg-blue-100 flex items-center justify-center text-3xl"><x-icon name="marketplace" class="w-4 h-4 inline" /></div>@endif
                 <div class="p-3">
                     <h3 class="font-medium text-slate-800 text-sm line-clamp-1">{{ $item->title }}</h3>
                     <p class="text-blue-600 font-bold mt-1">${{ number_format((float)$item->price, 2) }}</p>

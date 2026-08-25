@@ -10,7 +10,7 @@
     @foreach($checks as $label => $ok)
         <div class="flex items-center justify-between p-3 rounded-lg {{ $ok ? 'bg-green-50' : 'bg-red-50' }}">
             <span class="text-sm font-medium text-slate-700">{{ $label }}</span>
-            @if($ok)<span class="badge badge-success">✓ Passed</span>@else<span class="badge badge-danger">✕ Failed</span>@endif
+            @if($ok)<span class="badge badge-success"><x-icon name="check" class="w-4 h-4 inline" /> Passed</span>@else<span class="badge badge-danger"><x-icon name="star" class="w-4 h-4 inline" /> Failed</span>@endif
         </div>
     @endforeach
 </div>
@@ -21,9 +21,9 @@
 </div>
 
 <div class="flex gap-3">
-    <a href="{{ route('install.start') }}" class="btn btn-outline flex-1">← Back</a>
+    <a href="{{ route('install.start') }}" class="btn btn-outline flex-1"><x-icon name="arrow-left" class="w-4 h-4 inline" /> Back</a>
     @if($allPassed)
-        <a href="{{ route('install.database') }}" class="btn btn-primary flex-1">Continue →</a>
+        <a href="{{ route('install.database') }}" class="btn btn-primary flex-1">Continue <x-icon name="arrow-right" class="w-4 h-4 inline" /></a>
     @else
         <button class="btn btn-primary flex-1 opacity-50 cursor-not-allowed" disabled>Fix issues to continue</button>
     @endif

@@ -7,7 +7,7 @@
 <div class="max-w-3xl mx-auto">
     <div class="card mb-4 bg-blue-50 border-blue-200">
         <div class="card-body text-sm text-slate-700">
-            <p class="font-semibold text-blue-700">💬 Need help?</p>
+            <p class="font-semibold text-blue-700"><x-icon name="messages" class="w-4 h-4 inline" /> Need help?</p>
             <p>Send a message to our support team and we'll get back to you as soon as possible. This is a private conversation between you and the site administrators.</p>
         </div>
     </div>
@@ -17,7 +17,7 @@
             <div id="chatBox" class="space-y-3 max-h-96 overflow-y-auto min-h-[300px]">
                 @if($messages->isEmpty())
                     <div class="text-center text-slate-400 py-12">
-                        <div class="text-4xl mb-2">💬</div>
+                        <div class="text-4xl mb-2"><x-icon name="messages" class="w-4 h-4 inline" /></div>
                         <p>No messages yet. Start the conversation below.</p>
                     </div>
                 @else

@@ -121,6 +121,38 @@ class DashboardController extends Controller
         return redirect()->route('user.activate')->with('error', 'Payment could not be verified. If you have paid, please wait a moment and try again, or contact support with reference '.$reference);
     }
 
+    /**
+     * Start a 3-day free trial (no payment required).
+     */
+    public function startTrial(Request $request)
+    {
+        $user = auth('web')->user();
+        if (! $user) {
+            return redirect()->route('login');
+        }
+
+        if ($user->is_active) {
+            return redirect()->route('user.dashboard')->with('info', 'Your account is already active.');
+        }
+
+        // Don't allow starting a trial if they already had one that expired
+        if ($user->trial_ends_at && now()->gte($user->trial_ends_at) && ! $user->is_active) {
+            return redirect()->route('user.activate')
+                ->with('error', 'Your free trial has already been used. Please pay the $5 activation fee to continue.');
+        }
+
+        // Don't restart if already on an active trial
+        if ($user->isOnTrial()) {
+            return redirect()->route('user.dashboard')
+                ->with('info', 'You are already on a free trial with ' . $user->trialDaysLeft() . ' days left.');
+        }
+
+        $user->startTrial();
+
+        return redirect()->route('user.dashboard')
+            ->with('success', 'Your 3-day free trial has started! You now have full access. After 3 days, you\'ll need to pay the $5 activation fee.');
+    }
+
     /* =========================================================
      * Browse & book tasks (worker side)
      * ========================================================= */

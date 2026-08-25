@@ -36,9 +36,12 @@ class User extends Authenticatable implements JWTSubject
 
     protected $fillable = [
         'username', 'name', 'email', 'phone', 'country_code', 'password',
-        'image', 'bio', 'balance', 'total_earned', 'referrer_id',
+        'image', 'cover_image', 'bio', 'balance', 'total_earned', 'referrer_id',
         'referral_code', 'is_verified', 'is_active', 'banned',
         'email_verified_at', 'activated_at',
+        'trial_started_at', 'trial_ends_at',
+        'followers_count', 'following_count', 'posts_count',
+        'account_privacy', 'monetization_enabled',
     ];
 
     protected $hidden = [
@@ -51,11 +54,14 @@ class User extends Authenticatable implements JWTSubject
             'password'          => 'hashed',
             'email_verified_at' => 'datetime',
             'activated_at'      => 'datetime',
+            'trial_started_at'  => 'datetime',
+            'trial_ends_at'     => 'datetime',
             'is_verified'       => 'boolean',
             'is_active'         => 'boolean',
             'banned'            => 'boolean',
             'balance'           => 'decimal:2',
             'total_earned'      => 'decimal:2',
+            'monetization_enabled' => 'boolean',
         ];
     }
 
@@ -156,10 +162,193 @@ class User extends Authenticatable implements JWTSubject
         return $this->belongsTo(Country::class, 'country_code', 'code');
     }
 
+    /* ---------- Blog Relationships ---------- */
+    public function blogPosts()
+    {
+        return $this->hasMany(BlogPost::class, 'author_id');
+    }
+
+    public function blogComments()
+    {
+        return $this->hasMany(BlogComment::class);
+    }
+
+    public function blogLikes()
+    {
+        return $this->hasMany(BlogLike::class);
+    }
+
+    public function blogRatings()
+    {
+        return $this->hasMany(BlogRate::class);
+    }
+
+    /* ---------- Social Relationships ---------- */
+    public function socialPosts()
+    {
+        return $this->hasMany(SocialPost::class);
+    }
+
+    public function socialComments()
+    {
+        return $this->hasMany(SocialComment::class);
+    }
+
+    public function socialLikes()
+    {
+        return $this->hasMany(SocialLike::class);
+    }
+
+    // Followers = people following me
+    public function followers()
+    {
+        return $this->hasMany(Follow::class, 'following_id');
+    }
+
+    // Following = people I follow
+    public function following()
+    {
+        return $this->hasMany(Follow::class, 'follower_id');
+    }
+
+    public function isFollowing(User $other): bool
+    {
+        return $this->following()->where('following_id', $other->id)->exists();
+    }
+
+    public function isFollowedBy(User $other): bool
+    {
+        return $this->followers()->where('follower_id', $other->id)->exists();
+    }
+
+    public function socialPages()
+    {
+        return $this->hasMany(SocialPage::class, 'owner_id');
+    }
+
+    public function pageMemberships()
+    {
+        return $this->hasMany(SocialPageMember::class);
+    }
+
+    public function socialGroups()
+    {
+        return $this->hasMany(SocialGroup::class, 'owner_id');
+    }
+
+    public function groupMemberships()
+    {
+        return $this->hasMany(SocialGroupMember::class);
+    }
+
+    /* ---------- Chat Relationships ---------- */
+    public function conversations()
+    {
+        return $this->belongsToMany(Conversation::class, 'conversation_participants')
+            ->withPivot(['role', 'last_read_at', 'is_muted'])
+            ->withTimestamps()
+            ->orderBy('last_message_at', 'desc');
+    }
+
+    public function chatMessages()
+    {
+        return $this->hasMany(ChatMessage::class, 'sender_id');
+    }
+
+    /* ---------- Monetization Relationships ---------- */
+    public function monetizationEligibility()
+    {
+        return $this->hasOne(MonetizationEligibility::class);
+    }
+
+    public function monetizationEarnings()
+    {
+        return $this->hasMany(MonetizationEarning::class);
+    }
+
+    public function contentSubscriptions()
+    {
+        return $this->hasMany(ContentSubscription::class, 'subscriber_id');
+    }
+
+    public function subscribers()
+    {
+        return $this->hasMany(ContentSubscription::class, 'creator_id')->where('status', 'active');
+    }
+
+    public function starsReceived()
+    {
+        return $this->hasMany(ContentStar::class, 'receiver_id');
+    }
+
+    public function starsSent()
+    {
+        return $this->hasMany(ContentStar::class, 'sender_id');
+    }
+
     /* ---------- Helpers ---------- */
     public function canPerformTasks(): bool
     {
         return $this->is_active && ! $this->banned;
+    }
+
+    /**
+     * Check if the user is on an active free trial.
+     */
+    public function isOnTrial(): bool
+    {
+        if ($this->is_active) return false;
+        if (!$this->trial_ends_at) return false;
+        return now()->lt($this->trial_ends_at);
+    }
+
+    /**
+     * Check if the user has trial access (active trial or paid).
+     */
+    public function hasAccess(): bool
+    {
+        if ($this->is_active) return true;
+        if ($this->isOnTrial()) return true;
+        return false;
+    }
+
+    /**
+     * Days remaining in trial (0 if expired or not on trial).
+     */
+    public function trialDaysLeft(): int
+    {
+        if (!$this->trial_ends_at) return 0;
+        return max(0, now()->diffInDays($this->trial_ends_at));
+    }
+
+    /**
+     * Start a 3-day free trial.
+     */
+    public function startTrial(): void
+    {
+        $this->update([
+            'trial_started_at' => now(),
+            'trial_ends_at'    => now()->addDays(3),
+        ]);
+    }
+
+    /**
+     * Full profile URL for the social system.
+     */
+    public function profileUrl(): string
+    {
+        return route('social.profile', $this->username);
+    }
+
+    /**
+     * Avatar URL (with fallback).
+     */
+    public function avatarUrl(): string
+    {
+        if ($this->image) {
+            return asset('storage/' . $this->image);
+        }
+        return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&color=2563eb&background=eef2ff&size=128';
     }
 
     public function creditedReferralsCount(): int

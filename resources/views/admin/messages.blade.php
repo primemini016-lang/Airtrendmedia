@@ -5,7 +5,7 @@
 
 @section('content')
 @if($users->isEmpty())
-    <div class="card text-center py-16"><div class="text-5xl mb-3">💬</div><h3 class="font-bold text-slate-800">No conversations</h3><p class="text-slate-500 mt-1">User support messages will appear here.</p></div>
+    <div class="card text-center py-16"><div class="text-5xl mb-3"><x-icon name="messages" class="w-4 h-4 inline" /></div><h3 class="font-bold text-slate-800">No conversations</h3><p class="text-slate-500 mt-1">User support messages will appear here.</p></div>
 @else
     <div class="card">
         <div class="overflow-x-auto">
@@ -18,7 +18,7 @@
                             <td class="text-sm text-slate-600">{{ $u->email }}</td>
                             <td>@if($u->unread_count > 0)<span class="badge badge-danger">{{ $u->unread_count }} new</span>@else<span class="text-slate-300 text-sm">—</span>@endif</td>
                             <td class="text-sm text-slate-500">{{ $u->updated_at->diffForHumans() }}</td>
-                            <td><a href="{{ route('admin.messages.show', $u) }}" class="text-blue-600 hover:underline text-sm font-semibold">Open →</a></td>
+                            <td><a href="{{ route('admin.messages.show', $u) }}" class="text-blue-600 hover:underline text-sm font-semibold">Open <x-icon name="arrow-right" class="w-4 h-4 inline" /></a></td>
                         </tr>
                     @endforeach
                 </tbody>

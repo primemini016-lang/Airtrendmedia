@@ -41,25 +41,25 @@
     <a href="{{ route('admin.deposits', ['status' => 'pending']) }}" class="card hover:border-blue-400 transition">
         <div class="card-body flex items-center justify-between">
             <div><p class="stat-label">Pending Deposits</p><p class="text-2xl font-bold text-amber-600">{{ $stats['pending_deposits'] }}</p></div>
-            <span class="text-3xl">💰</span>
+            <span class="text-3xl"><x-icon name="wallet" class="w-4 h-4 inline" /></span>
         </div>
     </a>
     <a href="{{ route('admin.withdrawals', ['status' => 'pending']) }}" class="card hover:border-blue-400 transition">
         <div class="card-body flex items-center justify-between">
             <div><p class="stat-label">Pending Withdrawals</p><p class="text-2xl font-bold text-amber-600">{{ $stats['pending_withdrawals'] }}</p></div>
-            <span class="text-3xl">🏧</span>
+            <span class="text-3xl"><x-icon name="wallet" class="w-4 h-4 inline" /></span>
         </div>
     </a>
     <a href="{{ route('admin.tasks', ['status' => 'pending']) }}" class="card hover:border-blue-400 transition">
         <div class="card-body flex items-center justify-between">
             <div><p class="stat-label">Pending Tasks</p><p class="text-2xl font-bold text-amber-600">{{ $stats['pending_tasks'] }}</p></div>
-            <span class="text-3xl">📋</span>
+            <span class="text-3xl"><x-icon name="tasks" class="w-4 h-4 inline" /></span>
         </div>
     </a>
     <a href="{{ route('admin.complaints', ['status' => 'open']) }}" class="card hover:border-blue-400 transition">
         <div class="card-body flex items-center justify-between">
             <div><p class="stat-label">Open Complaints</p><p class="text-2xl font-bold text-red-600">{{ $stats['complaints'] }}</p></div>
-            <span class="text-3xl">⚠️</span>
+            <span class="text-3xl"><x-icon name="complaints" class="w-4 h-4 inline" /></span>
         </div>
     </a>
 </div>
@@ -101,7 +101,7 @@
                     </div>
                 @endforeach
             </div>
-            <a href="{{ route('admin.transactions') }}" class="block text-center text-blue-600 text-sm hover:underline mt-3">View all transactions →</a>
+            <a href="{{ route('admin.transactions') }}" class="block text-center text-blue-600 text-sm hover:underline mt-3">View all transactions <x-icon name="arrow-right" class="w-4 h-4 inline" /></a>
         </div>
     </div>
 </div>

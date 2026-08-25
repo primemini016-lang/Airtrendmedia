@@ -47,7 +47,7 @@
                     <input type="password" name="password_confirmation" class="input" required>
                 </div>
                 @if($referrer)<input type="hidden" name="referrer" value="{{ $referrer }}">
-                <div class="mb-4 px-3 py-2 rounded-lg bg-blue-50 text-blue-700 text-sm">✓ Referred by <strong>{{ $referrer }}</strong></div>
+                <div class="mb-4 px-3 py-2 rounded-lg bg-blue-50 text-blue-700 text-sm"><x-icon name="check" class="w-4 h-4 inline" /> Referred by <strong>{{ $referrer }}</strong></div>
                 @endif
                 <button class="btn btn-primary w-full">Create Account</button>
             </form>

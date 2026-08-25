@@ -6,7 +6,7 @@
 @section('content')
 @if(!$s->affiliate_enabled)
 <div class="card bg-amber-50 border-amber-200 mb-6">
-    <div class="card-body text-amber-800 text-sm">⚠ The affiliate program is currently disabled by the administrator. You can still share your link, but rewards will be credited once the program is re-enabled.</div>
+    <div class="card-body text-amber-800 text-sm"><x-icon name="complaints" class="w-4 h-4 inline" /> The affiliate program is currently disabled by the administrator. You can still share your link, but rewards will be credited once the program is re-enabled.</div>
 </div>
 @endif
 

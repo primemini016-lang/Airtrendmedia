@@ -5,7 +5,7 @@
 <div class="max-w-md mx-auto px-4 py-12">
     <div class="card">
         <div class="card-body text-center">
-            <div class="inline-flex w-14 h-14 rounded-2xl bg-blue-50 items-center justify-center text-2xl mb-3">✉️</div>
+            <div class="inline-flex w-14 h-14 rounded-2xl bg-blue-50 items-center justify-center text-2xl mb-3"><x-icon name="email" class="w-4 h-4 inline" /></div>
             <h1 class="text-2xl font-bold text-slate-800">Verify Your Email</h1>
             <p class="text-slate-500 text-sm mb-6">We sent a 6-digit code to <strong>{{ $email }}</strong>. Enter it below.</p>
             <form method="POST">

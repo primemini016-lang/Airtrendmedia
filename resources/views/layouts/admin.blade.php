@@ -58,36 +58,37 @@
                 <span class="ml-auto badge bg-white/20 text-white">Admin</span>
             </div>
             <nav class="flex-1 overflow-y-auto p-3 space-y-1 text-sm">
-                <a href="{{ route('admin.dashboard') }}" class="nav-link-admin {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}"><span>📊</span> Dashboard</a>
+                <a href="{{ route('admin.dashboard') }}" class="nav-link-admin {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}"><span><x-icon name="dashboard" class="w-4 h-4" /></span> Dashboard</a>
 
                 <div class="pt-3 pb-1 px-3 text-xs font-semibold text-blue-200 dark:text-slate-400 uppercase tracking-wider">Users & Tasks</div>
-                <a href="{{ route('admin.users') }}" class="nav-link-admin {{ request()->routeIs('admin.users') || request()->routeIs('admin.users.show') ? 'active' : '' }}"><span>👥</span> Users</a>
-                <a href="{{ route('admin.tasks') }}" class="nav-link-admin {{ request()->routeIs('admin.tasks') ? 'active' : '' }}"><span>📋</span> Tasks</a>
-                <a href="{{ route('admin.gigs') }}" class="nav-link-admin {{ request()->routeIs('admin.gigs') ? 'active' : '' }}"><span>💼</span> Gigs</a>
-                <a href="{{ route('admin.marketplace') }}" class="nav-link-admin {{ request()->routeIs('admin.marketplace') ? 'active' : '' }}"><span>🛒</span> Marketplace</a>
-                <a href="{{ route('admin.categories') }}" class="nav-link-admin {{ request()->routeIs('admin.categories') ? 'active' : '' }}"><span>🗂️</span> Categories</a>
+                <a href="{{ route('admin.users') }}" class="nav-link-admin {{ request()->routeIs('admin.users') || request()->routeIs('admin.users.show') ? 'active' : '' }}"><span><x-icon name="users" class="w-4 h-4" /></span> Users</a>
+                <a href="{{ route('admin.tasks') }}" class="nav-link-admin {{ request()->routeIs('admin.tasks') ? 'active' : '' }}"><span><x-icon name="tasks" class="w-4 h-4" /></span> Tasks</a>
+                <a href="{{ route('admin.gigs') }}" class="nav-link-admin {{ request()->routeIs('admin.gigs') ? 'active' : '' }}"><span><x-icon name="gigs" class="w-4 h-4" /></span> Gigs</a>
+                <a href="{{ route('admin.marketplace') }}" class="nav-link-admin {{ request()->routeIs('admin.marketplace') ? 'active' : '' }}"><span><x-icon name="marketplace" class="w-4 h-4" /></span> Marketplace</a>
+                <a href="{{ route('admin.categories') }}" class="nav-link-admin {{ request()->routeIs('admin.categories') ? 'active' : '' }}"><span><x-icon name="categories" class="w-4 h-4" /></span> Categories</a>
 
                 <div class="pt-3 pb-1 px-3 text-xs font-semibold text-blue-200 dark:text-slate-400 uppercase tracking-wider">Finance</div>
-                <a href="{{ route('admin.deposits') }}" class="nav-link-admin {{ request()->routeIs('admin.deposits') ? 'active' : '' }}"><span>💵</span> Deposits</a>
-                <a href="{{ route('admin.withdrawals') }}" class="nav-link-admin {{ request()->routeIs('admin.withdrawals') ? 'active' : '' }}"><span>🏦</span> Withdrawals</a>
-                <a href="{{ route('admin.transactions') }}" class="nav-link-admin {{ request()->routeIs('admin.transactions') ? 'active' : '' }}"><span>🧾</span> Transactions</a>
-                <a href="{{ route('admin.currencies') }}" class="nav-link-admin {{ request()->routeIs('admin.currencies') ? 'active' : '' }}"><span>💱</span> Currencies</a>
-                <a href="{{ route('admin.methods') }}" class="nav-link-admin {{ request()->routeIs('admin.methods') ? 'active' : '' }}"><span>💳</span> Payment Methods</a>
-                <a href="{{ route('admin.payment-keys') }}" class="nav-link-admin {{ request()->routeIs('admin.payment-keys') ? 'active' : '' }}"><span>🔑</span> Payment Keys</a>
-                <a href="{{ route('admin.affiliate') }}" class="nav-link-admin {{ request()->routeIs('admin.affiliate') ? 'active' : '' }}"><span>🤝</span> Affiliate</a>
+                <a href="{{ route('admin.deposits') }}" class="nav-link-admin {{ request()->routeIs('admin.deposits') ? 'active' : '' }}"><span><x-icon name="deposits" class="w-4 h-4" /></span> Deposits</a>
+                <a href="{{ route('admin.withdrawals') }}" class="nav-link-admin {{ request()->routeIs('admin.withdrawals') ? 'active' : '' }}"><span><x-icon name="withdraw" class="w-4 h-4" /></span> Withdrawals</a>
+                <a href="{{ route('admin.transactions') }}" class="nav-link-admin {{ request()->routeIs('admin.transactions') ? 'active' : '' }}"><span><x-icon name="transactions" class="w-4 h-4" /></span> Transactions</a>
+                <a href="{{ route('admin.currencies') }}" class="nav-link-admin {{ request()->routeIs('admin.currencies') ? 'active' : '' }}"><span><x-icon name="currencies" class="w-4 h-4" /></span> Currencies</a>
+                <a href="{{ route('admin.methods') }}" class="nav-link-admin {{ request()->routeIs('admin.methods') ? 'active' : '' }}"><span><x-icon name="currencies" class="w-4 h-4" /></span> Payment Methods</a>
+                <a href="{{ route('admin.payment-keys') }}" class="nav-link-admin {{ request()->routeIs('admin.payment-keys') ? 'active' : '' }}"><span><x-icon name="payment" class="w-4 h-4" /></span> Payment Keys</a>
+                <a href="{{ route('admin.affiliate') }}" class="nav-link-admin {{ request()->routeIs('admin.affiliate') ? 'active' : '' }}"><span><x-icon name="affiliate" class="w-4 h-4" /></span> Affiliate</a>
 
-                <div class="pt-3 pb-1 px-3 text-xs font-semibold text-blue-200 dark:text-slate-400 uppercase tracking-wider">Content</div>
-                <a href="{{ route('admin.complaints') }}" class="nav-link-admin {{ request()->routeIs('admin.complaints') ? 'active' : '' }}"><span>⚠️</span> Complaints</a>
-                <a href="{{ route('admin.messages') }}" class="nav-link-admin {{ request()->routeIs('admin.messages') || request()->routeIs('admin.messages.show') ? 'active' : '' }}"><span>💬</span> Messages</a>
-                <a href="{{ route('admin.faqs') }}" class="nav-link-admin {{ request()->routeIs('admin.faqs') ? 'active' : '' }}"><span>❓</span> FAQs</a>
-                <a href="{{ route('admin.ads') }}" class="nav-link-admin {{ request()->routeIs('admin.ads') ? 'active' : '' }}"><span>📢</span> Ads</a>
-                <a href="{{ route('admin.notifications') }}" class="nav-link-admin {{ request()->routeIs('admin.notifications') ? 'active' : '' }}"><span>🔔</span> Notifications</a>
+                <div class="pt-3 pb-1 px-3 text-xs font-semibold text-blue-200 dark:text-slate-400 uppercase tracking-wider">Content & Social</div>
+                <a href="{{ route('admin.complaints') }}" class="nav-link-admin {{ request()->routeIs('admin.complaints') ? 'active' : '' }}"><span><x-icon name="complaints" class="w-4 h-4" /></span> Complaints</a>
+                <a href="{{ route('admin.messages') }}" class="nav-link-admin {{ request()->routeIs('admin.messages') || request()->routeIs('admin.messages.show') ? 'active' : '' }}"><span><x-icon name="messages" class="w-4 h-4" /></span> Messages</a>
+                <a href="{{ route('admin.faqs') }}" class="nav-link-admin {{ request()->routeIs('admin.faqs') ? 'active' : '' }}"><span><x-icon name="faq" class="w-4 h-4" /></span> FAQs</a>
+                <a href="{{ route('admin.ads') }}" class="nav-link-admin {{ request()->routeIs('admin.ads') ? 'active' : '' }}"><span><x-icon name="ads" class="w-4 h-4" /></span> Ads</a>
+                <a href="{{ route('admin.blog') }}" class="nav-link-admin {{ request()->routeIs('admin.blog') || request()->routeIs('admin.blog.edit') ? 'active' : '' }}"><span><x-icon name="document-text" class="w-4 h-4" /></span> Blog</a>
+                <a href="{{ route('admin.notifications') }}" class="nav-link-admin {{ request()->routeIs('admin.notifications') ? 'active' : '' }}"><span><x-icon name="notifications" class="w-4 h-4" /></span> Notifications</a>
 
                 <div class="pt-3 pb-1 px-3 text-xs font-semibold text-blue-200 dark:text-slate-400 uppercase tracking-wider">System</div>
-                <a href="{{ route('admin.appearance') }}" class="nav-link-admin {{ request()->routeIs('admin.appearance') ? 'active' : '' }}"><span>🎨</span> Appearance</a>
-                <a href="{{ route('admin.email-settings') }}" class="nav-link-admin {{ request()->routeIs('admin.email-settings') ? 'active' : '' }}"><span>📧</span> Email Settings</a>
-                <a href="{{ route('admin.settings') }}" class="nav-link-admin {{ request()->routeIs('admin.settings') ? 'active' : '' }}"><span>⚙️</span> Site Settings</a>
-                <a href="{{ route('admin.system-update') }}" class="nav-link-admin {{ request()->routeIs('admin.system-update') ? 'active' : '' }}"><span>⬆️</span> System Update</a>
+                <a href="{{ route('admin.appearance') }}" class="nav-link-admin {{ request()->routeIs('admin.appearance') ? 'active' : '' }}"><span><x-icon name="appearance" class="w-4 h-4" /></span> Appearance</a>
+                <a href="{{ route('admin.email-settings') }}" class="nav-link-admin {{ request()->routeIs('admin.email-settings') ? 'active' : '' }}"><span><x-icon name="email" class="w-4 h-4" /></span> Email Settings</a>
+                <a href="{{ route('admin.settings') }}" class="nav-link-admin {{ request()->routeIs('admin.settings') ? 'active' : '' }}"><span><x-icon name="settings" class="w-4 h-4" /></span> Site Settings</a>
+                <a href="{{ route('admin.system-update') }}" class="nav-link-admin {{ request()->routeIs('admin.system-update') ? 'active' : '' }}"><span><x-icon name="system-update" class="w-4 h-4" /></span> System Update</a>
             </nav>
             <div class="p-3 border-t border-blue-800 dark:border-slate-700">
                 <div class="flex items-center gap-3 px-2 py-2 mb-2">
@@ -99,7 +100,7 @@
                 </div>
                 <form method="POST" action="{{ route('admin.logout') }}">
                     @csrf
-                    <button class="nav-link-admin w-full text-red-200 dark:text-red-400 hover:bg-red-900/40"><span>⏻</span> Logout</button>
+                    <button class="nav-link-admin w-full text-red-200 dark:text-red-400 hover:bg-red-900/40"><span><x-icon name="logout" class="w-4 h-4" /></span> Logout</button>
                 </form>
             </div>
         </aside>
@@ -114,14 +115,14 @@
                 </div>
                 <div class="flex items-center gap-3">
                     @if(session('impersonate'))
-                        <a href="{{ route('stop-impersonating') }}" class="btn btn-danger text-xs">⏹ Stop Impersonating</a>
+                        <a href="{{ route('stop-impersonating') }}" class="btn btn-danger text-xs"><x-icon name="x" class="w-3 h-3" /> Stop Impersonating</a>
                     @endif
                     <!-- Theme Toggle -->
                     <button id="theme-toggle" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300" title="Toggle theme">
                         <svg id="theme-icon-light" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" class="hidden dark:block"><circle cx="12" cy="12" r="5"/><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
                         <svg id="theme-icon-dark" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" class="block dark:hidden"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
                     </button>
-                    <a href="{{ route('home') }}" target="_blank" class="text-sm text-blue-600 dark:text-blue-400 hover:underline">View Site ↗</a>
+                    <a href="{{ route('home') }}" target="_blank" class="text-sm text-blue-600 dark:text-blue-400 hover:underline">View Site <x-icon name="arrow-right" class="w-3 h-3" /></a>
                 </div>
             </header>
 

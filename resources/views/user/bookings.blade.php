@@ -22,7 +22,7 @@
 
 @if($bookings->isEmpty())
     <div class="card text-center py-16">
-        <div class="text-5xl mb-3">📭</div>
+        <div class="text-5xl mb-3"><x-icon name="send" class="w-4 h-4 inline" /></div>
         <h3 class="text-lg font-bold text-slate-800">No bookings found</h3>
         <p class="text-slate-500 mt-1 mb-4">You haven't booked any tasks in this category yet.</p>
         <a href="{{ route('user.tasks') }}" class="btn btn-primary">Browse Tasks</a>

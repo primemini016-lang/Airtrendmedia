@@ -6,7 +6,7 @@
 @section('content')
 <div class="card mb-4 bg-blue-50 border-blue-200">
     <div class="card-body text-sm text-slate-700">
-        <p class="font-semibold text-blue-700 mb-1">💵 How the multi-currency system works</p>
+        <p class="font-semibold text-blue-700 mb-1"><x-icon name="wallet" class="w-4 h-4 inline" /> How the multi-currency system works</p>
         <p>Each currency has a <strong>USD value</strong> (how many units equal 1 USD). Users see prices in the default currency, but Paystack only accepts local currencies (NGN, GHS, ZAR, KES). Mark currencies that Paystack supports with the checkbox. When a user pays, the USD amount is converted to a Paystack-supported currency automatically.</p>
     </div>
 </div>
@@ -48,7 +48,7 @@
                                 <td class="text-lg">{{ $c->symbol }}</td>
                                 <td class="font-semibold">{{ number_format($c->usd_value,4) }}</td>
                                 <td>@if($c->is_default)<span class="badge badge-success">Default</span>@else<span class="text-slate-300">—</span>@endif</td>
-                                <td>@if($c->paystack_supported)<span class="badge badge-info">✓</span>@else<span class="text-slate-300">—</span>@endif</td>
+                                <td>@if($c->paystack_supported)<span class="badge badge-info"><x-icon name="check" class="w-4 h-4 inline" /></span>@else<span class="text-slate-300">—</span>@endif</td>
                                 <td>
                                     <form action="{{ route('admin.currencies.update', $c) }}" method="POST" class="inline">@csrf
                                         <input type="hidden" name="name" value="{{ $c->name }}"><input type="hidden" name="symbol" value="{{ $c->symbol }}">

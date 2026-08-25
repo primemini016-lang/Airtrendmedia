@@ -77,12 +77,12 @@
         <div class="card-body">
             <h3 class="font-bold text-slate-800 mb-3">Avoid Spam Tips</h3>
             <ul class="text-sm text-slate-600 space-y-3">
-                <li class="flex gap-2"><span class="text-blue-600">✓</span> Use a real domain email (not gmail/yahoo for sending)</li>
-                <li class="flex gap-2"><span class="text-blue-600">✓</span> Set up SPF, DKIM, and DMARC DNS records</li>
-                <li class="flex gap-2"><span class="text-blue-600">✓</span> Use a reputable SMTP provider (Mailgun, SES, SendGrid)</li>
-                <li class="flex gap-2"><span class="text-blue-600">✓</span> Keep "From" name consistent</li>
-                <li class="flex gap-2"><span class="text-blue-600">✓</span> Include unsubscribe options in marketing emails</li>
-                <li class="flex gap-2"><span class="text-blue-600">✓</span> Test deliverability before bulk sending</li>
+                <li class="flex gap-2"><span class="text-blue-600"><x-icon name="check" class="w-4 h-4 inline" /></span> Use a real domain email (not gmail/yahoo for sending)</li>
+                <li class="flex gap-2"><span class="text-blue-600"><x-icon name="check" class="w-4 h-4 inline" /></span> Set up SPF, DKIM, and DMARC DNS records</li>
+                <li class="flex gap-2"><span class="text-blue-600"><x-icon name="check" class="w-4 h-4 inline" /></span> Use a reputable SMTP provider (Mailgun, SES, SendGrid)</li>
+                <li class="flex gap-2"><span class="text-blue-600"><x-icon name="check" class="w-4 h-4 inline" /></span> Keep "From" name consistent</li>
+                <li class="flex gap-2"><span class="text-blue-600"><x-icon name="check" class="w-4 h-4 inline" /></span> Include unsubscribe options in marketing emails</li>
+                <li class="flex gap-2"><span class="text-blue-600"><x-icon name="check" class="w-4 h-4 inline" /></span> Test deliverability before bulk sending</li>
             </ul>
         </div>
     </div>

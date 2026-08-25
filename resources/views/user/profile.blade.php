@@ -17,7 +17,7 @@
             <p class="text-slate-400 text-sm">@{{ $user->username }}</p>
             <div class="mt-3">
                 @if($user->is_active)
-                    <span class="badge badge-success">✓ Active Account</span>
+                    <span class="badge badge-success"><x-icon name="check" class="w-4 h-4 inline" /> Active Account</span>
                 @else
                     <span class="badge badge-warning">Pending Activation</span>
                 @endif

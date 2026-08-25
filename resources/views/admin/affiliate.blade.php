@@ -16,7 +16,7 @@
     <!-- Top referrers -->
     <div class="card lg:col-span-1">
         <div class="card-body">
-            <h3 class="font-bold text-slate-800 mb-4">🏆 Top Referrers</h3>
+            <h3 class="font-bold text-slate-800 mb-4"><x-icon name="award" class="w-4 h-4 inline" /> Top Referrers</h3>
             @if($topReferrers->isEmpty())<p class="text-slate-400 text-center py-8 text-sm">No paid referrals yet.</p>
             @else
                 <div class="space-y-2">

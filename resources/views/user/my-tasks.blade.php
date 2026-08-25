@@ -23,7 +23,7 @@
 
 @if($tasks->isEmpty())
     <div class="card text-center py-16">
-        <div class="text-5xl mb-3">💼</div>
+        <div class="text-5xl mb-3"><x-icon name="briefcase" class="w-4 h-4 inline" /></div>
         <h3 class="text-lg font-bold text-slate-800">No offers yet</h3>
         <p class="text-slate-500 mt-1 mb-4">Create your first task to start hiring workers.</p>
         <a href="{{ route('user.task.create') }}" class="btn btn-primary">Create a Task</a>

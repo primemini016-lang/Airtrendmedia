@@ -7,7 +7,7 @@
 <div class="max-w-3xl mx-auto">
     <div class="card mb-5 bg-blue-50 border-blue-200">
         <div class="card-body text-sm text-slate-700">
-            <p class="font-semibold text-blue-700 mb-1">💰 How pricing works</p>
+            <p class="font-semibold text-blue-700 mb-1"><x-icon name="wallet" class="w-4 h-4 inline" /> How pricing works</p>
             <p>You pay the unit price × number of workers, plus a <strong>{{ $s->task_com }}%</strong> platform commission. Your wallet will be debited the total when the task is created. Tasks require admin approval before going live.</p>
             <p class="mt-1">Current balance: <strong>{{ number_format((float)auth()->user()->balance,2) }} USD</strong></p>
         </div>

@@ -4,14 +4,14 @@
 @section('heading', 'Conversation with ' . $user->name)
 
 @section('content')
-<div class="mb-4"><a href="{{ route('admin.messages') }}" class="text-blue-600 hover:underline text-sm">← Back to Messages</a></div>
+<div class="mb-4"><a href="{{ route('admin.messages') }}" class="text-blue-600 hover:underline text-sm"><x-icon name="arrow-left" class="w-4 h-4 inline" /> Back to Messages</a></div>
 
 <div class="max-w-3xl mx-auto">
     <div class="card mb-4">
         <div class="card-body">
             <div id="chatBox" class="space-y-3 max-h-96 overflow-y-auto min-h-[300px]">
                 @if($messages->isEmpty())
-                    <div class="text-center text-slate-400 py-12"><div class="text-4xl mb-2">💬</div><p>No messages in this conversation.</p></div>
+                    <div class="text-center text-slate-400 py-12"><div class="text-4xl mb-2"><x-icon name="messages" class="w-4 h-4 inline" /></div><p>No messages in this conversation.</p></div>
                 @else
                     @foreach($messages as $msg)
                         <div class="flex {{ $msg->from_admin ? 'justify-end' : 'justify-start' }}">

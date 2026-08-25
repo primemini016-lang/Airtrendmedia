@@ -3,7 +3,7 @@
 @section('heading', 'Task Details')
 
 @section('content')
-<a href="{{ route('user.tasks') }}" class="text-blue-600 text-sm hover:underline mb-4 inline-block">← Back to browse</a>
+<a href="{{ route('user.tasks') }}" class="text-blue-600 text-sm hover:underline mb-4 inline-block"><x-icon name="arrow-left" class="w-4 h-4 inline" /> Back to browse</a>
 
 <div class="grid lg:grid-cols-3 gap-6">
     <div class="lg:col-span-2 space-y-6">
@@ -17,7 +17,7 @@
             @if($task->action_url)
             <div class="mt-4 px-4 py-3 rounded-lg bg-slate-50 border border-slate-100">
                 <p class="text-xs text-slate-400 mb-1">Action URL</p>
-                <a href="{{ $task->action_url }}" target="_blank" class="text-blue-600 hover:underline break-all text-sm">{{ $task->action_url }} ↗</a>
+                <a href="{{ $task->action_url }}" target="_blank" class="text-blue-600 hover:underline break-all text-sm">{{ $task->action_url }} <x-icon name="arrow-right" class="w-4 h-4 inline" /></a>
             </div>
             @endif
         </div></div>
