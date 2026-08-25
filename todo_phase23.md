@@ -33,7 +33,8 @@
 ## Phase 4: Testing & Deploy
 - [x] php artisan route:list + view:compile check (373 routes, all compile)
 - [x] php artisan migrate:fresh --seed --force (passes, 82 subcategories with social icons)
-- [ ] Smoke test key pages (curl)
-- [ ] .env + .env.example finalize
-- [ ] Push to GitHub
-- [ ] Downloadable zip
+- [x] Smoke test key pages (curl) — all HTTP 200 (/, /login, /register, /browse, /blog, /faqs, /manifest.json, /sw.js, /js/action-sounds.js, /sounds/like.wav, /admin/login, /social, /admin, /gigs, /marketplace, /install, /admin/kyc, /admin/verification, /admin/sponsored-ads, /admin/anti-cheat, /admin/push-settings, /admin/pwa-settings, /admin/monetization)
+- [x] .env + .env.example finalize (fully rebranded to Airtrendmedia with all extended feature settings)
+- [x] Push to GitHub (committed + merged + pushed to primemini016-lang/Airtrendmedia main branch)
+- [x] Downloadable zip (airtrendmedia-complete.zip, 451 files, excludes vendor/node_modules/.git/cache)
+- [x] README.md rebranded to full Airtrendmedia all-in-one platform documentation
