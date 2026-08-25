@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="x-apple-disable-message-reformatting">
-    <title>{{ $subject ?? config('app.name', 'MiniWorkers') }}</title>
+    <title>{{ $subject ?? config('app.name', 'Airtrendmedia') }}</title>
     <!--[if mso]>
     <noscript>
         <xml>
@@ -167,7 +167,7 @@
     <div class="email-wrapper">
         <div class="email-container">
             <div class="email-header">
-                <div class="logo">{{ config('app.name', 'MiniWorkers') }}</div>
+                <div class="logo">{{ config('app.name', 'Airtrendmedia') }}</div>
                 <div class="header-subtitle">{{ $headerSubtitle ?? 'Your trusted microjob marketplace' }}</div>
             </div>
             <div class="email-body">
@@ -180,7 +180,7 @@
                     <a href="{{ config('app.url', 'https://airtrendmedia.com') }}/terms">Terms</a>
                 </div>
                 <p>If you have any questions, just reply to this email.</p>
-                <p class="copyright">&copy; {{ date('Y') }} {{ config('app.name', 'MiniWorkers') }}. All rights reserved.</p>
+                <p class="copyright">&copy; {{ date('Y') }} {{ config('app.name', 'Airtrendmedia') }}. All rights reserved.</p>
             </div>
         </div>
     </div>

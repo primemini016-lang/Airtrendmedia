@@ -6,7 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @php $favSetting = app(\App\Services\SettingService::class)->all(); @endphp
     @if(!empty($favSetting->favicon))<link rel="icon" href="{{ Storage::url($favSetting->favicon) }}">@endif
-    <title>@yield('title', 'Dashboard') — {{ $siteName ?? 'MiniWorkers' }}</title>
+    <title>@yield('title', 'Dashboard') — {{ $siteName ?? 'Airtrendmedia' }}</title>
     <script>
         if (localStorage.getItem('user-theme') === 'dark') {
             document.documentElement.classList.add('dark');
@@ -29,7 +29,7 @@
 <body class="min-h-screen bg-slate-100 dark:bg-slate-900 transition-colors">
     @php
         $settings = app(\App\Services\SettingService::class)->all();
-        $siteName = $settings->name ?? 'MiniWorkers';
+        $siteName = $settings->name ?? 'Airtrendmedia';
         $user = auth('web')->user();  // CRITICAL: use 'web' guard, not default JWT guard
         $logoUrl = null;
         if (!empty($settings->logo)) { $logoUrl = Storage::url($settings->logo); }

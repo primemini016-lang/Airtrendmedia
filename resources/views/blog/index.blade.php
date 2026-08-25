@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Blog — ' . ($siteName ?? 'MiniWorkers'))
+@section('title', 'Blog — ' . ($siteName ?? 'Airtrendmedia'))
 @section('content')
 
 {{-- Phoenix-style full-screen blog header --}}
@@ -11,7 +11,7 @@
         <div class="text-center max-w-3xl mx-auto">
             <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur text-sm font-medium mb-6">
                 <x-icon name="blog" class="w-4 h-4" />
-                <span>The MiniWorkers Blog</span>
+                <span>The Airtrendmedia Blog</span>
             </div>
             <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight mb-4">
                 Insights, Tips & Stories

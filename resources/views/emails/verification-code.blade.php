@@ -18,7 +18,7 @@
 
 <p>If you did not create an account with us, you can safely ignore this email.</p>
 
-<a href="{{ config('app.url', 'https://airtrendmedia.com') }}" class="email-button">Visit {{ config('app.name', 'MiniWorkers') }}</a>
+<a href="{{ config('app.url', 'https://airtrendmedia.com') }}" class="email-button">Visit {{ config('app.name', 'Airtrendmedia') }}</a>
 
-<p>Thanks,<br><strong>The {{ config('app.name', 'MiniWorkers') }} Team</strong></p>
+<p>Thanks,<br><strong>The {{ config('app.name', 'Airtrendmedia') }} Team</strong></p>
 @endsection

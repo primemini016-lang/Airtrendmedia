@@ -43,7 +43,7 @@
                         <td>
                             <div class="flex items-center gap-2">
                                 @if($u->image)<img src="{{ asset('storage/'.$u->image) }}" class="w-8 h-8 rounded-full object-cover">@else<div class="w-8 h-8 rounded-full auth-gradient flex items-center justify-center text-white text-xs font-bold">{{ strtoupper(substr($u->name,0,1)) }}</div>@endif
-                                <div><p class="font-semibold text-slate-800">{{ $u->name }}</p><p class="text-xs text-slate-400">@{{ $u->username }}</p></div>
+                                <div><p class="font-semibold text-slate-800">{{ $u->name }}</p><p class="text-xs text-slate-400">{{ $u->username }}</p></div>
                             </div>
                         </td>
                         <td class="text-slate-600 text-sm">{{ $u->email }}</td>

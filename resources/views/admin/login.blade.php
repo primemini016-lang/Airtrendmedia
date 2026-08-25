@@ -2,6 +2,9 @@
 
 @section('title', 'Admin Login')
 
+@section('auth-heading', 'Airtrendmedia Admin')
+@section('auth-subtitle', 'Sign in to manage your platform')
+
 @section('content')
 <div class="w-full max-w-md">
     <div class="text-center mb-6">

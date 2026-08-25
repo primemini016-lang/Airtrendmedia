@@ -18,7 +18,7 @@
 
 <p>If you did not request a password reset, please ignore this email — your account remains secure and no changes have been made.</p>
 
-<a href="{{ config('app.url', 'https://airtrendmedia.com') }}" class="email-button">Return to {{ config('app.name', 'MiniWorkers') }}</a>
+<a href="{{ config('app.url', 'https://airtrendmedia.com') }}" class="email-button">Return to {{ config('app.name', 'Airtrendmedia') }}</a>
 
-<p>Stay safe,<br><strong>The {{ config('app.name', 'MiniWorkers') }} Team</strong></p>
+<p>Stay safe,<br><strong>The {{ config('app.name', 'Airtrendmedia') }} Team</strong></p>
 @endsection

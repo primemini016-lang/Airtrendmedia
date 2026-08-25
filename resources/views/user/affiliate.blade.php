@@ -108,7 +108,7 @@
                         @endphp
                         <div class="flex items-center justify-between p-3 rounded-lg bg-slate-50">
                             <div>
-                                <p class="font-semibold text-slate-800 text-sm">@{{ $ref->referee->username }}</p>
+                                <p class="font-semibold text-slate-800 text-sm">{{ $ref->referee->username }}</p>
                                 <p class="text-xs text-slate-400">{{ $ref->created_at->format('M d, Y') }}</p>
                             </div>
                             <div class="text-right">
@@ -140,7 +140,7 @@
     function shareRef() {
         const url = document.getElementById('refLink').value;
         if (navigator.share) {
-            navigator.share({ title: 'Join MiniWorkers', url });
+            navigator.share({ title: 'Join Airtrendmedia', url });
         } else {
             copyRef();
         }

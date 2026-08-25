@@ -34,7 +34,7 @@
                 @forelse($transactions as $tx)
                     <tr>
                         <td class="text-slate-500 text-sm whitespace-nowrap">{{ $tx->created_at->format('M d, Y H:i') }}</td>
-                        <td><a href="{{ route('admin.users.show', $tx->user) }}" class="text-slate-700 hover:text-blue-600">@{{ $tx->user->username ?? '—' }}</a></td>
+                        <td><a href="{{ route('admin.users.show', $tx->user) }}" class="text-slate-700 hover:text-blue-600">{{ $tx->user->username ?? '—' }}</a></td>
                         <td><span class="badge badge-muted">{{ ucfirst(str_replace('_',' ',$tx->type)) }}</span></td>
                         <td class="text-slate-600 text-sm max-w-[260px] truncate" title="{{ $tx->description }}">{{ $tx->description }}</td>
                         <td class="text-xs text-slate-400">{{ $tx->reference }}</td>

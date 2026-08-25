@@ -26,6 +26,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script>tailwind.config = { darkMode: 'class' }</script>
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/social.css') }}">
     {{-- Alpine.js — required for all dropdown menus (Create, Messenger, Notifications, Profile) --}}
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     {{-- Facebook-style design system --}}
@@ -118,7 +119,7 @@
     @php
         $authUser = auth('web')->user();
         $settings = app(\App\Services\SettingService::class)->all();
-        $siteName = $settings->name ?? 'MiniWorkers';
+        $siteName = $settings->name ?? 'Airtrendmedia';
         $logoUrl = null;
         if (!empty($settings->logo)) { $logoUrl = Storage::url($settings->logo); }
         $unreadNotifs = $authUser ? $authUser->notifications()->where('is_read', false)->count() : 0;
@@ -345,11 +346,16 @@
     {{-- Mobile spacer for bottom nav --}}
     <div class="lg:hidden h-14"></div>
 
-    {{-- Theme toggle script --}}
+    {{-- Close all Alpine dropdowns on Escape --}}
     <script>
-        document.addEventListener('keydown', (e) => {
+        document.addEventListener('keydown', function (e) {
             if (e.key === 'Escape') {
-                document.querySelectorAll('[x-show]').forEach(el => el.__x?.$data && (el.__x.$data.open = false));
+                window.dispatchEvent(new CustomEvent('close-all-dropdowns'));
+                document.querySelectorAll('[x-data]').forEach(function (el) {
+                    if (el._x_dataStack && el._x_dataStack[0] && 'open' in el._x_dataStack[0]) {
+                        el._x_dataStack[0].open = false;
+                    }
+                });
             }
         });
     </script>

@@ -1,6 +1,6 @@
 @extends('layouts.social')
 
-@section('title', 'Explore — MiniWorkers')
+@section('title', 'Explore — Airtrendmedia')
 
 @section('content')
 <div class="fb-main-container">
@@ -9,7 +9,7 @@
         <div class="fb-search-box fb-search-large">
             <x-icon name="search" class="w-5 h-5 fb-text-muted" />
             <form action="{{ route('social.explore') }}" method="GET" class="flex-1">
-                <input type="text" name="q" value="{{ $query }}" placeholder="Search MiniWorkers" class="fb-search-input">
+                <input type="text" name="q" value="{{ $query }}" placeholder="Search Airtrendmedia" class="fb-search-input">
             </form>
         </div>
     </div>
@@ -86,7 +86,7 @@
                     <div class="fb-trending-item">
                         <div class="fb-trending-rank">#1</div>
                         <div>
-                            <div class="fb-text font-semibold">MiniWorkers Marketplace</div>
+                            <div class="fb-text font-semibold">Airtrendmedia Marketplace</div>
                             <div class="fb-text-muted text-sm">2.4K posts</div>
                         </div>
                     </div>

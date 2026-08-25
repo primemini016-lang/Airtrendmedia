@@ -128,7 +128,7 @@
                 @foreach($recentTxns as $tx)
                     <div class="flex items-center justify-between p-2 rounded-lg">
                         <div>
-                            <p class="text-sm font-semibold text-slate-800">@{{ $tx->user->username ?? '—' }}</p>
+                            <p class="text-sm font-semibold text-slate-800">{{ $tx->user->username ?? '—' }}</p>
                             <p class="text-xs text-slate-400">{{ $tx->description }}</p>
                         </div>
                         <span class="font-bold text-sm {{ $tx->amount >= 0 ? 'text-green-600' : 'text-red-600' }}">{{ $tx->amount >= 0 ? '+' : '' }}{{ number_format($tx->amount,2) }}</span>

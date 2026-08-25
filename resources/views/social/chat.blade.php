@@ -1,62 +1,9 @@
 @extends('layouts.social')
 
-@section('title', 'Messenger — MiniWorkers')
+@section('title', 'Messenger — Airtrendmedia')
 
 @section('content')
-<div class="fb-chat-container" x-data="{
-    showInfo: false,
-    messageText: '',
-    typingUsers: [],
-    showEmojiPicker: false,
-    activeMessageId: null,
-    pollTyping() {
-        @if($activeConversation)
-        fetch('{{ route('social.chat.typing-status', $activeConversation) }}', { headers: { 'Accept': 'application/json' } })
-            .then(r => r.json())
-            .then(data => {
-                this.typingUsers = data.typing || [];
-                if (this.typingUsers.length && window.AirtrendSounds) AirtrendSounds.message();
-            })
-            .catch(() => {});
-        @endif
-    },
-    sendTyping(isTyping) {
-        @if($activeConversation)
-        fetch('{{ route('social.chat.typing', $activeConversation) }}', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
-            body: JSON.stringify({ is_typing: isTyping })
-        }).catch(() => {});
-        @endif
-    },
-    reactToMessage(messageId, emoji) {
-        fetch('/messenger/message/' + messageId + '/react', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
-            body: JSON.stringify({ emoji: emoji })
-        }).then(r => r.json()).then(data => {
-            this.renderReactions(messageId, data.reactions || []);
-            if (window.AirtrendSounds) AirtrendSounds.like();
-        }).catch(() => {});
-    },
-    renderReactions(messageId, reactions) {
-        const el = document.getElementById('reactions-' + messageId);
-        if (!el) return;
-        if (!reactions.length) { el.innerHTML = ''; return; }
-        el.innerHTML = reactions.map(r =>
-            '<span class=\"fb-msg-reaction-chip\" title=\"' + (r.users || []).join(', ') + '\">' +
-            r.emoji + (r.count > 1 ? ' <b>' + r.count + '</b>' : '') + '</span>'
-        ).join('');
-    },
-    toggleEmojiPicker(messageId) {
-        if (this.activeMessageId === messageId) { this.showEmojiPicker = false; this.activeMessageId = null; }
-        else { this.showEmojiPicker = true; this.activeMessageId = messageId; }
-    },
-    init() {
-        setInterval(() => this.pollTyping(), 3000);
-        this.pollTyping();
-    }
-}" x-init="init()">
+<div class="fb-chat-container" x-data="chatComponent()" x-init="init()">
     <div class="fb-chat-layout">
 
         {{-- LEFT: Conversation List --}}
@@ -200,7 +147,7 @@
                             <img src="{{ $otherUser?->avatarUrl() }}" class="fb-avatar fb-avatar-lg mb-4" alt="">
                             <h3 class="fb-text font-bold text-lg">{{ $otherUser?->name }}</h3>
                             <p class="fb-text-muted text-sm mb-4">{{ $otherUser?->username }}</p>
-                            <p class="fb-text-muted text-sm">You're friends on MiniWorkers</p>
+                            <p class="fb-text-muted text-sm">You're friends on Airtrendmedia</p>
                             <a href="{{ route('social.profile', $otherUser?->username) }}" class="fb-btn fb-btn-primary mt-4">View Profile</a>
                         </div>
                     @else
@@ -491,6 +438,67 @@
 
 <script src="{{ asset('js/action-sounds.js') }}" defer></script>
 <script>
+// Register Alpine chat component BEFORE Alpine initializes
+document.addEventListener('alpine:init', function () {
+    window.Alpine.data('chatComponent', function () {
+        return {
+            showInfo: false,
+            messageText: '',
+            typingUsers: [],
+            showEmojiPicker: false,
+            activeMessageId: null,
+            pollTyping() {
+                @if($activeConversation)
+                fetch('{{ route('social.chat.typing-status', $activeConversation) }}', { headers: { 'Accept': 'application/json' } })
+                    .then(function (r) { return r.json(); })
+                    .then(function (data) {
+                        this.typingUsers = data.typing || [];
+                        if (this.typingUsers.length && window.AirtrendSounds) AirtrendSounds.message();
+                    }.bind(this))
+                    .catch(function () {});
+                @endif
+            },
+            sendTyping(isTyping) {
+                @if($activeConversation)
+                fetch('{{ route('social.chat.typing', $activeConversation) }}', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
+                    body: JSON.stringify({ is_typing: isTyping })
+                }).catch(function () {});
+                @endif
+            },
+            reactToMessage(messageId, emoji) {
+                var self = this;
+                fetch('/messenger/message/' + messageId + '/react', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
+                    body: JSON.stringify({ emoji: emoji })
+                }).then(function (r) { return r.json(); }).then(function (data) {
+                    self.renderReactions(messageId, data.reactions || []);
+                    if (window.AirtrendSounds) AirtrendSounds.like();
+                }).catch(function () {});
+            },
+            renderReactions(messageId, reactions) {
+                var el = document.getElementById('reactions-' + messageId);
+                if (!el) return;
+                if (!reactions.length) { el.innerHTML = ''; return; }
+                el.innerHTML = reactions.map(function (r) {
+                    return '<span class="fb-msg-reaction-chip" title="' + (r.users || []).join(', ') + '">' +
+                        r.emoji + (r.count > 1 ? ' <b>' + r.count + '</b>' : '') + '</span>';
+                }).join('');
+            },
+            toggleEmojiPicker(messageId) {
+                if (this.activeMessageId === messageId) { this.showEmojiPicker = false; this.activeMessageId = null; }
+                else { this.showEmojiPicker = true; this.activeMessageId = messageId; }
+            },
+            init() {
+                var self = this;
+                setInterval(function () { self.pollTyping(); }, 3000);
+                this.pollTyping();
+            }
+        };
+    });
+});
 // Auto-scroll to bottom of messages on load and after rendering.
 document.addEventListener('DOMContentLoaded', function() {
     var area = document.getElementById('messagesArea');

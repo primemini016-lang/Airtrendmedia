@@ -55,7 +55,7 @@
                             @if($proof->user->image)<img src="{{ asset('storage/'.$proof->user->image) }}" class="w-8 h-8 rounded-full object-cover">@else<div class="w-8 h-8 rounded-full auth-gradient flex items-center justify-center text-white text-xs font-bold">{{ strtoupper(substr($proof->user->username,0,1)) }}</div>@endif
                             <div>
                                 <p class="font-semibold text-slate-800 text-sm">{{ $proof->user->name }}</p>
-                                <p class="text-xs text-slate-400">@{{ $proof->user->username }}</p>
+                                <p class="text-xs text-slate-400">{{ $proof->user->username }}</p>
                             </div>
                         </div>
                         <span class="badge badge-{{ $st[1] }}">{{ $st[0] }}</span>

@@ -14,7 +14,7 @@
         <div class="card-body text-center">
             @if($user->image)<img src="{{ asset('storage/'.$user->image) }}" class="w-24 h-24 rounded-full object-cover mx-auto mb-3 border-4 border-blue-100">@else<div class="w-24 h-24 rounded-full auth-gradient flex items-center justify-center text-white text-3xl font-bold mx-auto mb-3">{{ strtoupper(substr($user->name,0,1)) }}</div>@endif
             <h3 class="font-bold text-slate-800">{{ $user->name }}</h3>
-            <p class="text-slate-400 text-sm">@{{ $user->username }}</p>
+            <p class="text-slate-400 text-sm">{{ $user->username }}</p>
             <div class="mt-2">
                 @if($user->banned)<span class="badge badge-danger">Banned</span>@elseif($user->is_active)<span class="badge badge-success">Active</span>@else<span class="badge badge-warning">Inactive</span>@endif
             </div>
@@ -123,7 +123,7 @@
             @else
                 <div class="space-y-1.5">
                 @foreach($affiliateReferrals as $ref)
-                    <div class="flex justify-between text-sm"><span class="text-slate-600">@{{ $ref->referee->username }}</span><span class="badge badge-{{ $ref->status === 'paid' ? 'success' : ($ref->status === 'pending' ? 'warning' : 'danger') }}">{{ ucfirst($ref->status) }}</span></div>
+                    <div class="flex justify-between text-sm"><span class="text-slate-600">{{ $ref->referee->username }}</span><span class="badge badge-{{ $ref->status === 'paid' ? 'success' : ($ref->status === 'pending' ? 'warning' : 'danger') }}">{{ ucfirst($ref->status) }}</span></div>
                 @endforeach
                 </div>
             @endif

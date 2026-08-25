@@ -46,7 +46,7 @@
     @php
         $settings = app(\App\Services\SettingService::class)->all();
         $s = $settings;
-        $siteName = $settings->name ?? 'MiniWorkers';
+        $siteName = $settings->name ?? 'Airtrendmedia';
         $contactEmail = $settings->contact_email ?? null;
         $phone = $settings->phone ?? null;
         $address = $settings->address ?? null;

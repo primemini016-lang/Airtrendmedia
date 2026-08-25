@@ -42,7 +42,7 @@
                         <a href="{{ route('user.task', $task) }}" class="font-bold text-slate-800 hover:text-blue-600 line-clamp-2">{{ $task->title }}</a>
                         <span class="badge badge-{{ $badge[1] }}">{{ $badge[0] }}</span>
                     </div>
-                    <p class="text-xs text-slate-500 mb-3">By @{{ $task->user->username }} · {{ $task->category->name }}</p>
+                    <p class="text-xs text-slate-500 mb-3">By {{ $task->user->username }} · {{ $task->category->name }}</p>
                     <div class="flex items-center justify-between text-sm">
                         <span class="text-slate-600">Reward</span>
                         <span class="font-bold text-blue-600">{{ number_format($task->price,2) }} USD</span>

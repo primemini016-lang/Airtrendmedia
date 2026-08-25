@@ -1,6 +1,6 @@
 @extends('layouts.social')
 
-@section('title', 'Monetization — MiniWorkers')
+@section('title', 'Monetization — Airtrendmedia')
 
 @section('content')
 <div class="fb-main-container">

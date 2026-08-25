@@ -5,7 +5,7 @@
 <div class="max-w-3xl mx-auto px-4 sm:px-6 py-10">
     <h1 class="text-3xl font-bold text-slate-800 mb-6">Terms & Conditions</h1>
     <div class="card"><div class="card-body prose prose-slate max-w-none text-sm leading-relaxed space-y-4">
-        <p>Welcome to MiniWorkers. By registering an account and using our platform, you agree to the following terms and conditions. Please read them carefully.</p>
+        <p>Welcome to Airtrendmedia. By registering an account and using our platform, you agree to the following terms and conditions. Please read them carefully.</p>
         <h3 class="font-bold text-slate-800">1. Account Activation</h3>
         <p>To perform tasks and earn money on the platform, you must pay a one-time account activation fee. This fee is non-refundable and grants you permanent access to the marketplace as a worker.</p>
         <h3 class="font-bold text-slate-800">2. Task Completion</h3>

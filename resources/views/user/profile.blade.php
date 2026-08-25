@@ -14,7 +14,7 @@
                 <div class="w-28 h-28 rounded-full auth-gradient flex items-center justify-center text-white text-4xl font-bold mx-auto mb-3">{{ strtoupper(substr($user->name,0,1)) }}</div>
             @endif
             <h3 class="font-bold text-slate-800">{{ $user->name }}</h3>
-            <p class="text-slate-400 text-sm">@{{ $user->username }}</p>
+            <p class="text-slate-400 text-sm">{{ $user->username }}</p>
             <div class="mt-3">
                 @if($user->is_active)
                     <span class="badge badge-success"><x-icon name="check" class="w-4 h-4 inline" /> Active Account</span>
