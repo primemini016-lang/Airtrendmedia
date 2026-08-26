@@ -10,20 +10,15 @@ use Symfony\Component\HttpFoundation\Response;
  * Ensures a valid APP_KEY exists before the installer wizard loads.
  *
  * On a completely fresh deployment the .env file ships with an empty
- * APP_KEY (and empty JWT_SECRET). The installer wizard is supposed to
- * generate these keys during the "database" step, but Laravel's session
- * component is configured with SESSION_ENCRYPT=true, which means the
- * session service provider tries to use the encrypter — and the
- * encrypter throws a fatal MissingAppKeyException before any controller
- * code (or even the exception handler) can run. The result is that the
- * /install page crashes with a raw PHP fatal error, which is exactly
- * the "script is not running at all" experience users hit.
+ * APP_KEY. Because SESSION_ENCRYPT=true, the session service provider
+ * resolves the encrypter — which throws a fatal MissingAppKeyException
+ * before any controller can run.
  *
- * This middleware runs only on the /install* routes and guarantees a
- * usable APP_KEY is present in .env before the request is handed to
- * the session machinery. If a key already exists it is left untouched.
- * The installer itself will (re)generate both keys during the database
- * step, so this is purely a "get the wizard to boot" safety net.
+ * This middleware runs on /install* routes and guarantees a usable
+ * APP_KEY is present BOTH in .env AND in the running config on the
+ * SAME request — no server restart required. This is what makes the
+ * installer work instantly on real hosting (Apache/Nginx + PHP-FPM)
+ * where there is no "artisan serve" auto-restart.
  */
 class EnsureAppKeyForInstaller
 {
@@ -31,70 +26,83 @@ class EnsureAppKeyForInstaller
     {
         $key = config('app.key');
 
-        // If a valid key is already configured, nothing to do.
+        // If a valid key is already configured in-memory, we're good.
         if (!empty($key) && str_starts_with($key, 'base64:')) {
+            // Still verify it's persisted to .env (defensive).
+            $this->ensureKeyPersisted($key);
             return $next($request);
         }
 
-        // Attempt to generate one via artisan (writes to .env).
-        try {
-            \Illuminate\Support\Facades\Artisan::call('key:generate', ['--force' => true]);
-            \Illuminate\Support\Facades\Artisan::call('config:clear');
-        } catch (\Throwable $e) {
-            // Fall back to writing a random key directly into .env if
-            // artisan is unavailable for any reason.
-            $this->writeKeyManually();
-        }
+        // Generate + persist + load into the running config in one shot.
+        $key = $this->generateAndPersistKey();
 
-        // Reload the config so the rest of the request picks up the key.
-        $newKey = config('app.key');
-        if (empty($newKey)) {
-            // Read directly from .env as a last resort.
-            $this->writeKeyManually();
-            $newKey = env('APP_KEY');
-        }
+        if (!empty($key)) {
+            // Push the key into the live config so the encrypter resolves it.
+            config(['app.key' => $key]);
 
-        // Make the freshly-generated key immediately available to the
-        // encrypter / session services without a full reboot.
-        if (!empty($newKey)) {
-            config(['app.key' => $newKey]);
-            app()->forgetInstance(\Illuminate\Encryption\Encrypter::class);
-            app()->forgetInstance('encrypter');
+            // Force the container to forget the cached encrypter instance so
+            // the next resolution rebuilds it with the new key.
+            try {
+                app()->forgetInstance(\Illuminate\Encryption\Encrypter::class);
+                app()->forgetInstance('encrypter');
+            } catch (\Throwable $e) {
+                // ignore
+            }
         }
 
         return $next($request);
     }
 
     /**
-     * Write a random base64 APP_KEY into the .env file manually.
+     * Generate a fresh base64 APP_KEY, write it to .env, and return it.
      */
-    private function writeKeyManually(): void
+    private function generateAndPersistKey(): string
+    {
+        $key = 'base64:' . base64_encode(
+            \Illuminate\Encryption\Encrypter::generateKey(config('app.cipher') ?: 'AES-256-CBC')
+        );
+        $this->writeKeyToEnv($key);
+        return $key;
+    }
+
+    /**
+     * Make sure the given key is written to .env (idempotent).
+     */
+    private function ensureKeyPersisted(string $key): void
+    {
+        $envPath = base_path('.env');
+        if (!file_exists($envPath)) {
+            $this->writeKeyToEnv($key);
+            return;
+        }
+        $content = (string) file_get_contents($envPath);
+        if (!preg_match('/^APP_KEY=base64:.*$/m', $content)) {
+            $this->writeKeyToEnv($key);
+        }
+    }
+
+    /**
+     * Write (or replace) the APP_KEY line in .env.
+     */
+    private function writeKeyToEnv(string $key): void
     {
         $envPath = base_path('.env');
 
         if (!file_exists($envPath)) {
-            // No .env at all — copy from .env.example first.
             $example = base_path('.env.example');
             if (file_exists($example)) {
                 @copy($example, $envPath);
             } else {
-                @file_put_contents($envPath, "APP_NAME=Airtrendmedia\nAPP_ENV=production\nAPP_KEY=\nAPP_DEBUG=false\nAPP_INSTALL=false\n");
+                @file_put_contents($envPath, "APP_NAME=Airtrendmedia\nAPP_ENV=production\nAPP_KEY=\nAPP_DEBUG=false\nAPP_URL=\nAPP_INSTALL=false\n");
             }
         }
 
-        $key = 'base64:'.base64_encode(
-            \Illuminate\Encryption\Encrypter::generateKey(config('app.cipher') ?: 'AES-256-CBC')
-        );
-
         $content = (string) file_get_contents($envPath);
-
         if (preg_match('/^APP_KEY=.*$/m', $content)) {
-            $content = preg_replace('/^APP_KEY=.*$/m', 'APP_KEY='.$key, $content);
+            $content = preg_replace('/^APP_KEY=.*$/m', 'APP_KEY=' . $key, $content);
         } else {
-            $content .= "\nAPP_KEY=".$key."\n";
+            $content = rtrim($content) . "\nAPP_KEY=" . $key . "\n";
         }
-
         file_put_contents($envPath, $content);
-        config(['app.key' => $key]);
     }
 }

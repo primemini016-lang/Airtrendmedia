@@ -31,12 +31,34 @@ FLUSH PRIVILEGES;
 **4. Point your browser to the installer**
 Visit: `http://your-domain.com/install`
 
-The installer will guide you through:
-1. **Requirements Check** — verifies PHP version and extensions
-2. **Database Configuration** — enter your MySQL credentials (the installer writes the `.env` file and runs all migrations + seeders automatically)
-3. **App Settings** — optional email/SMTP configuration
-4. **Admin Account** — create your administrator username, email, and password
-5. **Finish** — installation complete!
+The installer is a **single page** — you fill in everything at once and click **Install Now**. The wizard then runs a **bulletproof atomic install** that either completes fully or fails cleanly (no half-installed state).
+
+**What you enter (one page, two sections):**
+
+**Database Details:**
+- DB Host (usually `127.0.0.1`)
+- DB Port (usually `3306`)
+- Database Name
+- Database Username
+- Database Password
+
+**Admin Account Details:**
+- Admin Name
+- Admin Username
+- Admin Email
+- Admin Password (min 8 characters, with confirmation)
+
+**What the wizard does automatically when you click Install Now:**
+1. Tests the database connection with your credentials
+2. Writes your DB credentials to `.env`
+3. Generates `APP_KEY` (encryption key) automatically
+4. Generates `JWT_SECRET` (API auth key) automatically
+5. Runs `migrate:fresh --seed` — creates all 70 database tables + seed data
+6. Creates your admin account with the super-admin role
+7. Writes the `installed.json` marker to lock the installer
+8. Redirects you to the success page
+
+If any step fails, you get a **friendly error message** and the form keeps your input so you can fix and retry. Nothing is left half-written.
 
 **5. Log in**
 - **Admin panel:** `http://your-domain.com/admin/login`

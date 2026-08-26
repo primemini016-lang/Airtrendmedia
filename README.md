@@ -198,11 +198,14 @@ One unified admin system controls everything across all three platforms.
 - **Category management** with social-media icons and custom colors
 - **Dark/light theme toggle**
 
-### Installation Wizard
-- **Only requires** database credentials + admin details
+### Installation Wizard (Recommended — Single Page)
+- **Only requires** database credentials + admin account details on ONE page
+- **Bulletproof atomic install** — either everything succeeds or nothing is written (no half-installed state)
 - Payment keys are NOT collected during installation — set them after install
-- Auto-generates JWT secret and application key
-- Creates admin account and seeds default categories
+- Auto-generates APP_KEY and JWT secret (no manual `key:generate` or `jwt:secret` needed)
+- Creates the admin account, runs all migrations, and seeds default categories in one operation
+- Friendly error messages with preserved input if anything fails (e.g. wrong DB credentials)
+- Locks the installer automatically after a successful install (`storage/app/installed.json`)
 
 ---
 
@@ -241,14 +244,39 @@ One unified admin system controls everything across all three platforms.
    composer install --optimize-autoloader --no-dev
    ```
 
-3. **Configure environment:**
+3. **Set permissions:**
+   ```bash
+   chmod -R 775 storage bootstrap/cache
+   ```
+
+4. **Run the web installer (recommended):** Navigate to your site's `/install` URL in a browser:
+   ```
+   https://your-domain.com/install
+   ```
+   - Fill in **Database Details** (host, port, database name, username, password)
+   - Fill in **Admin Account Details** (name, username, email, password)
+   - Click **Install Now** — the wizard handles everything else atomically:
+     - Tests the database connection
+     - Writes your credentials to `.env`
+     - Generates `APP_KEY` and `JWT_SECRET` automatically
+     - Runs `migrate:fresh --seed` (creates all 70 tables + seed data)
+     - Creates your admin account
+     - Locks the installer and redirects to the success page
+   - If anything fails, you get a friendly error and can retry without losing your input
+   - Payment API keys are set AFTER install from **Admin → Settings → Payment Keys**
+
+### Manual Installation (Advanced — Only If Web Installer Is Unavailable)
+
+If you prefer the command line or the web installer is not reachable:
+
+1. **Configure environment:**
    ```bash
    cp .env.example .env
    php artisan key:generate
    php artisan jwt:secret
    ```
 
-4. **Set up database in `.env`:**
+2. **Set up database in `.env`:**
    ```bash
    DB_CONNECTION=mysql
    DB_HOST=127.0.0.1
@@ -258,19 +286,15 @@ One unified admin system controls everything across all three platforms.
    DB_PASSWORD=your_password
    ```
 
-5. **Run migrations and seeders:**
+3. **Run migrations and seeders:**
    ```bash
    php artisan migrate:fresh --seed
    ```
 
-6. **Set permissions:**
+4. **Create the install marker** (so the installer is locked):
    ```bash
-   chmod -R 775 storage bootstrap/cache
+   php -r "file_put_contents(storage_path('app/installed.json'), json_encode(['installed_at' => date('Y-m-d H:i:s'), 'version' => '2.0.0'], JSON_PRETTY_PRINT));"
    ```
-
-7. **Or use the web installer:** Navigate to your site and follow the installation wizard.
-   - Only requires database credentials + admin account details
-   - Payment API keys are set AFTER install from **Admin → Settings → Payment Keys**
 
 ### Local Testing (SQLite)
 For quick local testing, use SQLite instead of MySQL:

@@ -29,18 +29,15 @@ use Illuminate\Support\Facades\Route;
 */
 
 // Installer (bypasses the "installed" middleware).
+// Single-page wizard: GET /install shows the form (DB + admin details),
+// POST /install runs the entire install atomically, GET /install/finish
+// shows the success screen.
 // The 'installer.key' middleware guarantees a usable APP_KEY exists
 // before the wizard loads — without it the encrypted-session service
 // provider throws a fatal MissingAppKeyException on a fresh deploy.
 Route::group(['prefix' => 'install', 'middleware' => ['installer.key']], function () {
     Route::get('/', [InstallController::class, 'index'])->name('install.start');
-    Route::get('/requirements', [InstallController::class, 'requirements'])->name('install.requirements');
-    Route::get('/database', [InstallController::class, 'database'])->name('install.database');
-    Route::post('/database', [InstallController::class, 'runDatabase']);
-    Route::get('/app', [InstallController::class, 'appSetup'])->name('install.app');
-    Route::post('/app', [InstallController::class, 'saveApp']);
-    Route::get('/admin', [InstallController::class, 'adminSetup'])->name('install.admin');
-    Route::post('/admin', [InstallController::class, 'saveAdmin']);
+    Route::post('/', [InstallController::class, 'process'])->name('install.process');
     Route::get('/finish', [InstallController::class, 'finish'])->name('install.finish');
 });
 
