@@ -9,15 +9,13 @@
     $current   = $currentUser ?? auth('web')->user();
 @endphp
 <div class="fb-stories-bar" id="fb-stories-bar">
-    {{-- Create Story --}}
-    <div class="fb-story-create" onclick="document.getElementById('story-create-modal')?.classList.remove('hidden')">
+    {{-- Create Story Card (Facebook style — avatar on top, "Create Story" label at bottom) --}}
+    <div class="fb-story-create-card" onclick="document.getElementById('story-create-modal')?.classList.remove('hidden')">
         <div class="fb-story-create-img">
             @if($current)<img src="{{ $current->avatarUrl() }}" alt="{{ $current->name }}">@endif
         </div>
-        <div class="fb-story-create-cta">
-            <div class="fb-story-create-plus">+</div>
-            <span>Create Story</span>
-        </div>
+        <div class="fb-story-create-plus">+</div>
+        <div class="fb-story-create-cta">Create Story</div>
     </div>
 
     {{-- Existing stories --}}
@@ -39,6 +37,37 @@
     @empty
         {{-- Fallback placeholder cards from suggestions --}}
     @endforelse
+</div>
+
+{{-- Story Creation Modal --}}
+<div id="story-create-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4" style="background: rgba(0,0,0,0.6);">
+    <div class="fb-card w-full max-w-md p-4">
+        <div class="flex items-center justify-between mb-3">
+            <h3 class="font-bold text-lg">Create Story</h3>
+            <button onclick="document.getElementById('story-create-modal').classList.add('hidden')"><x-icon name="x" class="w-5 h-5" /></button>
+        </div>
+        <form id="story-create-form" onsubmit="return false;">
+            @csrf
+            <div class="mb-3">
+                <label class="block text-sm font-medium mb-1 fb-text-secondary">Story Type</label>
+                <select name="media_type" id="story-media-type" class="fb-input" onchange="AirtrendStories.toggleStoryFields()">
+                    <option value="image">Photo</option>
+                    <option value="text">Text Story</option>
+                </select>
+            </div>
+            <div id="story-image-field" class="mb-3">
+                <label class="block text-sm font-medium mb-1 fb-text-secondary">Upload Photo</label>
+                <input type="file" name="media" accept="image/*" class="w-full text-sm">
+            </div>
+            <div id="story-text-field" class="mb-3 hidden">
+                <label class="block text-sm font-medium mb-1 fb-text-secondary">Text (optional for photo, required for text story)</label>
+                <textarea name="caption" rows="3" class="fb-input" placeholder="Write something..."></textarea>
+            </div>
+            <button type="button" onclick="AirtrendStories.submitStory()" class="w-full fb-btn-primary py-2 rounded-lg font-semibold flex items-center justify-center gap-2">
+                <x-icon name="plus" class="w-5 h-5" /> Share Story
+            </button>
+        </form>
+    </div>
 </div>
 
 {{-- Story Viewer Modal --}}
@@ -80,11 +109,37 @@ window.AirtrendStories = {
             if (name) document.getElementById('airtrend-story-owner').textContent = name.textContent;
             viewer.classList.remove('hidden');
             if (window.AirtrendSounds) AirtrendSounds.notification();
+            // Record a view
+            fetch('/stories/' + id + '/view', { method: 'POST', headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '', 'Accept': 'application/json' } }).catch(function(){});
         }
     },
     close: function () {
         const v = document.getElementById('airtrend-story-viewer');
         if (v) v.classList.add('hidden');
+    },
+    toggleStoryFields: function () {
+        var type = document.getElementById('story-media-type').value;
+        document.getElementById('story-image-field').classList.toggle('hidden', type === 'text');
+        document.getElementById('story-text-field').classList.toggle('hidden', type === 'image');
+    },
+    submitStory: function () {
+        var form = document.getElementById('story-create-form');
+        var formData = new FormData(form);
+        fetch('/stories', {
+            method: 'POST',
+            headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '', 'Accept': 'application/json' },
+            body: formData
+        }).then(function (r) { return r.json(); }).then(function (data) {
+            if (data.success) {
+                if (window.AirtrendSounds) AirtrendSounds.send();
+                document.getElementById('story-create-modal').classList.add('hidden');
+                form.reset();
+                // Reload the page to show the new story in the bar
+                window.location.reload();
+            } else {
+                alert(data.error || data.message || 'Failed to create story.');
+            }
+        }).catch(function () { alert('Failed to create story. Please try again.'); });
     },
 };
 document.addEventListener('keydown', function (e) {

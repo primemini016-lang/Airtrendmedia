@@ -56,32 +56,32 @@ class BlogPost extends Model
 
     public function comments(): HasMany
     {
-        return $this->hasMany(BlogComment::class)->whereNull('parent_id')->where('is_approved', true)->latest();
+        return $this->hasMany(BlogComment::class, 'post_id')->whereNull('parent_id')->where('is_approved', true)->latest();
     }
 
     public function allComments(): HasMany
     {
-        return $this->hasMany(BlogComment::class)->latest();
+        return $this->hasMany(BlogComment::class, 'post_id')->latest();
     }
 
     public function likes(): HasMany
     {
-        return $this->hasMany(BlogLike::class);
+        return $this->hasMany(BlogLike::class, 'post_id');
     }
 
     public function views(): HasMany
     {
-        return $this->hasMany(BlogView::class);
+        return $this->hasMany(BlogView::class, 'post_id');
     }
 
     public function ratings(): HasMany
     {
-        return $this->hasMany(BlogRate::class);
+        return $this->hasMany(BlogRate::class, 'post_id');
     }
 
     public function shares(): HasMany
     {
-        return $this->hasMany(BlogShare::class);
+        return $this->hasMany(BlogShare::class, 'post_id');
     }
 
     public function isLikedBy(?User $user): bool

@@ -15,7 +15,6 @@
 
     <form action="{{ route('social.profile.update') }}" method="POST" enctype="multipart/form-data" class="space-y-5">
         @csrf
-        @method('PUT')
 
         <div>
             <label class="block font-semibold text-sm mb-1.5">Name</label>

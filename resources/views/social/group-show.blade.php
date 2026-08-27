@@ -25,7 +25,7 @@
             <div class="flex gap-2 pb-2">
                 @if($isMember)
                     @if($group->owner_id !== $user->id)
-                    <button onclick="leaveGroup({{ $group->id }}, this)" class="fb-btn-secondary px-6 py-2 rounded-lg font-semibold">Leave Group</button>
+                    <button onclick="leaveGroup('{{ $group->slug }}', this)" class="fb-btn-secondary px-6 py-2 rounded-lg font-semibold">Leave Group</button>
                     @endif
                     @if($memberRole === 'admin' || $group->owner_id === $user->id)
                     <a href="{{ route('social.group.edit', $group) }}" class="fb-btn-secondary px-4 py-2 rounded-lg font-medium"><x-icon name="settings" class="w-5 h-5" /></a>
@@ -33,7 +33,7 @@
                 @elseif($isPending)
                     <button disabled class="fb-btn-secondary px-6 py-2 rounded-lg font-semibold">Pending Approval</button>
                 @else
-                    <button onclick="joinGroup({{ $group->id }}, this)" class="fb-btn-primary px-6 py-2 rounded-lg font-semibold">
+                    <button onclick="joinGroup('{{ $group->slug }}', this)" class="fb-btn-primary px-6 py-2 rounded-lg font-semibold">
                         {{ $group->requires_approval ? 'Request to Join' : '+ Join Group' }}
                     </button>
                 @endif
@@ -88,8 +88,8 @@
                     <div class="flex items-center gap-2">
                         <img src="{{ $pending->user->avatarUrl() }}" class="w-9 h-9 fb-avatar" alt="">
                         <div class="flex-1 min-w-0"><div class="font-medium text-sm truncate">{{ $pending->user->name }}</div></div>
-                        <button onclick="approveMember({{ $group->id }}, {{ $pending->user_id }}, this)" class="fb-btn-primary px-3 py-1 rounded-md text-xs font-medium">Approve</button>
-                        <button onclick="removeMember({{ $group->id }}, {{ $pending->user_id }}, this)" class="fb-btn-secondary px-3 py-1 rounded-md text-xs">Decline</button>
+                        <button onclick="approveMember('{{ $group->slug }}', {{ $pending->user_id }}, this)" class="fb-btn-primary px-3 py-1 rounded-md text-xs font-medium">Approve</button>
+                        <button onclick="removeMember('{{ $group->slug }}', {{ $pending->user_id }}, this)" class="fb-btn-secondary px-3 py-1 rounded-md text-xs">Decline</button>
                     </div>
                 @endforeach
             </div>
@@ -126,9 +126,9 @@
 @push('scripts')
 <script>
 function joinGroup(groupId, btn) {
-    fetch(`/social/groups/${groupId}/join`, {
+    fetch(`/groups/${groupId}/join`, {
         method: 'POST',
-        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
+        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content, 'Accept': 'application/json' },
     }).then(r => r.json()).then(data => {
         if (data.error) { alert(data.error); return; }
         btn.textContent = data.pending ? 'Pending' : 'Joined';
@@ -138,21 +138,21 @@ function joinGroup(groupId, btn) {
 }
 function leaveGroup(groupId, btn) {
     if (!confirm('Leave this group?')) return;
-    fetch(`/social/groups/${groupId}/leave`, {
+    fetch(`/groups/${groupId}/leave`, {
         method: 'POST',
-        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
+        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content, 'Accept': 'application/json' },
     }).then(r => r.json()).then(data => { if (data.success) location.reload(); else alert(data.error || 'Failed.'); });
 }
 function approveMember(groupId, userId, btn) {
-    fetch(`/social/groups/${groupId}/members/${userId}/approve`, {
+    fetch(`/groups/${groupId}/members/${userId}/approve`, {
         method: 'POST',
-        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
+        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content, 'Accept': 'application/json' },
     }).then(r => r.json()).then(data => { if (data.success) btn.parentElement.remove(); else alert(data.error); });
 }
 function removeMember(groupId, userId, btn) {
-    fetch(`/social/groups/${groupId}/members/${userId}/remove`, {
+    fetch(`/groups/${groupId}/members/${userId}/remove`, {
         method: 'POST',
-        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
+        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content, 'Accept': 'application/json' },
     }).then(r => r.json()).then(data => { if (data.success) btn.parentElement.remove(); else alert(data.error); });
 }
 </script>

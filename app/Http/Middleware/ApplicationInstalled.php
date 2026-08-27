@@ -20,6 +20,8 @@ class ApplicationInstalled
         if (! file_exists(storage_path('app/installed.json'))) {
             return redirect()->to('/install');
         }
+        $this->ensureStorageSymlink();
+
 
         // ── Guarantee JWT_SECRET at runtime ──────────────────────────
         // If the key is missing from .env (e.g. manual deployment without
@@ -59,5 +61,42 @@ class ApplicationInstalled
         }
 
         @file_put_contents($envPath, rtrim($content) . PHP_EOL . $key . '=' . $value . PHP_EOL, LOCK_EX);
+    }
+
+    /**
+     * Ensure the public/storage symlink exists and points to
+     * storage/app/public. This fixes the "blank/broken profile image"
+     * bug that occurs when the repo ships public/storage as a regular
+     * directory (with a .gitkeep placeholder) instead of a symlink.
+     */
+    protected function ensureStorageSymlink(): void
+    {
+        $target = storage_path('app/public');
+        $link   = public_path('storage');
+
+        // Already a valid symlink — nothing to do.
+        if (is_link($link) && realpath($link) === realpath($target)) {
+            return;
+        }
+
+        // Make sure the target directory exists.
+        if (! is_dir($target)) {
+            @mkdir($target, 0755, true);
+        }
+
+        // If public/storage is a regular directory, try to remove it
+        // (only if it's empty or contains just a .gitkeep placeholder).
+        if (is_dir($link) && ! is_link($link)) {
+            $entries = array_diff(@scandir($link) ?: [], ['.', '..', '.gitkeep']);
+            if (empty($entries)) {
+                @unlink($link . DIRECTORY_SEPARATOR . '.gitkeep');
+                @rmdir($link);
+            }
+        }
+
+        // Create the symlink if the path is now free.
+        if (! file_exists($link) && ! is_link($link)) {
+            @symlink($target, $link);
+        }
     }
 }

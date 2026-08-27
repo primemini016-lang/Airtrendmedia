@@ -30,6 +30,7 @@ return [
         \App\Providers\AuthServiceProvider::class,
         \App\Providers\EventServiceProvider::class,
         \App\Providers\RouteServiceProvider::class,
+        \App\Providers\RelativeAssetServiceProvider::class,
     ])->toArray()),
 
     'aliases' => Facade::defaultAliases()->merge([

@@ -267,6 +267,8 @@ class SocialController extends Controller
                 'success' => true,
                 'comment' => [
                     'id' => $comment->id,
+                    'parent_id' => $comment->parent_id,
+                    'post_id' => $comment->post_id,
                     'body' => $comment->body,
                     'user_name' => $user->name,
                     'user_avatar' => $user->avatarUrl(),

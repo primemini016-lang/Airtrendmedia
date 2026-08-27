@@ -22,11 +22,11 @@
             </div>
             <div class="flex gap-2 pb-2">
                 @if($isMember)
-                    <button onclick="leavePage({{ $page->id }}, this)" class="fb-btn-secondary px-6 py-2 rounded-lg font-semibold">
+                    <button onclick="leavePage('{{ $page->slug }}', this)" class="fb-btn-secondary px-6 py-2 rounded-lg font-semibold">
                         <x-icon name="check" class="w-5 h-5 inline" /> Following
                     </button>
                 @else
-                    <button onclick="joinPage({{ $page->id }}, this)" class="fb-btn-primary px-6 py-2 rounded-lg font-semibold">+ Follow</button>
+                    <button onclick="joinPage('{{ $page->slug }}', this)" class="fb-btn-primary px-6 py-2 rounded-lg font-semibold">+ Follow</button>
                 @endif
                 @if($page->website)
                     <a href="{{ $page->website }}" target="_blank" class="fb-btn-secondary px-4 py-2 rounded-lg font-medium"><x-icon name="link" class="w-5 h-5" /></a>
@@ -105,9 +105,9 @@
 @push('scripts')
 <script>
 function joinPage(pageId, btn) {
-    fetch(`/social/pages/${pageId}/join`, {
+    fetch(`/pages/${pageId}/join`, {
         method: 'POST',
-        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
+        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content, 'Accept': 'application/json' },
     }).then(r => r.json()).then(data => {
         if (data.error) { alert(data.error); return; }
         btn.textContent = 'Following';
@@ -116,9 +116,9 @@ function joinPage(pageId, btn) {
     });
 }
 function leavePage(pageId, btn) {
-    fetch(`/social/pages/${pageId}/leave`, {
+    fetch(`/pages/${pageId}/leave`, {
         method: 'POST',
-        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
+        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content, 'Accept': 'application/json' },
     }).then(r => r.json()).then(data => {
         if (data.error) { alert(data.error); return; }
         btn.textContent = '+ Follow';

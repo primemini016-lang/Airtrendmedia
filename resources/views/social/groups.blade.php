@@ -59,7 +59,7 @@
                         {{ ucfirst($group->privacy) }} · {{ $group->members()->where('status','approved')->count() }} members
                     </div>
                     @if(!$group->isMemberOf($user))
-                    <button onclick="joinGroup({{ $group->id }}, this)" class="w-full fb-btn-primary py-1.5 rounded-md text-sm font-medium mt-2">
+                    <button onclick="joinGroup('{{ $group->slug }}', this)" class="w-full fb-btn-primary py-1.5 rounded-md text-sm font-medium mt-2">
                         {{ $group->requires_approval ? 'Request to Join' : '+ Join' }}
                     </button>
                     @endif
@@ -74,9 +74,9 @@
 @push('scripts')
 <script>
 function joinGroup(groupId, btn) {
-    fetch(`/social/groups/${groupId}/join`, {
+    fetch(`/groups/${groupId}/join`, {
         method: 'POST',
-        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
+        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content, 'Accept': 'application/json' },
     }).then(r => r.json()).then(data => {
         if (data.error) { alert(data.error); return; }
         btn.textContent = data.pending ? 'Pending' : 'Joined';

@@ -44,8 +44,8 @@ class ProfileController extends Controller
         $posts = $postsQuery->paginate(10);
 
         // Followers / Following
-        $followers = $profile->followers()->with('follower:id,username,name,image')->paginate(20, pageName: 'followers_page');
-        $following = $profile->following()->with('following:id,username,name,image')->paginate(20, pageName: 'following_page');
+        $followers = $profile->followers()->with('follower:id,username,name,image,followers_count')->paginate(20, pageName: 'followers_page');
+        $following = $profile->following()->with('following:id,username,name,image,followers_count')->paginate(20, pageName: 'following_page');
 
         // Pages owned by user
         $pages = $profile->socialPages()->limit(6)->get();

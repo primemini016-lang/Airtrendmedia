@@ -257,15 +257,24 @@
 
 @push('scripts')
 <script>
+// ── Social Feed JavaScript ──────────────────────────────────
+// All AJAX calls use RELATIVE URLs (not route()) so they work
+// regardless of the APP_URL setting in .env.
+
+const CSRF_TOKEN = document.querySelector('meta[name="csrf-token"]')?.content || '';
+
 // Toggle reaction (like by default, with reaction picker on hover)
 function toggleReaction(postId, currentReaction) {
-    // For simplicity, toggle like
-    fetch(`{{ route('social.like', ':post') }}`.replace(':post', postId), {
+    fetch(`/social/post/${postId}/like`, {
         method: 'POST',
-        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ reaction: 'like' })
+        headers: {
+            'X-CSRF-TOKEN': CSRF_TOKEN,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({ reaction: currentReaction === 'like' ? 'like' : 'like' })
     })
-    .then(r => r.json())
+    .then(r => { if (!r.ok) throw new Error('Network response was not ok'); return r.json(); })
     .then(data => {
         if (data.error) { alert(data.error); return; }
         const btn = document.getElementById('like-btn-' + postId);
@@ -273,11 +282,72 @@ function toggleReaction(postId, currentReaction) {
         if (data.reacted) {
             btn.classList.add('text-blue-600');
             text.textContent = 'Like';
+            if (window.AirtrendSounds) AirtrendSounds.like();
         } else {
             btn.classList.remove('text-blue-600');
             text.textContent = 'Like';
         }
-    });
+        // Update the reaction count in the stats bar
+        updateLikeCount(postId, data.count);
+    })
+    .catch(err => { console.error('Reaction error:', err); });
+}
+
+// Reaction picker — set a specific reaction type
+function setReaction(postId, reaction) {
+    fetch(`/social/post/${postId}/like`, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': CSRF_TOKEN,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({ reaction: reaction })
+    })
+    .then(r => { if (!r.ok) throw new Error('Network response was not ok'); return r.json(); })
+    .then(data => {
+        if (data.error) { alert(data.error); return; }
+        const btn = document.getElementById('like-btn-' + postId);
+        const text = document.getElementById('like-text-' + postId);
+        if (data.reacted) {
+            btn.classList.add('text-blue-600');
+            const reactionLabels = { like: 'Like', love: 'Love', haha: 'Haha', wow: 'Wow', sad: 'Sad', angry: 'Angry' };
+            text.textContent = reactionLabels[reaction] || 'Like';
+            if (window.AirtrendSounds) AirtrendSounds.like();
+        } else {
+            btn.classList.remove('text-blue-600');
+            text.textContent = 'Like';
+        }
+        updateLikeCount(postId, data.count);
+        hideReactionPopup(postId);
+    })
+    .catch(err => { console.error('Reaction error:', err); });
+}
+
+function updateLikeCount(postId, count) {
+    const statsBar = document.querySelector(`#post-${postId} .fb-text-secondary`);
+    // Find the likes count span and update it
+    const postCard = document.getElementById('post-' + postId);
+    if (postCard) {
+        let likeSpan = postCard.querySelector('.like-count');
+        if (likeSpan) {
+            likeSpan.textContent = count;
+        }
+    }
+}
+
+// Reaction popup show/hide
+let reactionTimer = null;
+function showReactionPopup(postId) {
+    clearTimeout(reactionTimer);
+    const popup = document.getElementById('reaction-popup-' + postId);
+    if (popup) popup.classList.add('show');
+}
+function hideReactionPopup(postId) {
+    reactionTimer = setTimeout(() => {
+        const popup = document.getElementById('reaction-popup-' + postId);
+        if (popup) popup.classList.remove('show');
+    }, 300);
 }
 
 function showComments(postId) {
@@ -289,12 +359,15 @@ function submitComment(event, postId) {
     event.preventDefault();
     const form = event.target;
     const formData = new FormData(form);
-    fetch(`{{ route('social.comment', ':post') }}`.replace(':post', postId), {
+    fetch(`/social/post/${postId}/comment`, {
         method: 'POST',
-        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
+        headers: {
+            'X-CSRF-TOKEN': CSRF_TOKEN,
+            'Accept': 'application/json'
+        },
         body: formData
     })
-    .then(r => r.json())
+    .then(r => { if (!r.ok) throw new Error('Network response was not ok'); return r.json(); })
     .then(data => {
         if (data.success) {
             const list = document.getElementById('comment-list-' + postId);
@@ -311,43 +384,60 @@ function submitComment(event, postId) {
                 </div>`;
             list.prepend(div);
             form.querySelector('input[name=body]').value = '';
+            if (window.AirtrendSounds) AirtrendSounds.comment();
         } else if (data.error) {
             alert(data.error);
         }
-    });
+    })
+    .catch(err => { console.error('Comment error:', err); });
 }
 
 function sharePost(postId) {
     if (!confirm('Share this post to your feed?')) return;
-    fetch(`{{ route('social.share', ':post') }}`.replace(':post', postId), {
+    fetch(`/social/post/${postId}/share`, {
         method: 'POST',
-        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content, 'Content-Type': 'application/json' },
+        headers: {
+            'X-CSRF-TOKEN': CSRF_TOKEN,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
         body: JSON.stringify({})
     })
-    .then(r => r.json())
-    .then(data => { if (data.success) alert('Post shared!'); else alert(data.error || 'Failed to share.'); });
+    .then(r => { if (!r.ok) throw new Error('Network response was not ok'); return r.json(); })
+    .then(data => { if (data.success) alert('Post shared!'); else alert(data.error || 'Failed to share.'); })
+    .catch(err => { console.error('Share error:', err); alert('Failed to share post.'); });
 }
 
 function deletePost(postId) {
     if (!confirm('Delete this post?')) return;
-    fetch(`{{ route('social.delete', ':post') }}`.replace(':post', postId), {
+    fetch(`/social/post/${postId}`, {
         method: 'POST',
-        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
+        headers: {
+            'X-CSRF-TOKEN': CSRF_TOKEN,
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({ _method: 'DELETE' })
     })
-    .then(r => r.json())
-    .then(data => { if (data.success) document.getElementById('post-' + postId).remove(); else alert(data.error || 'Failed.'); });
+    .then(r => { if (!r.ok) throw new Error('Network response was not ok'); return r.json(); })
+    .then(data => { if (data.success) document.getElementById('post-' + postId).remove(); else alert(data.error || 'Failed.'); })
+    .catch(err => { console.error('Delete error:', err); alert('Failed to delete post.'); });
 }
 
 function likeComment(commentId) {
     fetch(`/social/comment/${commentId}/like`, {
         method: 'POST',
-        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
+        headers: {
+            'X-CSRF-TOKEN': CSRF_TOKEN,
+            'Accept': 'application/json'
+        }
     }).then(r => r.json()).then(d => { if (!d.liked) {} });
 }
 
 function loadAllComments(postId) {
-    fetch(`{{ route('social.comments', ':post') }}`.replace(':post', postId))
-    .then(r => r.json())
+    fetch(`/social/post/${postId}/comments`, {
+        headers: { 'Accept': 'application/json' }
+    })
+    .then(r => { if (!r.ok) throw new Error('Network response was not ok'); return r.json(); })
     .then(data => {
         const list = document.getElementById('comment-list-' + postId);
         list.innerHTML = '';
@@ -357,7 +447,105 @@ function loadAllComments(postId) {
             div.innerHTML = `<img src="${c.user_avatar}" class="w-8 h-8 fb-avatar" alt=""><div class="flex-1"><div class="inline-block fb-hover-bg rounded-2xl px-3 py-2"><span class="font-semibold text-sm">${c.user_name}</span><div class="text-sm">${c.body}</div></div><div class="text-xs fb-text-secondary mt-1 px-3">${c.time}</div></div>`;
             list.appendChild(div);
         });
-    });
+    })
+    .catch(err => { console.error('Comments error:', err); });
+}
+
+// ── Like a comment ──────────────────────────────────────────────
+function likeComment(commentId) {
+    fetch(`/social/comment/${commentId}/like`, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': CSRF_TOKEN,
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({})
+    })
+    .then(r => { if (!r.ok) throw new Error('Network response was not ok'); return r.json(); })
+    .then(data => {
+        if (data.error) { alert(data.error); return; }
+        const btn = document.getElementById('comment-like-btn-' + commentId);
+        const countSpan = document.getElementById('comment-like-count-' + commentId);
+        if (btn) {
+            if (data.liked) {
+                btn.classList.add('text-blue-600');
+                btn.textContent = 'Liked';
+            } else {
+                btn.classList.remove('text-blue-600');
+                btn.textContent = 'Like';
+            }
+        }
+        if (countSpan) {
+            if (data.count > 0) {
+                countSpan.innerHTML = `<span class="w-4 h-4 rounded-full flex items-center justify-center" style="background: var(--fb-blue);"><svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M2 21h4V9H2v12zm20-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L13.17 1 7.59 6.59C7.22 6.95 7 7.45 7 8v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg></span> ${data.count}`;
+                countSpan.classList.remove('hidden');
+            } else {
+                countSpan.classList.add('hidden');
+            }
+        }
+        if (window.AirtrendSounds) AirtrendSounds.like();
+    })
+    .catch(err => { console.error('Comment like error:', err); });
+}
+
+// ── Toggle reply form visibility ────────────────────────────────
+function toggleReplyForm(commentId) {
+    const form = document.getElementById('reply-form-' + commentId);
+    if (form) {
+        form.classList.toggle('hidden');
+        if (!form.classList.contains('hidden')) {
+            const input = form.querySelector('input[name=body]');
+            if (input) input.focus();
+        }
+    }
+}
+
+// ── Submit a reply to a comment ─────────────────────────────────
+function submitReply(event, postId, parentId) {
+    event.preventDefault();
+    const form = event.target;
+    const formData = new FormData(form);
+    formData.append('parent_id', parentId);
+    fetch(`/social/post/${postId}/comment`, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': CSRF_TOKEN,
+            'Accept': 'application/json'
+        },
+        body: formData
+    })
+    .then(r => { if (!r.ok) throw new Error('Network response was not ok'); return r.json(); })
+    .then(data => {
+        if (data.success) {
+            const repliesContainer = document.getElementById('replies-' + parentId);
+            if (repliesContainer) {
+                const div = document.createElement('div');
+                div.className = 'flex items-start gap-2 mt-2 ml-2';
+                div.id = 'comment-' + data.comment.id;
+                div.innerHTML = `
+                    <img src="${data.comment.user_avatar}" class="w-7 h-7 fb-avatar" alt="">
+                    <div class="flex-1 min-w-0">
+                        <div class="inline-block fb-hover-bg rounded-2xl px-3 py-2 max-w-full">
+                            <span class="font-semibold text-sm">${data.comment.user_name}</span>
+                            <div class="text-sm break-words">${data.comment.body}</div>
+                        </div>
+                        <div class="flex items-center gap-3 mt-1 px-3 text-xs font-semibold fb-text-secondary">
+                            <span class="font-normal">Just now</span>
+                        </div>
+                    </div>`;
+                repliesContainer.appendChild(div);
+            }
+            form.querySelector('input[name=body]').value = '';
+            // Hide the reply form after submitting
+            const replyForm = document.getElementById('reply-form-' + parentId);
+            if (replyForm) replyForm.classList.add('hidden');
+            if (window.AirtrendSounds) AirtrendSounds.comment();
+        } else if (data.error) {
+            alert(data.error);
+        }
+    })
+    .catch(err => { console.error('Reply error:', err); });
 }
 
 // Close modal on Escape

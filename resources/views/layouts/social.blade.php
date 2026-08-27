@@ -250,11 +250,11 @@
                                     $otherUser = $conv->is_group ? null : $conv->participants->where('user_id', '!=', $authUser->id)->first()?->user;
                                     $lastMsg = $conv->messages->first();
                                 @endphp
-                                <a href="{{ route('social.chat', ['conversation' => $conv->id]) }}" class="fb-right-rail-item" @click="open=false">
+                                <a href="{{ route('social.chat', ['c' => $conv->id]) }}" class="fb-right-rail-item" @click="open=false">
                                     <img src="{{ $otherUser?->avatarUrl() ?? asset('images/default-avatar.png') }}" class="w-10 h-10 fb-avatar" alt="">
                                     <div class="flex-1 min-w-0">
                                         <div class="font-medium text-sm truncate">{{ $conv->is_group ? $conv->name : $otherUser?->name }}</div>
-                                        <div class="text-xs fb-text-secondary truncate">{{ $lastMsg?->message ?? '' }}</div>
+                                        <div class="text-xs fb-text-secondary truncate">{{ $lastMsg?->body ?? '' }}</div>
                                     </div>
                                 </a>
                             @endforeach

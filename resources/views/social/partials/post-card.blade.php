@@ -106,8 +106,10 @@
             @if($post->likes_count > 0)
                 <span class="flex items-center gap-1">
                     <span class="w-4 h-4 rounded-full flex items-center justify-center" style="background: var(--fb-blue);"><x-icon name="like" class="w-3 h-3 text-white" fill="currentColor" /></span>
-                    <span>{{ $post->likes_count }}</span>
+                    <span class="like-count">{{ $post->likes_count }}</span>
                 </span>
+            @else
+                <span class="like-count" style="display:none;">0</span>
             @endif
         </div>
         <div class="flex items-center gap-3">
@@ -116,16 +118,30 @@
             @if($post->views_count > 0)<span class="flex items-center gap-1"><x-icon name="view" class="w-3 h-3" />{{ $post->views_count }}</span>@endif
         </div>
     </div>
+    @else
+    <div class="hidden"><span class="like-count">0</span></div>
     @endif
 
     {{-- Action buttons --}}
     <div class="flex items-center justify-around border-t fb-border px-2 py-1">
-        <button onclick="toggleReaction({{ $post->id }}, '{{ $userLike?->reaction ?? '' }}')" 
-                class="fb-react-btn flex-1 {{ $userLike ? 'text-blue-600' : '' }}"
-                id="like-btn-{{ $post->id }}">
-            <x-icon name="{{ $userLike?->reaction === 'love' ? 'reaction-love' : 'like' }}" class="w-5 h-5" fill="{{ $userLike ? 'currentColor' : 'none' }}" />
-            <span id="like-text-{{ $post->id }}">{{ ucfirst($userLike?->reaction ?? 'Like') }}</span>
-        </button>
+        <div class="relative flex-1">
+            <div id="reaction-popup-{{ $post->id }}" class="reaction-popup"
+                 onmouseenter="showReactionPopup({{ $post->id }})" onmouseleave="hideReactionPopup({{ $post->id }})">
+                <span class="reaction-btn" onclick="setReaction({{ $post->id }}, 'like')" title="Like">👍</span>
+                <span class="reaction-btn" onclick="setReaction({{ $post->id }}, 'love')" title="Love">❤️</span>
+                <span class="reaction-btn" onclick="setReaction({{ $post->id }}, 'haha')" title="Haha">😂</span>
+                <span class="reaction-btn" onclick="setReaction({{ $post->id }}, 'wow')" title="Wow">😮</span>
+                <span class="reaction-btn" onclick="setReaction({{ $post->id }}, 'sad')" title="Sad">😢</span>
+                <span class="reaction-btn" onclick="setReaction({{ $post->id }}, 'angry')" title="Angry">😡</span>
+            </div>
+            <button onclick="toggleReaction({{ $post->id }}, '{{ $userLike?->reaction ?? '' }}')"
+                    onmouseenter="showReactionPopup({{ $post->id }})" onmouseleave="hideReactionPopup({{ $post->id }})"
+                    class="fb-react-btn w-full {{ $userLike ? 'text-blue-600' : '' }}"
+                    id="like-btn-{{ $post->id }}">
+                <x-icon name="{{ $userLike?->reaction === 'love' ? 'reaction-love' : 'like' }}" class="w-5 h-5" fill="{{ $userLike ? 'currentColor' : 'none' }}" />
+                <span id="like-text-{{ $post->id }}">{{ ucfirst($userLike?->reaction ?? 'Like') }}</span>
+            </button>
+        </div>
         <button onclick="showComments({{ $post->id }})" class="fb-react-btn flex-1">
             <x-icon name="comment" class="w-5 h-5" />
             <span>Comment</span>

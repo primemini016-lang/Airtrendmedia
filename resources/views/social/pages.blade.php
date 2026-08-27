@@ -61,7 +61,7 @@
                     <a href="{{ route('social.page.show', $page) }}" class="font-semibold text-sm hover:underline block truncate">{{ $page->name }}</a>
                     @if($page->category)<div class="text-xs fb-text-secondary">{{ $page->category }}</div>@endif
                     <div class="text-xs fb-text-secondary">{{ $page->followers_count }} followers</div>
-                    <button onclick="joinPage({{ $page->id }}, this)" class="w-full fb-btn-primary py-1.5 rounded-md text-sm font-medium mt-2">+ Follow</button>
+                    <button onclick="joinPage('{{ $page->slug }}', this)" class="w-full fb-btn-primary py-1.5 rounded-md text-sm font-medium mt-2">+ Follow</button>
                 </div>
             </div>
         @endforeach
@@ -73,9 +73,9 @@
 @push('scripts')
 <script>
 function joinPage(pageId, btn) {
-    fetch(`/social/pages/${pageId}/join`, {
+    fetch(`/pages/${pageId}/join`, {
         method: 'POST',
-        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
+        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content, 'Accept': 'application/json' },
     }).then(r => r.json()).then(data => {
         if (data.error) { alert(data.error); return; }
         btn.textContent = data.joined ? 'Following' : '+ Follow';

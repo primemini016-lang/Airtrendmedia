@@ -353,10 +353,14 @@ class InstallController extends Controller
             return;
         }
 
-        // An empty deployment directory can safely be replaced by a symlink.
+        // An empty deployment directory (or one that only contains a .gitkeep
+        // placeholder) can safely be replaced by a symlink.
         if (is_dir($link) && !is_link($link)) {
-            $entries = array_diff(@scandir($link) ?: [], ['.', '..']);
-            if (!$entries) { @rmdir($link); }
+            $entries = array_diff(@scandir($link) ?: [], ['.', '..', '.gitkeep']);
+            if (!$entries) {
+                @unlink($link . DIRECTORY_SEPARATOR . '.gitkeep');
+                @rmdir($link);
+            }
         }
 
         if (!file_exists($link)) {

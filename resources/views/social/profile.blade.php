@@ -41,7 +41,11 @@
                         <span title="Monetization Enabled"><x-icon name="monetization" class="w-6 h-6 text-green-600" /></span>
                     @endif
                 </h1>
-                <div class="fb-text-secondary font-medium mt-1">{{ $profile->followers_count }} followers · {{ $profile->following_count }} following · {{ $friendsCount }} friends</div>
+                <div class="fb-text-secondary font-medium mt-1">
+                    <a href="{{ route('social.profile', $profile->username) }}?tab=followers" class="hover:underline">{{ $profile->followers_count }} followers</a> ·
+                    <a href="{{ route('social.profile', $profile->username) }}?tab=following" class="hover:underline">{{ $profile->following_count }} following</a> ·
+                    <a href="{{ route('social.profile', $profile->username) }}?tab=friends" class="hover:underline">{{ $friendsCount }} friends</a>
+                </div>
                 @if($profile->bio)
                     <div class="mt-2 text-sm">{{ $profile->bio }}</div>
                 @endif
@@ -246,7 +250,6 @@
         </div>
         <form action="{{ route('social.profile.update') }}" method="POST" enctype="multipart/form-data">
             @csrf
-            @method('PUT')
             <input type="hidden" name="name" value="{{ $profile->name }}">
             <input type="file" name="cover_image" accept="image/*" class="w-full mb-3" required>
             <button type="submit" class="w-full fb-btn-primary py-2 rounded-lg font-semibold">Upload Cover</button>

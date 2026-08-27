@@ -221,16 +221,16 @@
                     <button class="fb-nav-icon-btn" title="Add sticker">
                         <x-icon name="sticker" class="w-6 h-6 fb-text-muted" />
                     </button>
-                    <form action="{{ route('social.chat.send', $activeConversation) }}" method="POST" class="fb-chat-form" id="chatForm">
+                    <form action="{{ route('social.chat.send', $activeConversation) }}" method="POST" class="fb-chat-form" id="chatForm" onsubmit="return false;">
                         @csrf
                         <input type="text" name="body" placeholder="Aa"
                                class="fb-chat-input"
                                x-model="messageText"
                                @input="sendTyping(true)"
                                @blur="sendTyping(false)"
-                               @keydown.enter="if(messageText.trim()){ sendTyping(false); $el.closest('form').submit(); }">
+                               @keydown.enter.prevent="if(messageText.trim()){ sendMessage(); }">
                     </form>
-                    <button class="fb-nav-icon-btn" title="Send" onclick="document.getElementById('chatForm').submit();">
+                    <button class="fb-nav-icon-btn" title="Send" @click="if(messageText.trim()){ sendMessage(); }">
                         <x-icon name="send" class="w-6 h-6 fb-text-muted" />
                     </button>
                 </div>
@@ -449,7 +449,7 @@ document.addEventListener('alpine:init', function () {
             activeMessageId: null,
             pollTyping() {
                 @if($activeConversation)
-                fetch('{{ route('social.chat.typing-status', $activeConversation) }}', { headers: { 'Accept': 'application/json' } })
+                fetch('/messenger/{{ $activeConversation->id }}/typing-status', { headers: { 'Accept': 'application/json' } })
                     .then(function (r) { return r.json(); })
                     .then(function (data) {
                         this.typingUsers = data.typing || [];
@@ -460,10 +460,35 @@ document.addEventListener('alpine:init', function () {
             },
             sendTyping(isTyping) {
                 @if($activeConversation)
-                fetch('{{ route('social.chat.typing', $activeConversation) }}', {
+                fetch('/messenger/{{ $activeConversation->id }}/typing', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
                     body: JSON.stringify({ is_typing: isTyping })
+                }).catch(function () {});
+                @endif
+            },
+            sendMessage() {
+                @if($activeConversation)
+                var self = this;
+                var text = this.messageText.trim();
+                if (!text) return;
+                var formData = new FormData();
+                formData.append('body', text);
+                fetch('/messenger/{{ $activeConversation->id }}/send', {
+                    method: 'POST',
+                    headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
+                    body: formData
+                }).then(function (r) { return r.json(); }).then(function (data) {
+                    if (data.html) {
+                        var area = document.getElementById('messagesArea');
+                        if (area) {
+                            area.insertAdjacentHTML('beforeend', data.html);
+                            area.scrollTop = area.scrollHeight;
+                        }
+                    }
+                    self.messageText = '';
+                    self.sendTyping(false);
+                    if (window.AirtrendSounds) AirtrendSounds.send();
                 }).catch(function () {});
                 @endif
             },
