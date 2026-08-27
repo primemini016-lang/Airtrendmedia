@@ -13,7 +13,7 @@
             <a href="{{ route('browse') }}" class="btn btn-outline text-white border-white">Browse Tasks</a>
             @else
             <a href="{{ route('user.dashboard') }}" class="btn bg-white text-blue-700 hover:bg-blue-50">Go to Dashboard</a>
-            <a href="{{ route('social.feed') }}" class="btn btn-outline text-white border-white">Open Social Feed</a>
+            <a href="{{ route('ptc.index') }}" class="btn btn-outline text-white border-white">Browse PTC Ads</a>
             @endguest
         </div>
         <div class="mt-10 grid grid-cols-3 gap-4 max-w-lg mx-auto text-center">
@@ -143,8 +143,8 @@
     <h2 class="text-2xl font-bold text-slate-800 mb-6">Browse by Category</h2>
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
         @foreach($categories as $cat)
-        <a href="{{ route('browse', ['category'=>$cat->id]) }}" class="card p-5 hover:shadow-md transition text-center group">
-            <div class="w-12 h-12 rounded-xl flex items-center justify-center text-xl mx-auto mb-3 group-hover:scale-110 transition" style="background:{{ $cat->color ?? '#2563eb' }}20;color:{{ $cat->color ?? '#2563eb' }}">@categoryIcon($cat->icon)</div>
+        <a href="{{ route('browse', ['category'=>$cat->id]) }}" class="card p-5 hover:shadow-lg hover:-translate-y-1 transition text-center group">
+            <div class="mx-auto mb-3 group-hover:scale-110 group-active:scale-95 transition-transform">@categoryIcon3D($cat, 52)</div>
             <p class="font-semibold text-slate-800 text-sm">{{ $cat->name }}</p>
         </a>
         @endforeach
@@ -163,7 +163,7 @@
         @foreach($liveTasks as $task)
         <div class="card p-5 hover:shadow-md transition">
             <div class="flex items-center justify-between mb-2">
-                <span class="badge badge-info inline-flex items-center gap-1">@if($task->category)<span>@categoryIcon($task->category->icon)</span>@endif {{ $task->category?->name ?? 'General' }}</span>
+                <span class="badge badge-info inline-flex items-center gap-1.5">@if($task->category)<span class="inline-flex">@categoryIcon3D($task->category, 20)</span>@endif {{ $task->category?->name ?? 'General' }}</span>
                 <span class="text-xs text-slate-400">{{ $task->booked }}/{{ $task->amount }} slots</span>
             </div>
             <h3 class="font-semibold text-slate-800 mb-1 line-clamp-2">{{ $task->title }}</h3>

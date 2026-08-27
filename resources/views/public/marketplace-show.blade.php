@@ -83,6 +83,43 @@
         </div>
     </div>
 
+    {{-- Ratings & Reviews --}}
+    @include('partials.reviews', ['reviewType' => 'listing', 'reviewTarget' => $listing, 'reviews' => $reviews, 'myReview' => $myReview ?? null])
+
+    {{-- Comments --}}
+    <section class="card mt-6 p-5">
+        <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2"><x-icon name="comment" class="w-5 h-5 text-blue-500" /> Comments <span class="text-sm font-normal text-slate-400">({{ $listing->comment_count }})</span></h3>
+
+        @auth('web')
+        <form action="{{ route('comments.store') }}" method="POST" class="mb-5">
+            @csrf
+            <input type="hidden" name="type" value="listing">
+            <input type="hidden" name="id" value="{{ $listing->id }}">
+            <textarea name="body" rows="2" class="form-input w-full" placeholder="Write a comment..." required></textarea>
+            <button type="submit" class="btn btn-primary mt-2">Post Comment</button>
+        </form>
+        @endauth
+
+        @if($comments->isNotEmpty())
+            <div class="space-y-4">
+                @foreach($comments as $comment)
+                    <div class="flex gap-3">
+                        <img src="{{ $comment->user?->avatarUrl() }}" class="w-9 h-9 rounded-full object-cover" alt="">
+                        <div class="flex-1">
+                            <div class="bg-slate-50 rounded-xl px-3 py-2">
+                                <div class="font-semibold text-slate-700 text-sm">{{ $comment->user?->username }}</div>
+                                <p class="text-sm text-slate-600 mt-1">{{ $comment->body }}</p>
+                            </div>
+                            <div class="text-xs text-slate-400 mt-1">{{ $comment->created_at->diffForHumans() }}</div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        @else
+            <p class="text-sm text-slate-400 text-center py-4">No comments yet.</p>
+        @endif
+    </section>
+
     <!-- Related -->
     @if($related->isNotEmpty())
     <div class="mt-12">

@@ -65,7 +65,7 @@
                         <div class="border border-slate-200 rounded-lg p-3">
                             <div class="flex items-center justify-between mb-2">
                                 <div class="flex items-center gap-2">
-                                    <span class="w-8 h-8 rounded-lg flex items-center justify-center text-base" style="background:{{ $cat->color ?? '#2563eb' }}20;color:{{ $cat->color ?? '#2563eb' }}">@categoryIcon($cat->icon)</span>
+                                    <span class="inline-flex items-center justify-center">@categoryIcon3D($cat, 36)</span>
                                     <span class="font-semibold text-slate-800">{{ $cat->name }}</span>
                                     @if($cat->active)<span class="badge badge-success">Active</span>@else<span class="badge badge-muted">Inactive</span>@endif
                                 </div>

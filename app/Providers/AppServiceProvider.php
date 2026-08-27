@@ -33,5 +33,11 @@ class AppServiceProvider extends ServiceProvider
         Blade::directive('categoryIcon', function ($icon) {
             return "<?php echo app('icon.renderer')->render($icon); ?>";
         });
+
+        // 3D colored badge directive for real, brand-colored 3D icons.
+        // Usage: @categoryIcon3D('facebook', 48) or @categoryIcon3D($cat->icon)
+        Blade::directive('categoryIcon3D', function ($expression) {
+            return "<?php echo app('icon.renderer')->render3D($expression); ?>";
+        });
     }
 }

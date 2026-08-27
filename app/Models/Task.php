@@ -41,6 +41,26 @@ class Task extends Model
         return $this->hasMany(TaskProof::class);
     }
 
+    public function reviews()
+    {
+        return $this->morphMany(Review::class, 'reviewable');
+    }
+
+    public function approvedReviews()
+    {
+        return $this->reviews()->where('is_approved', true)->latest();
+    }
+
+    public function getRatingAvgAttribute(): float
+    {
+        return (float) $this->approvedReviews()->avg('rating') ?: 0;
+    }
+
+    public function getRatingCountAttribute(): int
+    {
+        return (int) $this->approvedReviews()->count();
+    }
+
     public function isActive(): bool
     {
         return (int) $this->status === 1;

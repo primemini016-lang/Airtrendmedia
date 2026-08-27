@@ -28,7 +28,7 @@
         @foreach($tasks as $task)
         <div class="card p-5 hover:shadow-md transition flex flex-col">
             <div class="flex items-center justify-between mb-2">
-                <span class="badge badge-info inline-flex items-center gap-1">@if($task->category)<span>@categoryIcon($task->category->icon)</span>@endif {{ $task->category?->name ?? 'General' }}</span>
+                <span class="badge badge-info inline-flex items-center gap-1.5">@if($task->category)<span class="inline-flex">@categoryIcon3D($task->category, 20)</span>@endif {{ $task->category?->name ?? 'General' }}</span>
                 <span class="text-xs text-slate-400">{{ $task->booked }}/{{ $task->amount }} booked</span>
             </div>
             <h3 class="font-semibold text-slate-800 mb-1 line-clamp-2">{{ $task->title }}</h3>

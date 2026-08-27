@@ -75,7 +75,7 @@ class ChatController extends Controller
             ->limit(8)
             ->get(['id', 'username', 'name', 'image']);
 
-        return view('social.chat', compact('conversations', 'activeConversation', 'messages', 'suggestedUsers', 'user', 'otherUser'));
+        return view('messenger.chat', compact('conversations', 'activeConversation', 'messages', 'suggestedUsers', 'user', 'otherUser'));
     }
 
     /**
@@ -122,7 +122,7 @@ class ChatController extends Controller
             ]);
         }
 
-        return redirect()->route('social.chat', ['c' => $conversation->id]);
+        return redirect()->route('messenger.chat', ['c' => $conversation->id]);
     }
 
     /**
@@ -204,7 +204,7 @@ class ChatController extends Controller
                     'type'    => 'chat_message',
                     'title'   => 'New message from ' . $user->name,
                     'body'    => $validated['body'] ? Str::limit($validated['body'], 100) : 'Sent an attachment',
-                    'url'     => route('social.chat', ['c' => $conversation->id]),
+                    'url'     => route('messenger.chat', ['c' => $conversation->id]),
                 ]);
             }
         }
@@ -215,7 +215,7 @@ class ChatController extends Controller
             return response()->json([
                 'message'  => 'Message sent.',
                 'data'     => $message,
-                'html'     => view('social.partials.chat-message', ['message' => $message, 'user' => $user])->render(),
+                'html'     => view('messenger.partials.chat-message', ['message' => $message, 'user' => $user])->render(),
             ]);
         }
 
@@ -250,7 +250,7 @@ class ChatController extends Controller
 
         $html = '';
         foreach ($messages as $msg) {
-            $html .= view('social.partials.chat-message', ['message' => $msg, 'user' => $user])->render();
+            $html .= view('messenger.partials.chat-message', ['message' => $msg, 'user' => $user])->render();
         }
 
         return response()->json([
@@ -330,7 +330,7 @@ class ChatController extends Controller
             }
         }
 
-        return redirect()->route('social.chat', ['c' => $conversation->id])
+        return redirect()->route('messenger.chat', ['c' => $conversation->id])
             ->with('success', 'Group conversation created.');
     }
 

@@ -77,6 +77,9 @@
         </div>
     </div>
 
+    {{-- Ratings & Reviews --}}
+    @include('partials.reviews', ['reviewType' => 'gig', 'reviewTarget' => $gig, 'reviews' => $reviews, 'myReview' => $myReview ?? null])
+
     <!-- Related -->
     @if($related->isNotEmpty())
     <div class="mt-12">

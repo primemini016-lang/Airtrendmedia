@@ -42,7 +42,7 @@
                 <div class="grid sm:grid-cols-2 gap-4 mb-4">
                     <div>
                         <label class="label">Reward per worker (USD) <span class="text-red-500">*</span></label>
-                        <input type="number" name="price" id="price" class="input" value="{{ old('price') }}" placeholder="0.50" min="0.10" max="1000" step="0.01" required oninput="calcTotal()">
+                        <input type="number" name="price" id="price" class="input" value="{{ old('price') }}" placeholder="0.01" min="0.01" max="1000" step="0.01" required oninput="calcTotal()">
                     </div>
                     <div>
                         <label class="label">Number of workers <span class="text-red-500">*</span></label>

@@ -58,13 +58,20 @@ class MarketplaceController extends Controller
         $listing->load('user:id,username,name,image', 'category', 'inquiries');
         $listing->increment('views');
 
+        $reviews  = $listing->approvedReviews()->with('user:id,username,name,image')->paginate(10);
+        $comments = $listing->comments()->with('user:id,username,name,image', 'replies.user:id,username,name,image')->get();
+        $myReview = null;
+        if (auth('web')->check()) {
+            $myReview = $listing->reviews()->where('user_id', auth('web')->id())->first();
+        }
+
         $related = MarketplaceListing::with('user:id,username,name,image')
             ->where('status', 'active')
             ->where('id', '!=', $listing->id)
             ->when($listing->category_id, fn ($q) => $q->where('category_id', $listing->category_id))
             ->latest()->limit(4)->get();
 
-        return view('public.marketplace-show', compact('listing', 'related'));
+        return view('public.marketplace-show', compact('listing', 'related', 'reviews', 'comments', 'myReview'));
     }
 
     /* =========================================================

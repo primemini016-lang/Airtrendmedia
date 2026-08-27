@@ -98,19 +98,15 @@
                 <a href="{{ route('admin.notifications') }}" class="nav-link-admin {{ request()->routeIs('admin.notifications') ? 'active' : '' }}"><span><x-icon name="notifications" class="w-[18px] h-[18px]" /></span> Notifications</a>
 
                 <div class="nav-section">Airtrendmedia — God Mode</div>
-                <a href="{{ route('admin.control-center') }}" class="nav-link-admin {{ request()->routeIs('admin.control-center') ? 'active' : '' }}"><span><x-icon name="admin" class="w-[18px] h-[18px]" /></span> Control Center</a>
-                <a href="{{ route('admin.social.posts') }}" class="nav-link-admin {{ request()->routeIs('admin.social.posts') ? 'active' : '' }}"><span><x-icon name="feed" class="w-[18px] h-[18px]" /></span> Social Posts</a>
-                <a href="{{ route('admin.social.comments') }}" class="nav-link-admin {{ request()->routeIs('admin.social.comments') ? 'active' : '' }}"><span><x-icon name="comment" class="w-[18px] h-[18px]" /></span> Social Comments</a>
-                <a href="{{ route('admin.social.stories') }}" class="nav-link-admin {{ request()->routeIs('admin.social.stories') ? 'active' : '' }}"><span><x-icon name="stories" class="w-[18px] h-[18px]" /></span> Stories</a>
-                <a href="{{ route('admin.social.pages') }}" class="nav-link-admin {{ request()->routeIs('admin.social.pages') ? 'active' : '' }}"><span><x-icon name="pages" class="w-[18px] h-[18px]" /></span> Social Pages</a>
-                <a href="{{ route('admin.social.groups') }}" class="nav-link-admin {{ request()->routeIs('admin.social.groups') ? 'active' : '' }}"><span><x-icon name="groups" class="w-[18px] h-[18px]" /></span> Social Groups</a>
+                <a href="{{ route('admin.ptc') }}" class="nav-link-admin {{ request()->routeIs('admin.ptc') || request()->routeIs('admin.ptc.show') ? 'active' : '' }}"><span><x-icon name="ads" class="w-[18px] h-[18px]" /></span> PTC Ads</a>
+                <a href="{{ route('admin.ptc.settings') }}" class="nav-link-admin {{ request()->routeIs('admin.ptc.settings') ? 'active' : '' }}"><span><x-icon name="settings" class="w-[18px] h-[18px]" /></span> PTC Settings</a>
                 <a href="{{ route('admin.kyc') }}" class="nav-link-admin {{ request()->routeIs('admin.kyc') || request()->routeIs('admin.kyc.show') ? 'active' : '' }}"><span><x-icon name="admin" class="w-[18px] h-[18px]" /></span> KYC Verification</a>
                 <a href="{{ route('admin.verification') }}" class="nav-link-admin {{ request()->routeIs('admin.verification') || request()->routeIs('admin.verification.show') ? 'active' : '' }}"><span><x-icon name="star" class="w-[18px] h-[18px]" /></span> Blue Badges</a>
                 <a href="{{ route('admin.sponsored-ads') }}" class="nav-link-admin {{ request()->routeIs('admin.sponsored-ads') ? 'active' : '' }}"><span><x-icon name="ads" class="w-[18px] h-[18px]" /></span> Sponsored Ads</a>
-                <a href="{{ route('admin.monetization-management') }}" class="nav-link-admin {{ request()->routeIs('admin.monetization-management') ? 'active' : '' }}"><span><x-icon name="monetization" class="w-[18px] h-[18px]" /></span> Monetization</a>
                 <a href="{{ route('admin.anti-cheat') }}" class="nav-link-admin {{ request()->routeIs('admin.anti-cheat') ? 'active' : '' }}"><span><x-icon name="complaints" class="w-[18px] h-[18px]" /></span> Anti-Cheat</a>
                 <a href="{{ route('admin.push-settings') }}" class="nav-link-admin {{ request()->routeIs('admin.push-settings') || request()->routeIs('admin.push-settings.logs') ? 'active' : '' }}"><span><x-icon name="notifications" class="w-[18px] h-[18px]" /></span> Push / Firebase</a>
                 <a href="{{ route('admin.pwa-settings') }}" class="nav-link-admin {{ request()->routeIs('admin.pwa-settings') ? 'active' : '' }}"><span><x-icon name="appearance" class="w-[18px] h-[18px]" /></span> PWA Settings</a>
+                <a href="{{ route('admin.banner-settings') }}" class="nav-link-admin {{ request()->routeIs('admin.banner-settings') ? 'active' : '' }}"><span><x-icon name="ads" class="w-[18px] h-[18px]" /></span> Banner & Popup</a>
 
                 <div class="nav-section">System</div>
                 <a href="{{ route('admin.appearance') }}" class="nav-link-admin {{ request()->routeIs('admin.appearance') ? 'active' : '' }}"><span><x-icon name="appearance" class="w-[18px] h-[18px]" /></span> Appearance</a>

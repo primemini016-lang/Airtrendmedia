@@ -33,4 +33,29 @@ class Gig extends Model
     {
         return $this->hasMany(GigOrder::class);
     }
+
+    public function reviews()
+    {
+        return $this->morphMany(Review::class, 'reviewable');
+    }
+
+    public function approvedReviews()
+    {
+        return $this->reviews()->where('is_approved', true)->latest();
+    }
+
+    public function getRatingAvgAttribute(): float
+    {
+        return (float) $this->approvedReviews()->avg('rating') ?: 0;
+    }
+
+    public function getRatingCountAttribute(): int
+    {
+        return (int) $this->approvedReviews()->count();
+    }
+
+    public function getReviewCountAttribute(): int
+    {
+        return $this->rating_count;
+    }
 }

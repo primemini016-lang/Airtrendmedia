@@ -9,17 +9,13 @@ use App\Http\Controllers\Web\User\DashboardController as UserDashboard;
 use App\Http\Controllers\Web\Admin\AdminController;
 use App\Http\Controllers\Web\BlogController;
 use App\Http\Controllers\Web\User\BlogController as UserBlogController;
-use App\Http\Controllers\Web\Admin\SocialAdminController;
-use App\Http\Controllers\Web\SocialController;
-use App\Http\Controllers\Web\SocialPageController;
-use App\Http\Controllers\Web\GroupController;
 use App\Http\Controllers\Web\ChatController;
-use App\Http\Controllers\Web\ProfileController;
-use App\Http\Controllers\Web\MonetizationController;
 use App\Http\Controllers\Web\KycController;
 use App\Http\Controllers\Web\VerificationController;
-use App\Http\Controllers\Web\StoryController;
 use App\Http\Controllers\Web\SponsoredAdController;
+use App\Http\Controllers\Web\PtcController;
+use App\Http\Controllers\Web\ReviewController;
+use App\Http\Controllers\Web\CommentController;
 use App\Http\Controllers\Web\AccountTypeController;
 use App\Http\Controllers\Web\PushNotificationController;
 use Illuminate\Support\Facades\Route;
@@ -31,12 +27,6 @@ use Illuminate\Support\Facades\Route;
 */
 
 // Installer (bypasses the "installed" middleware).
-// Single-page wizard: GET /install shows the form (DB + admin details),
-// POST /install runs the entire install atomically, GET /install/finish
-// shows the success screen.
-// The 'installer.key' middleware guarantees a usable APP_KEY exists
-// before the wizard loads — without it the encrypted-session service
-// provider throws a fatal MissingAppKeyException on a fresh deploy.
 Route::group(['prefix' => 'install', 'middleware' => ['installer.key']], function () {
     Route::get('/', [InstallController::class, 'index'])->name('install.start');
     Route::post('/', [InstallController::class, 'process'])->name('install.process');
@@ -56,15 +46,20 @@ Route::middleware('installed')->group(function () {
 
     // Marketplace (public browse)
     Route::get('/marketplace', [MarketplaceController::class, 'index'])->name('marketplace');
-    Route::get('/marketplace/{listing}', [MarketplaceController::class, 'show'])->name('marketplace.show');
+    Route::get('/marketplace/{listing}', [MarketplaceController::class, 'show'])->name('marketplace.show')->where('listing', '[0-9]+');
 
     // Gigs (public browse)
     Route::get('/gigs', [GigController::class, 'index'])->name('gigs.browse');
-    Route::get('/gigs/{gig}', [GigController::class, 'show'])->name('gigs.show');
+    Route::get('/gigs/{gig}', [GigController::class, 'show'])->name('gigs.show')->where('gig', '[0-9]+');
 
     // Blog (public browse — Phoenix-style full screen)
     Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
     Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
+
+    // PTC (Paid-To-Click) ads — public browse
+    Route::get('/ptc', [PtcController::class, 'index'])->name('ptc.index');
+    Route::get('/ptc/{ad}', [PtcController::class, 'show'])->name('ptc.show')
+        ->where('ad', '[0-9]+');
 
     // Auth (web session-based for the blade frontend)
     Route::get('/login', [WebAuthController::class, 'showLogin'])->name('login');
@@ -99,7 +94,7 @@ Route::middleware('installed')->group(function () {
         Route::middleware('activated')->group(function () {
             Route::get('/dashboard', [UserDashboard::class, 'index'])->name('user.dashboard');
             Route::get('/tasks', [UserDashboard::class, 'browseTasks'])->name('user.tasks');
-            Route::get('/tasks/{task}', [UserDashboard::class, 'taskDetail'])->name('user.task');
+            Route::get('/tasks/{task}', [UserDashboard::class, 'taskDetail'])->name('user.task')->where('task', '[0-9]+');
             Route::post('/tasks/{task}/book', [UserDashboard::class, 'bookTask'])->name('user.task.book');
             Route::post('/tasks/{task}/proof', [UserDashboard::class, 'submitProof'])->name('user.task.proof');
             Route::get('/my-bookings', [UserDashboard::class, 'myBookings'])->name('user.bookings');
@@ -144,70 +139,19 @@ Route::middleware('installed')->group(function () {
             Route::post('/blog/{slug}/comment', [BlogController::class, 'comment'])->name('blog.comment');
             Route::post('/blog/{slug}/share', [BlogController::class, 'share'])->name('blog.share');
 
-            // ===== Facebook Clone — Social Feed =====
-            Route::get('/social', [SocialController::class, 'feed'])->name('social.feed');
-            Route::post('/social/post', [SocialController::class, 'createPost'])->name('social.feed.post');
-            Route::post('/social/post/{post}/like', [SocialController::class, 'toggleLike'])->name('social.like');
-            Route::post('/social/post/{post}/comment', [SocialController::class, 'comment'])->name('social.comment');
-            Route::post('/social/comment/{comment}/like', [SocialController::class, 'toggleCommentLike'])->name('social.comment.like');
-            Route::post('/social/post/{post}/share', [SocialController::class, 'share'])->name('social.share');
-            Route::delete('/social/post/{post}', [SocialController::class, 'deletePost'])->name('social.delete');
-            Route::get('/social/post/{post}/comments', [SocialController::class, 'getComments'])->name('social.comments');
-            Route::post('/social/follow/{target}', [SocialController::class, 'toggleFollow'])->name('social.follow');
-            Route::get('/explore', [SocialController::class, 'explore'])->name('social.explore');
-
-            // ===== Facebook Clone — Pages =====
-            Route::get('/pages', [SocialPageController::class, 'index'])->name('social.pages');
-            Route::get('/pages/create', [SocialPageController::class, 'create'])->name('social.pages.create');
-            Route::post('/pages', [SocialPageController::class, 'store'])->name('social.pages.store');
-            Route::get('/pages/mine', [SocialPageController::class, 'myPages'])->name('social.pages.mine');
-            Route::get('/pages/{page:slug}', [SocialPageController::class, 'show'])->name('social.page.show');
-            Route::get('/pages/{page:slug}/edit', [SocialPageController::class, 'edit'])->name('social.page.edit');
-            Route::post('/pages/{page:slug}', [SocialPageController::class, 'update'])->name('social.page.update');
-            Route::delete('/pages/{page:slug}', [SocialPageController::class, 'destroy'])->name('social.page.destroy');
-            Route::post('/pages/{page}/join', [SocialPageController::class, 'join'])->name('social.pages.join');
-            Route::post('/pages/{page}/leave', [SocialPageController::class, 'leave'])->name('social.pages.leave');
-
-            // ===== Facebook Clone — Groups =====
-            Route::get('/groups', [GroupController::class, 'index'])->name('social.groups');
-            Route::get('/groups/create', [GroupController::class, 'create'])->name('social.groups.create');
-            Route::post('/groups', [GroupController::class, 'store'])->name('social.groups.store');
-            Route::get('/groups/mine', [GroupController::class, 'myGroups'])->name('social.groups.mine');
-            Route::get('/groups/{group:slug}', [GroupController::class, 'show'])->name('social.group.show');
-            Route::get('/groups/{group:slug}/edit', [GroupController::class, 'edit'])->name('social.group.edit');
-            Route::post('/groups/{group:slug}', [GroupController::class, 'update'])->name('social.group.update');
-            Route::delete('/groups/{group:slug}', [GroupController::class, 'destroy'])->name('social.group.destroy');
-            Route::post('/groups/{group}/join', [GroupController::class, 'join'])->name('social.groups.join');
-            Route::post('/groups/{group}/leave', [GroupController::class, 'leave'])->name('social.groups.leave');
-            Route::post('/groups/{group}/members/{memberId}/approve', [GroupController::class, 'approveMember'])->name('social.groups.member.approve');
-            Route::post('/groups/{group}/members/{memberId}/remove', [GroupController::class, 'removeMember'])->name('social.groups.member.remove');
-
-            // ===== Facebook Clone — Messenger / Chat =====
-            Route::get('/messenger', [ChatController::class, 'index'])->name('social.chat');
-            Route::get('/messenger/start/{targetUser}', [ChatController::class, 'startConversation'])->name('social.chat.start');
-            Route::post('/messenger/{conversation}/send', [ChatController::class, 'send'])->name('social.chat.send');
-            Route::get('/messenger/{conversation}/fetch', [ChatController::class, 'fetchMessages'])->name('social.chat.fetch');
-            Route::get('/messenger/unread', [ChatController::class, 'unreadCount'])->name('social.chat.unread');
-            Route::post('/messenger/group', [ChatController::class, 'createGroup'])->name('social.chat.group');
-            Route::delete('/messenger/message/{message}', [ChatController::class, 'deleteMessage'])->name('social.chat.delete');
-            Route::get('/messenger/search', [ChatController::class, 'searchUsers'])->name('social.chat.search');
-
-            // ===== Facebook Clone — Profiles =====
-            Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('social.profile.edit');
-            Route::post('/profile/update', [ProfileController::class, 'update'])->name('social.profile.update');
-            Route::post('/profile/avatar', [ProfileController::class, 'updateAvatar'])->name('social.profile.avatar');
-            Route::get('/profile/{username}', [ProfileController::class, 'show'])->name('social.profile');
-            Route::post('/profile/{creator}/stars', [ProfileController::class, 'sendStar'])->name('social.stars');
-            Route::get('/people', [ProfileController::class, 'suggestions'])->name('social.suggestions');
-            Route::get('/friends', [ProfileController::class, 'friends'])->name('social.friends');
-
-            // ===== Facebook Clone — Monetization =====
-            Route::get('/monetization', [MonetizationController::class, 'dashboard'])->name('social.monetization');
-            Route::post('/monetization/apply', [MonetizationController::class, 'apply'])->name('social.monetization.apply');
-            Route::post('/monetization/subscription', [MonetizationController::class, 'setupSubscription'])->name('social.monetization.subscription');
-            Route::post('/monetization/withdraw', [MonetizationController::class, 'withdraw'])->name('social.monetization.withdraw');
-            Route::post('/monetization/subscribe/{creator}', [MonetizationController::class, 'subscribe'])->name('social.monetization.subscribe');
-            Route::post('/monetization/subscription/{subscription}/cancel', [MonetizationController::class, 'cancelSubscription'])->name('social.monetization.cancel');
+            // ===== Airtrendmedia — Messenger / User-to-User Chat =====
+            Route::get('/messenger', [ChatController::class, 'index'])->name('messenger.chat');
+            Route::get('/messenger/start/{targetUser}', [ChatController::class, 'startConversation'])->name('messenger.chat.start');
+            Route::post('/messenger/{conversation}/send', [ChatController::class, 'send'])->name('messenger.chat.send');
+            Route::get('/messenger/{conversation}/fetch', [ChatController::class, 'fetchMessages'])->name('messenger.chat.fetch');
+            Route::get('/messenger/unread', [ChatController::class, 'unreadCount'])->name('messenger.chat.unread');
+            Route::post('/messenger/group', [ChatController::class, 'createGroup'])->name('messenger.chat.group');
+            Route::delete('/messenger/message/{message}', [ChatController::class, 'deleteMessage'])->name('messenger.chat.delete');
+            Route::get('/messenger/search', [ChatController::class, 'searchUsers'])->name('messenger.chat.search');
+            Route::post('/messenger/{conversation}/typing', [ChatController::class, 'typing'])->name('messenger.chat.typing');
+            Route::get('/messenger/{conversation}/typing-status', [ChatController::class, 'typingStatus'])->name('messenger.chat.typing-status');
+            Route::post('/messenger/message/{message}/react', [ChatController::class, 'react'])->name('messenger.chat.react');
+            Route::get('/messenger/message/{message}/reactions', [ChatController::class, 'messageReactions'])->name('messenger.chat.reactions');
 
             // ===== Airtrendmedia — KYC Verification =====
             Route::get('/kyc', [KycController::class, 'index'])->name('user.kyc');
@@ -222,26 +166,25 @@ Route::middleware('installed')->group(function () {
             Route::get('/account-type', [AccountTypeController::class, 'index'])->name('user.account-type');
             Route::post('/account-type/switch', [AccountTypeController::class, 'switch'])->name('user.account-type.switch');
 
-            // ===== Airtrendmedia — Stories (Facebook style) =====
-            Route::get('/stories/active', [StoryController::class, 'active'])->name('social.stories.active');
-            Route::post('/stories', [StoryController::class, 'store'])->name('social.stories.store');
-            Route::post('/stories/{story}/view', [StoryController::class, 'view'])->name('social.stories.view');
-            Route::get('/stories/{story}/viewers', [StoryController::class, 'viewers'])->name('social.stories.viewers');
-            Route::delete('/stories/{story}', [StoryController::class, 'destroy'])->name('social.stories.destroy');
-
-            // ===== Airtrendmedia — Chat typing indicator + emoji reactions =====
-            Route::post('/messenger/{conversation}/typing', [ChatController::class, 'typing'])->name('social.chat.typing');
-            Route::get('/messenger/{conversation}/typing-status', [ChatController::class, 'typingStatus'])->name('social.chat.typing-status');
-            Route::post('/messenger/message/{message}/react', [ChatController::class, 'react'])->name('social.chat.react');
-            Route::get('/messenger/message/{message}/reactions', [ChatController::class, 'messageReactions'])->name('social.chat.reactions');
-
             // ===== Airtrendmedia — Sponsored Ads (Advertiser) =====
             Route::get('/sponsored-ads', [SponsoredAdController::class, 'index'])->name('user.sponsored-ads');
             Route::post('/sponsored-ads', [SponsoredAdController::class, 'store'])->name('user.sponsored-ads.store');
             Route::get('/sponsored-ads/{ad}/stats', [SponsoredAdController::class, 'stats'])->name('user.sponsored-ads.stats');
             Route::post('/sponsored-ads/{ad}/impression', [SponsoredAdController::class, 'impression'])->name('user.sponsored-ads.impression');
             Route::post('/sponsored-ads/{ad}/click', [SponsoredAdController::class, 'click'])->name('user.sponsored-ads.click');
-            Route::get('/feed-ads', [SponsoredAdController::class, 'feedAds'])->name('social.feed-ads');
+            Route::get('/feed-ads', [SponsoredAdController::class, 'feedAds'])->name('feed.ads');
+
+            // ===== Airtrendmedia — PTC (Paid-To-Click) — User side =====
+            Route::get('/my-ptc', [PtcController::class, 'myAds'])->name('user.ptc.index');
+            Route::get('/my-ptc/create', [PtcController::class, 'create'])->name('user.ptc.create');
+            Route::post('/my-ptc', [PtcController::class, 'store'])->name('user.ptc.store');
+            Route::get('/my-ptc/history', [PtcController::class, 'history'])->name('user.ptc.history');
+            Route::get('/my-ptc/{ad}/edit', [PtcController::class, 'edit'])->name('user.ptc.edit');
+            Route::post('/my-ptc/{ad}', [PtcController::class, 'update'])->name('user.ptc.update');
+            Route::delete('/my-ptc/{ad}', [PtcController::class, 'destroy'])->name('user.ptc.destroy');
+            Route::get('/my-ptc/{ad}/stats', [PtcController::class, 'stats'])->name('user.ptc.stats');
+            Route::post('/ptc/{ad}/start', [PtcController::class, 'startView'])->name('ptc.start');
+            Route::post('/ptc/{ad}/confirm', [PtcController::class, 'confirmExecution'])->name('ptc.confirm');
 
             // ===== Creator Blog Studio =====
             Route::get('/my-blog', [UserBlogController::class, 'index'])->name('user.blog.index');
@@ -250,6 +193,14 @@ Route::middleware('installed')->group(function () {
             Route::get('/my-blog/{post}/edit', [UserBlogController::class, 'edit'])->name('user.blog.edit');
             Route::post('/my-blog/{post}', [UserBlogController::class, 'update'])->name('user.blog.update');
             Route::delete('/my-blog/{post}', [UserBlogController::class, 'destroy'])->name('user.blog.destroy');
+
+            // ===== Airtrendmedia — Unified Reviews / Ratings (gigs, listings, tasks, profiles) =====
+            Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store');
+            Route::delete('/reviews/{review}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
+
+            // ===== Airtrendmedia — Comments (marketplace listings, reusable) =====
+            Route::post('/comments', [CommentController::class, 'store'])->name('comments.store');
+            Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
 
             // ===== Airtrendmedia — Push Notification Device Token Registration =====
             Route::post('/push/register-token', [PushNotificationController::class, 'registerToken'])->name('user.push.register-token');
@@ -359,22 +310,6 @@ Route::middleware('installed')->group(function () {
             Route::get('/notifications', [AdminController::class, 'adminNotifications'])->name('notifications');
             Route::post('/notifications/broadcast', [AdminController::class, 'sendBroadcastNotification'])->name('notifications.broadcast');
 
-            // ===== Platform Control — Social Network Moderation =====
-            Route::get('/control-center', [SocialAdminController::class, 'dashboard'])->name('control-center');
-            Route::get('/social/posts', [SocialAdminController::class, 'posts'])->name('social.posts');
-            Route::post('/social/posts/{post}', [SocialAdminController::class, 'updatePost'])->name('social.posts.update');
-            Route::delete('/social/posts/{post}', [SocialAdminController::class, 'deletePost'])->name('social.posts.delete');
-            Route::get('/social/comments', [SocialAdminController::class, 'comments'])->name('social.comments');
-            Route::delete('/social/comments/{comment}', [SocialAdminController::class, 'deleteComment'])->name('social.comments.delete');
-            Route::get('/social/stories', [SocialAdminController::class, 'stories'])->name('social.stories');
-            Route::delete('/social/stories/{story}', [SocialAdminController::class, 'deleteStory'])->name('social.stories.delete');
-            Route::get('/social/pages', [SocialAdminController::class, 'pages'])->name('social.pages');
-            Route::post('/social/pages/{page}', [SocialAdminController::class, 'updatePage'])->name('social.pages.update');
-            Route::delete('/social/pages/{page}', [SocialAdminController::class, 'deletePage'])->name('social.pages.delete');
-            Route::get('/social/groups', [SocialAdminController::class, 'groups'])->name('social.groups');
-            Route::post('/social/groups/{group}', [SocialAdminController::class, 'updateGroup'])->name('social.groups.update');
-            Route::delete('/social/groups/{group}', [SocialAdminController::class, 'deleteGroup'])->name('social.groups.delete');
-
             // Blog management
             Route::get('/blog', [BlogController::class, 'adminIndex'])->name('blog');
             Route::post('/blog', [BlogController::class, 'adminStore'])->name('blog.store');
@@ -408,6 +343,23 @@ Route::middleware('installed')->group(function () {
             Route::post('/sponsored-ads/{ad}/resume', [SponsoredAdController::class, 'adminResume'])->name('sponsored-ads.resume');
             Route::post('/sponsored-ads/settings', [SponsoredAdController::class, 'adminSettings'])->name('sponsored-ads.settings');
 
+            // ===== Airtrendmedia — Admin PTC (Paid-To-Click) Management =====
+            Route::get('/ptc', [PtcController::class, 'adminIndex'])->name('ptc');
+            Route::get('/ptc/settings', [PtcController::class, 'adminSettings'])->name('ptc.settings');
+            Route::post('/ptc/settings', [PtcController::class, 'adminSettings'])->name('ptc.settings');
+            Route::get('/ptc/{ad}', [PtcController::class, 'adminShow'])->name('ptc.show')
+                ->where('ad', '[0-9]+');
+            Route::post('/ptc/{ad}/approve', [PtcController::class, 'adminApprove'])->name('ptc.approve')
+                ->where('ad', '[0-9]+');
+            Route::post('/ptc/{ad}/reject', [PtcController::class, 'adminReject'])->name('ptc.reject')
+                ->where('ad', '[0-9]+');
+            Route::post('/ptc/{ad}/pause', [PtcController::class, 'adminPause'])->name('ptc.pause')
+                ->where('ad', '[0-9]+');
+            Route::post('/ptc/{ad}/resume', [PtcController::class, 'adminResume'])->name('ptc.resume')
+                ->where('ad', '[0-9]+');
+            Route::delete('/ptc/{ad}', [PtcController::class, 'adminDestroy'])->name('ptc.delete')
+                ->where('ad', '[0-9]+');
+
             // ===== Airtrendmedia — Admin Push / Firebase / OneSignal Settings =====
             Route::get('/push-settings', [PushNotificationController::class, 'adminSettings'])->name('push-settings');
             Route::post('/push-settings', [PushNotificationController::class, 'adminSettingsSave'])->name('push-settings.save');
@@ -415,19 +367,16 @@ Route::middleware('installed')->group(function () {
             Route::get('/push-settings/logs', [PushNotificationController::class, 'adminLogs'])->name('push-settings.logs');
             Route::post('/push-settings/broadcast', [PushNotificationController::class, 'adminBroadcast'])->name('push-settings.broadcast');
 
-            // ===== Airtrendmedia — Admin Monetization Management =====
-            Route::get('/monetization', [AdminController::class, 'monetizationManagement'])->name('monetization-management');
-            Route::post('/monetization/{user}/disable', [AdminController::class, 'monetizationDisable'])->name('monetization.disable');
-            Route::post('/monetization/{user}/enable', [AdminController::class, 'monetizationEnable'])->name('monetization.enable');
-
             // ===== Airtrendmedia — Admin Anti-Cheat Flags =====
             Route::get('/anti-cheat', [AdminController::class, 'antiCheat'])->name('anti-cheat');
             Route::post('/anti-cheat/{flag}/resolve', [AdminController::class, 'antiCheatResolve'])->name('anti-cheat.resolve');
             Route::post('/anti-cheat/{flag}/dismiss', [AdminController::class, 'antiCheatDismiss'])->name('anti-cheat.dismiss');
 
-            // ===== Airtrendmedia — Admin PWA Settings =====
+            // ===== Airtrendmedia — Admin PWA + Popup Banner Settings =====
             Route::get('/pwa-settings', [AdminController::class, 'pwaSettings'])->name('pwa-settings');
             Route::post('/pwa-settings', [AdminController::class, 'pwaSettingsSave'])->name('pwa-settings.save');
+            Route::get('/banner-settings', [AdminController::class, 'bannerSettings'])->name('banner-settings');
+            Route::post('/banner-settings', [AdminController::class, 'bannerSettingsSave'])->name('banner-settings.save');
         });
     });
 });

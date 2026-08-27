@@ -27,6 +27,7 @@
     @stack('styles')
 </head>
 <body class="min-h-screen bg-slate-100 dark:bg-slate-900 transition-colors">
+    @include('partials.banners')
     @php
         $settings = app(\App\Services\SettingService::class)->all();
         $siteName = $settings->name ?? 'Airtrendmedia';
@@ -62,17 +63,13 @@
                 <a href="{{ route('user.messages') }}" class="nav-link {{ request()->routeIs('user.messages') ? 'active' : '' }}"><span><x-icon name="messages" class="w-4 h-4" /></span> Support</a>
                 <a href="{{ route('user.profile') }}" class="nav-link {{ request()->routeIs('user.profile') ? 'active' : '' }}"><span><x-icon name="profile" class="w-4 h-4" /></span> Profile</a>
 
-                {{-- Community / Facebook Clone --}}
+                {{-- Community --}}
                 <div class="px-3 py-2 text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Community</div>
-                <a href="{{ route('social.feed') }}" class="nav-link {{ request()->routeIs('social.feed') ? 'active' : '' }}"><span><x-icon name="news-feed" class="w-4 h-4" /></span> News Feed</a>
-                <a href="{{ route('social.chat') }}" class="nav-link {{ request()->routeIs('social.chat') ? 'active' : '' }}"><span><x-icon name="messenger" class="w-4 h-4" /></span> Messenger</a>
-                <a href="{{ route('social.suggestions') }}" class="nav-link {{ request()->routeIs('social.suggestions') || request()->routeIs('social.friends') ? 'active' : '' }}"><span><x-icon name="friend-suggestions" class="w-4 h-4" /></span> Friends</a>
-                <a href="{{ route('social.pages') }}" class="nav-link {{ request()->routeIs('social.pages') || request()->routeIs('social.page.show') || request()->routeIs('social.pages.mine') ? 'active' : '' }}"><span><x-icon name="flag" class="w-4 h-4" /></span> Pages</a>
-                <a href="{{ route('social.groups') }}" class="nav-link {{ request()->routeIs('social.groups') || request()->routeIs('social.group.show') || request()->routeIs('social.groups.mine') ? 'active' : '' }}"><span><x-icon name="user-group" class="w-4 h-4" /></span> Groups</a>
-                <a href="{{ route('social.explore') }}" class="nav-link {{ request()->routeIs('social.explore') ? 'active' : '' }}"><span><x-icon name="search" class="w-4 h-4" /></span> Explore</a>
-                <a href="{{ route('social.monetization') }}" class="nav-link {{ request()->routeIs('social.monetization') ? 'active' : '' }}"><span><x-icon name="monetization" class="w-4 h-4" /></span> Monetization</a>
+                <a href="{{ route('messenger.chat') }}" class="nav-link {{ request()->routeIs('messenger.*') ? 'active' : '' }}"><span><x-icon name="messenger" class="w-4 h-4" /></span> Messenger</a>
                 <a href="{{ route('blog.index') }}" class="nav-link {{ request()->routeIs('blog.index') || request()->routeIs('blog.show') ? 'active' : '' }}"><span><x-icon name="document-text" class="w-4 h-4" /></span> Blog</a>
                 <a href="{{ route('user.blog.index') }}" class="nav-link {{ request()->routeIs('user.blog.*') ? 'active' : '' }}"><span><x-icon name="blog" class="w-4 h-4" /></span> My Blog</a>
+                <a href="{{ route('ptc.index') }}" class="nav-link {{ request()->routeIs('ptc.*') ? 'active' : '' }}"><span><x-icon name="ads" class="w-4 h-4" /></span> PTC Ads</a>
+                <a href="{{ route('user.ptc.index') }}" class="nav-link {{ request()->routeIs('user.ptc.*') ? 'active' : '' }}"><span><x-icon name="dashboard" class="w-4 h-4" /></span> My PTC Ads</a>
 
                 {{-- Airtrendmedia — Identity & Advertising --}}
                 <div class="px-3 py-2 text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Identity & Ads</div>
@@ -112,6 +109,13 @@
                         <a href="{{ route('stop-impersonating') }}" class="btn btn-danger text-xs"><x-icon name="x" class="w-3 h-3" /> Stop Impersonating</a>
                     @endif
                     <div class="hidden sm:block px-3 py-1.5 rounded-lg bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-semibold text-sm">Balance: {{ number_format((float)($user?->balance ?? 0),2) }} USD</div>
+                    <!-- Messenger / Messages Icon -->
+                    <div class="relative">
+                        <a href="{{ route('messenger.chat') }}" class="relative p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300" title="Messages">
+                            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                            <span id="msg-badge" class="absolute -top-1 -right-1 bg-blue-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center hidden">0</span>
+                        </a>
+                    </div>
                     <!-- Notification Bell -->
                     <div class="relative">
                         <a href="{{ route('user.notifications') }}" class="relative p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300" title="Notifications">

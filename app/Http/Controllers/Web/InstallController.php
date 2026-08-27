@@ -259,7 +259,7 @@ class InstallController extends Controller
     private function requirementChecks(): array
     {
         return [
-            'PHP >= 8.1'               => version_compare(PHP_VERSION, '8.1.0', '>='),
+            'PHP >= 8.3'               => version_compare(PHP_VERSION, '8.3.0', '>='),
             'PDO Extension'            => extension_loaded('pdo'),
             'MySQL (pdo_mysql)'        => extension_loaded('pdo_mysql') || extension_loaded('pdo_mysqli'),
             'mbstring'                 => extension_loaded('mbstring'),

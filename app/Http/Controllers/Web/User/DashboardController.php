@@ -72,7 +72,6 @@ class DashboardController extends Controller
         $totalGigs = $user->gigs()->count();
         $activeGigs = $user->gigs()->where('status', 'active')->count();
         $totalListings = $user->marketplaceListings()->count();
-        $socialPosts = $user->socialPosts()->count();
         $totalBookings = $user->bookings()->count();
         $referralCount = $user->referrals()->count();
         $unreadNotifications = $user->notifications()->whereNull('read_at')->count();
@@ -91,7 +90,7 @@ class DashboardController extends Controller
             'user', 'openBookings', 'myActiveTasks', 'pendingTasks', 'pendingBookings',
             'pendingProofs', 'pendingWithdrawals',
             'completedTasks', 'totalGigs', 'activeGigs', 'totalListings',
-            'socialPosts', 'totalBookings', 'referralCount', 'unreadNotifications',
+            'totalBookings', 'referralCount', 'unreadNotifications',
             'earningsThisMonth', 'availableTasks'
         ));
     }
@@ -447,7 +446,7 @@ class DashboardController extends Controller
         $validated = $request->validate([
             'title'       => 'required|string|max:191',
             'category_id' => 'required|exists:task_categories,id',
-            'price'       => 'required|numeric|min:0.10|max:1000',
+            'price'       => 'required|numeric|min:0.01|max:1000',
             'amount'      => 'required|integer|min:1|max:1000',
             'time'        => 'nullable|integer|min:1|max:10080',
             'action_url'  => 'nullable|url|max:500',
@@ -716,7 +715,8 @@ class DashboardController extends Controller
     {
         $user = auth('web')->user()->load('country');
         $countries = Country::orderBy('name')->get();
-        return view('user.profile', compact('user', 'countries'));
+        $reviews = $user->approvedReviews()->with('user:id,username,name,image')->paginate(10);
+        return view('user.profile', compact('user', 'countries', 'reviews'));
     }
 
     public function updateProfile(Request $request)

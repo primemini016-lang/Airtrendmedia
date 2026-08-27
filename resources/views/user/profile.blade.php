@@ -37,6 +37,31 @@
                 <div class="flex justify-between"><span class="text-slate-400">Referral</span><span class="text-slate-700 font-mono">{{ $user->referral_code }}</span></div>
                 <div class="flex justify-between"><span class="text-slate-400">Joined</span><span class="text-slate-700">{{ $user->created_at->format('M d, Y') }}</span></div>
             </div>
+
+            {{-- Reputation / 5-star review summary --}}
+            <div class="mt-4 pt-4 border-t border-slate-100 text-left">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-slate-400 text-sm">Profile Rating</span>
+                    <span class="text-amber-500 font-bold text-lg">{{ number_format((float)$user->stars, 1) }}<span class="text-xs text-slate-400">/5</span></span>
+                </div>
+                <div class="text-amber-500 text-lg leading-none">
+                    @for($i = 1; $i <= 5; $i++)
+                        @if($i <= round($user->stars))★@else☆@endif
+                    @endfor
+                </div>
+                <div class="text-xs text-slate-400 mt-1">{{ number_format((int)$user->review_count) }} review(s) · {{ (int)$user->positive_review_count }} positive</div>
+
+                <div class="flex flex-wrap gap-2 mt-3">
+                    @if($user->isRecommendable())
+                        <span class="badge bg-emerald-100 text-emerald-700"><x-icon name="check-circle" class="w-4 h-4 inline" /> Recommendable</span>
+                    @else
+                        <span class="badge bg-slate-100 text-slate-500">{{ max(0, 10 - (int)$user->positive_review_count) }} more positive reviews to be recommendable</span>
+                    @endif
+                    @if($user->hasVerifiedBadge())
+                        <span class="badge bg-blue-100 text-blue-700"><x-icon name="check-circle" class="w-4 h-4 inline" /> Verified</span>
+                    @endif
+                </div>
+            </div>
         </div>
     </div>
 
@@ -85,4 +110,7 @@
         </div>
     </div>
 </div>
+
+{{-- Profile reviews (received from other users) --}}
+@include('partials.reviews', ['reviewType' => 'profile', 'reviewTarget' => $user, 'reviews' => $reviews, 'myReview' => null])
 @endsection

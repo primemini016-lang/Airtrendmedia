@@ -14,9 +14,11 @@ class DatabaseSeeder extends Seeder
             AppSettingSeeder::class,
             CategorySeeder::class,
             SetupSeeder::class,
+            DemoDataSeeder::class,
         ]);
 
-        // NOTE: No demo admin or user is created by the seeder.
+        // NOTE: No demo admin or user is created by the core seeders.
         // The first admin account is created securely during the web installer.
+        // DemoDataSeeder creates 10 demo users with sample content for testing.
     }
 }

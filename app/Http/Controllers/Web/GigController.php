@@ -68,13 +68,19 @@ class GigController extends Controller
         $gig->load('user:id,username,name,image', 'category', 'orders');
         $gig->increment('views');
 
+        $reviews = $gig->approvedReviews()->with('user:id,username,name,image')->paginate(10);
+        $myReview = null;
+        if (auth('web')->check()) {
+            $myReview = $gig->reviews()->where('user_id', auth('web')->id())->first();
+        }
+
         $related = Gig::with('user:id,username,name,image')
             ->where('status', 'active')
             ->where('id', '!=', $gig->id)
             ->when($gig->category_id, fn ($q) => $q->where('category_id', $gig->category_id))
             ->latest()->limit(4)->get();
 
-        return view('public.gigs-show', compact('gig', 'related'));
+        return view('public.gigs-show', compact('gig', 'related', 'reviews', 'myReview'));
     }
 
     /* =========================================================

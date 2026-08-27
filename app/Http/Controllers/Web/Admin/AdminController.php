@@ -16,14 +16,12 @@ use App\Models\Faq;
 use App\Models\Gig;
 use App\Models\MarketplaceListing;
 use App\Models\Message;
-use App\Models\MonetizationEligibility;
-use App\Models\MonetizationDisableLog;
+use App\Models\User;
 use App\Models\SiteSetting;
 use App\Models\Task;
 use App\Models\TaskCategory;
 use App\Models\TaskProof;
 use App\Models\Transaction;
-use App\Models\User;
 use App\Models\Withdrawal;
 use App\Models\WithdrawalMethod;
 use App\Services\ActivationService;
@@ -1566,80 +1564,6 @@ class AdminController extends Controller
     |===================================================================== */
 
     /**
-     * Admin: monetization management — view all monetized users + disable/enable.
-     */
-    public function monetizationManagement(Request $request)
-    {
-        $query = MonetizationEligibility::with('user:id,username,name,email,image,followers_count,monetization_enabled')
-            ->latest();
-
-        if ($status = $request->get('status')) {
-            if ($status === 'enabled') {
-                $query->where('is_eligible', true)->whereHas('user', fn($q) => $q->where('monetization_enabled', true));
-            } elseif ($status === 'disabled') {
-                $query->whereHas('user', fn($q) => $q->whereNotNull('monetization_disabled_reason'));
-            } elseif ($status === 'eligible') {
-                $query->where('is_eligible', true);
-            }
-        }
-
-        $eligibilities = $query->paginate(20);
-        $disableLogs = MonetizationDisableLog::with('user:id,username,name', 'admin:id,name')->latest()->limit(20)->get();
-
-        return view('admin.monetization-management', compact('eligibilities', 'disableLogs'));
-    }
-
-    /**
-     * Admin: disable monetization for a user with a reason.
-     */
-    public function monetizationDisable(Request $request, User $user)
-    {
-        $validated = $request->validate([
-            'reason' => ['required', 'string', 'max:500'],
-        ]);
-
-        $admin = auth('admin')->user();
-
-        $user->update([
-            'monetization_enabled'        => false,
-            'monetization_disabled_reason'=> $validated['reason'],
-            'monetization_disabled_at'    => now(),
-        ]);
-
-        MonetizationDisableLog::create([
-            'user_id'     => $user->id,
-            'admin_id'    => $admin?->id,
-            'reason'      => $validated['reason'],
-            'action'      => 'disabled',
-        ]);
-
-        return back()->with('success', "Monetization disabled for {$user->username}. Reason recorded.");
-    }
-
-    /**
-     * Admin: re-enable monetization for a user.
-     */
-    public function monetizationEnable(Request $request, User $user)
-    {
-        $admin = auth('admin')->user();
-
-        $user->update([
-            'monetization_enabled'        => true,
-            'monetization_disabled_reason'=> null,
-            'monetization_disabled_at'    => null,
-        ]);
-
-        MonetizationDisableLog::create([
-            'user_id'  => $user->id,
-            'admin_id' => $admin?->id,
-            'reason'   => 'Re-enabled by admin',
-            'action'   => 'enabled',
-        ]);
-
-        return back()->with('success', "Monetization re-enabled for {$user->username}.");
-    }
-
-    /**
      * Admin: anti-cheat flags dashboard.
      */
     public function antiCheat(Request $request)
@@ -1775,5 +1699,67 @@ class AdminController extends Controller
         ];
 
         File::put(public_path('manifest.json'), json_encode($manifest, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+    }
+
+    /**
+     * Admin: Banner & Popup settings page.
+     * Manages header banner, footer banner, popup banner (with description text),
+     * and PWA install popup banner — all admin-controlled.
+     */
+    public function bannerSettings()
+    {
+        $s = $this->settings->all();
+        return view('admin.banner-settings', compact('s'));
+    }
+
+    /**
+     * Admin: Save banner & popup settings.
+     */
+    public function bannerSettingsSave(Request $request)
+    {
+        $validated = $request->validate([
+            'header_banner_enabled'      => ['nullable', 'boolean'],
+            'header_banner_text'         => ['nullable', 'string', 'max:500'],
+            'header_banner_bg_color'     => ['nullable', 'string', 'max:20'],
+            'header_banner_text_color'   => ['nullable', 'string', 'max:20'],
+            'header_banner_link'         => ['nullable', 'string', 'max:500'],
+            'footer_banner_enabled'      => ['nullable', 'boolean'],
+            'footer_banner_text'         => ['nullable', 'string', 'max:500'],
+            'footer_banner_bg_color'     => ['nullable', 'string', 'max:20'],
+            'footer_banner_text_color'   => ['nullable', 'string', 'max:20'],
+            'footer_banner_link'         => ['nullable', 'string', 'max:500'],
+            'popup_banner_enabled'       => ['nullable', 'boolean'],
+            'popup_banner_title'         => ['nullable', 'string', 'max:200'],
+            'popup_banner_description'   => ['nullable', 'string', 'max:2000'],
+            'popup_banner_image'         => ['nullable', 'string', 'max:500'],
+            'popup_banner_link'          => ['nullable', 'string', 'max:500'],
+            'popup_banner_link_text'     => ['nullable', 'string', 'max:100'],
+            'popup_banner_bg_color'      => ['nullable', 'string', 'max:20'],
+            'popup_banner_delay_seconds' => ['nullable', 'integer', 'min:0', 'max:3600'],
+            'popup_banner_show_again_hours' => ['nullable', 'integer', 'min:0', 'max:720'],
+            'pwa_popup_enabled'          => ['nullable', 'boolean'],
+            'pwa_popup_title'            => ['nullable', 'string', 'max:200'],
+            'pwa_popup_description'      => ['nullable', 'string', 'max:2000'],
+            'pwa_popup_install_btn_text' => ['nullable', 'string', 'max:100'],
+            'pwa_popup_dismiss_btn_text' => ['nullable', 'string', 'max:100'],
+        ]);
+
+        $s = $this->settings->all();
+        foreach ($validated as $key => $value) {
+            if ($value !== null) {
+                $s->$key = $value;
+            }
+        }
+        // Handle booleans
+        $boolFields = [
+            'header_banner_enabled', 'footer_banner_enabled', 'popup_banner_enabled', 'pwa_popup_enabled',
+        ];
+        foreach ($boolFields as $field) {
+            $s->$field = $request->boolean($field);
+        }
+        $s->save();
+        $this->settings->flush();
+
+        return back()->with('success', 'Banner & Popup settings saved successfully.');
     }
 }

@@ -252,6 +252,86 @@ class IconRendererService
     ];
 
     /**
+     * Brand colors keyed by icon/platform name (hex, no #).
+     * Used by render3D() to give each social-media icon its real brand color
+     * with a 3D gradient + drop-shadow effect.
+     */
+    protected array $brandColors = [
+        'facebook'      => '1877F2', 'facebook-like' => '1877F2', 'facebook-page' => '1877F2',
+        'facebook-follow' => '1877F2', 'facebook-react' => '1877F2', 'facebook-share' => '1877F2',
+        'facebook-group' => '1877F2', 'facebook-view' => '1877F2', 'facebook-star' => '1877F2',
+        'twitter'       => '1DA1F2', 'twitter-retweet' => '1DA1F2', 'twitter-follow' => '1DA1F2',
+        'twitter-like'  => '1DA1F2', 'twitter-comment' => '1DA1F2',
+        'x-follow'      => '000000', 'x-like' => '000000', 'x-retweet' => '000000',
+        'instagram'     => 'E4405F', 'instagram-followers' => 'E4405F', 'instagram-follow' => 'E4405F',
+        'instagram-like' => 'E4405F', 'instagram-comment' => 'E4405F', 'instagram-story' => 'E4405F',
+        'instagram-reel' => 'E4405F', 'instagram-save' => 'E4405F',
+        'youtube'       => 'FF0000', 'youtube-subscribers' => 'FF0000', 'youtube-watch' => 'FF0000',
+        'youtube-sub'   => 'FF0000', 'youtube-like' => 'FF0000', 'youtube-view' => 'FF0000', 'youtube-comment' => 'FF0000',
+        'tiktok'        => '000000', 'tiktok-follow' => '000000', 'tiktok-like' => '000000',
+        'tiktok-view'   => '000000', 'tiktok-comment' => '000000', 'tiktok-share' => '000000',
+        'linkedin'      => '0A66C2', 'linkedin-connect' => '0A66C2', 'linkedin-follow' => '0A66C2', 'linkedin-like' => '0A66C2',
+        'telegram'      => '26A5E4', 'telegram-join' => '26A5E4', 'telegram-view' => '26A5E4',
+        'whatsapp'      => '25D366', 'whatsapp-message' => '25D366', 'whatsapp-join' => '25D366',
+        'pinterest'     => 'E60023', 'pinterest-follow' => 'E60023', 'pinterest-pin' => 'E60023',
+        'snapchat'      => 'FFFC00', 'snapchat-follow' => 'FFFC00', 'snapchat-view' => 'FFFC00',
+        'reddit'        => 'FF4500', 'reddit-upvote' => 'FF4500', 'reddit-sub' => 'FF4500',
+        'discord'       => '5865F2', 'discord-join' => '5865F2',
+        'twitch'        => '9146FF', 'twitch-follow' => '9146FF', 'twitch-view' => '9146FF',
+        'spotify'       => '1DB954', 'spotify-play' => '1DB954', 'spotify-follow' => '1DB954',
+        'soundcloud'    => 'FF5500', 'soundcloud-play' => 'FF5500', 'soundcloud-follow' => 'FF5500',
+        'website'       => '3B82F6', 'website-visit' => '3B82F6',
+        'google'        => '4285F4', 'google-review' => '4285F4', 'google-play-install' => '00C300',
+        'app-install'   => '0D96F6', 'app-review' => '0D96F6', 'appstore-install' => '0D96F6',
+        'survey'        => '8B5CF6', 'review' => 'F59E0B', 'signup' => '10B981', 'subscribe' => 'EF4444',
+        'comment'       => '6366F1', 'share' => '14B8A6', 'follow' => 'EC4899', 'like' => 'F43F5E',
+        'view'          => '3B82F6', 'vote' => '8B5CF6', 'writing' => '6366F1', 'design' => 'A855F7',
+        'marketing'     => 'F97316', 'music' => '9333EA', 'video' => 'EF4444', 'tech' => '06B6D4',
+        'briefcase'     => '475569', 'star' => 'F59E0B', 'heart' => 'EF4444', 'globe' => '3B82F6',
+        'quora'         => 'B92B27', 'quora-upvote' => 'B92B27', 'quora-follow' => 'B92B27',
+        'medium'        => '000000', 'medium-clap' => '000000', 'medium-follow' => '000000',
+        'vk'            => '0077FF', 'vk-follow' => '0077FF', 'vk-like' => '0077FF',
+        'threads'       => '000000', 'threads-follow' => '000000', 'threads-like' => '000000',
+        'tumblr'        => '36465D', 'tumblr-follow' => '36465D', 'tumblr-reblog' => '36465D',
+        'vimeo'         => '1AB7EA', 'vimeo-follow' => '1AB7EA', 'vimeo-view' => '1AB7EA',
+        'dailymotion'   => '0066DC', 'dailymotion-follow' => '0066DC', 'dailymotion-view' => '0066DC',
+        'mixcloud'      => '5000FF', 'mixcloud-follow' => '5000FF', 'mixcloud-play' => '5000FF',
+        'patreon'       => 'FF424D', 'patreon-follow' => 'FF424D', 'patreon-pledge' => 'FF424D',
+        'kick'          => '53FC18', 'kick-follow' => '53FC18', 'kick-view' => '53FC18',
+        'rumble'        => '85C742', 'rumble-follow' => '85C742', 'rumble-view' => '85C742',
+        'clubhouse'     => '651FFF', 'clubhouse-follow' => '651FFF',
+        'signal'        => '3A76F0', 'signal-follow' => '3A76F0',
+        'viber'         => '7360F2', 'viber-follow' => '7360F2', 'viber-message' => '7360F2',
+        'line'          => '06C755', 'line-follow' => '06C755', 'line-message' => '06C755',
+        'skype'         => '00AFF0', 'skype-follow' => '00AFF0',
+        'truth'         => 'E8112D', 'truth-follow' => 'E8112D', 'truth-like' => 'E8112D',
+        'mastodon'      => '6364FF', 'mastodon-follow' => '6364FF', 'mastodon-boost' => '6364FF',
+        'weibo'         => 'E6162D', 'weibo-follow' => 'E6162D', 'weibo-repost' => 'E6162D',
+        'wechat'        => '07C160', 'wechat-follow' => '07C160',
+        'likee'         => 'FFDF00', 'likee-follow' => 'FFDF00', 'likee-view' => 'FFDF00',
+        'sharechat'     => 'FE5722', 'sharechat-follow' => 'FE5722',
+        'kuaishou'      => 'FF4906', 'kuaishou-follow' => 'FF4906', 'kuaishou-view' => 'FF4906',
+        'onlyfans'      => '00AFF0', 'onlyfans-follow' => '00AFF0', 'onlyfans-subscribe' => '00AFF0',
+        'trovo'         => '21BCF4', 'trovo-follow' => '21BCF4', 'trovo-view' => '21BCF4',
+        'xing'          => '006567', 'xing-follow' => '006567',
+        'meetup'        => 'ED1C40', 'meetup-follow' => 'ED1C40',
+        'goodreads'     => '372213', 'goodreads-follow' => '372213', 'goodreads-review' => '372213',
+        'untappd'       => 'FFC000', 'untappd-follow' => 'FFC000',
+        'substack'      => 'FF6719', 'substack-follow' => 'FF6719', 'substack-subscribe' => 'FF6719',
+        'behance'       => '1769FF', 'behance-follow' => '1769FF', 'behance-like' => '1769FF',
+        'dribbble'      => 'EA4C89', 'dribbble-follow' => 'EA4C89', 'dribbble-like' => 'EA4C89',
+        'flickr'        => '0063DC', 'flickr-follow' => '0063DC',
+        'github'        => '181717', 'github-follow' => '181717', 'github-star' => '181717',
+        'trustpilot'    => '00B67A', 'trustpilot-review' => '00B67A',
+        'social'        => '3B82F6', 'social-media' => '3B82F6',
+        'edit'          => '64748B', 'palette' => 'A855F7', 'code' => '1E293B', 'trending' => '10B981',
+        'clipboard'     => '6366F1', 'phone' => '06B6D4', 'photo' => '14B8A6', 'image' => '14B8A6',
+        'bug'           => 'EF4444', 'table' => '64748B', 'link' => '3B82F6', 'folder' => 'F59E0B',
+        'mail'          => 'EF4444', 'search' => '64748B', 'chat' => '6366F1', 'user' => '10B981',
+        'mic'           => '9333EA',
+    ];
+
+    /**
      * Render an inline SVG for the given icon key.
      *
      * @param  object|string|null  $icon
@@ -270,5 +350,117 @@ class IconRendererService
         return '<svg class="w-5 h-5 inline-block" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">'
             . $path
             . '</svg>';
+    }
+
+    /**
+     * Render a 3D, brand-colored circular badge icon.
+     * Produces a glossy 3D sphere/badge with the platform's real brand color,
+     * a radial-gradient highlight, inner shadow and drop shadow for depth.
+     *
+     * @param  object|string|null  $icon
+     * @param  int                  $size   pixel size (default 48)
+     * @return string
+     */
+    public function render3D($icon, int $size = 48): string
+    {
+        $key = $icon;
+        if (is_object($key) && isset($key->icon)) {
+            $key = $key->icon;
+        }
+        // Support passing a color override via the model (e.g. $cat->color).
+        $overrideColor = null;
+        if (is_object($icon) && isset($icon->color) && $icon->color) {
+            $overrideColor = ltrim($icon->color, '#');
+        }
+        $key = is_string($key) ? strtolower(trim($key)) : 'briefcase';
+
+        $path = $this->paths[$key] ?? ($this->paths['briefcase'] ?? $this->paths['default']);
+        $color = $overrideColor ?: ($this->brandColors[$key] ?? '475569');
+
+        // Lighten color for the gradient top highlight.
+        $light = $this->lighten($color, 40);
+        $dark  = $this->darken($color, 25);
+
+        $uid = 'g3d' . substr(md5($key . $size . $color), 0, 8);
+
+        $r = $size / 2;
+        // Inner SVG icon sized ~55% of badge, centered.
+        $iconSize = (int) round($size * 0.55);
+        $iconOffset = ($size - $iconSize) / 2;
+
+        $svg = '<svg width="' . $size . '" height="' . $size . '" viewBox="0 0 ' . $size . ' ' . $size . '" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle">'
+            . '<defs>'
+            . '<radialGradient id="' . $uid . '" cx="35%" cy="28%" r="80%">'
+            . '<stop offset="0%" stop-color="#' . $light . '"/>'
+            . '<stop offset="55%" stop-color="#' . $color . '"/>'
+            . '<stop offset="100%" stop-color="#' . $dark . '"/>'
+            . '</radialGradient>'
+            . '<radialGradient id="' . $uid . 'hl" cx="40%" cy="22%" r="45%">'
+            . '<stop offset="0%" stop-color="#ffffff" stop-opacity="0.75"/>'
+            . '<stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>'
+            . '</radialGradient>'
+            . '<filter id="' . $uid . 'sh" x="-30%" y="-30%" width="160%" height="160%">'
+            . '<feDropShadow dx="0" dy="' . round($size * 0.06) . '" stdDeviation="' . round($size * 0.05) . '" flood-color="#000000" flood-opacity="0.35"/>'
+            . '</filter>'
+            . '<clipPath id="' . $uid . 'clip"><circle cx="' . $r . '" cy="' . $r . '" r="' . $r . '"/></clipPath>'
+            . '</defs>'
+            // 3D badge sphere
+            . '<g filter="url(#' . $uid . 'sh)">'
+            . '<circle cx="' . $r . '" cy="' . $r . '" r="' . ($r - 1) . '" fill="url(#' . $uid . ')"/>'
+            // glossy highlight
+            . '<circle cx="' . $r . '" cy="' . $r . '" r="' . ($r - 1) . '" fill="url(#' . $uid . 'hl)"/>'
+            // bottom inner shadow for depth
+            . '<circle cx="' . $r . '" cy="' . ($r + $r * 0.5) . '" r="' . $r . '" fill="#000000" opacity="0.18" clip-path="url(#' . $uid . 'clip)"/>'
+            . '<circle cx="' . $r . '" cy="' . $r . '" r="' . ($r - 1) . '" fill="none" stroke="#ffffff" stroke-opacity="0.25" stroke-width="1"/>'
+            . '</g>'
+            // the platform icon glyph in white, centered
+            . '<g transform="translate(' . $iconOffset . ',' . $iconOffset . ') scale(' . ($iconSize / 24) . ')">'
+            . '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">'
+            . $path
+            . '</svg>'
+            . '</g>'
+            . '</svg>';
+
+        return $svg;
+    }
+
+    /**
+     * Lighten a hex color by a percentage (0-100).
+     */
+    protected function lighten(string $hex, int $percent): string
+    {
+        $hex = ltrim($hex, '#');
+        if (strlen($hex) === 3) {
+            $hex = $hex[0] . $hex[0] . $hex[1] . $hex[1] . $hex[2] . $hex[2];
+        }
+        $r = hexdec(substr($hex, 0, 2));
+        $g = hexdec(substr($hex, 2, 2));
+        $b = hexdec(substr($hex, 4, 2));
+        $r = (int) round($r + (255 - $r) * ($percent / 100));
+        $g = (int) round($g + (255 - $g) * ($percent / 100));
+        $b = (int) round($b + (255 - $b) * ($percent / 100));
+        return str_pad(dechex(min($r, 255)), 2, '0', STR_PAD_LEFT)
+             . str_pad(dechex(min($g, 255)), 2, '0', STR_PAD_LEFT)
+             . str_pad(dechex(min($b, 255)), 2, '0', STR_PAD_LEFT);
+    }
+
+    /**
+     * Darken a hex color by a percentage (0-100).
+     */
+    protected function darken(string $hex, int $percent): string
+    {
+        $hex = ltrim($hex, '#');
+        if (strlen($hex) === 3) {
+            $hex = $hex[0] . $hex[0] . $hex[1] . $hex[1] . $hex[2] . $hex[2];
+        }
+        $r = hexdec(substr($hex, 0, 2));
+        $g = hexdec(substr($hex, 2, 2));
+        $b = hexdec(substr($hex, 4, 2));
+        $r = (int) round($r * (1 - $percent / 100));
+        $g = (int) round($g * (1 - $percent / 100));
+        $b = (int) round($b * (1 - $percent / 100));
+        return str_pad(dechex(max($r, 0)), 2, '0', STR_PAD_LEFT)
+             . str_pad(dechex(max($g, 0)), 2, '0', STR_PAD_LEFT)
+             . str_pad(dechex(max($b, 0)), 2, '0', STR_PAD_LEFT);
     }
 }

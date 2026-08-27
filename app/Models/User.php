@@ -46,6 +46,8 @@ class User extends Authenticatable implements JWTSubject
         'account_type', 'kyc_status', 'kyc_approved_at',
         'verification_status', 'verification_valid_until',
         'registration_ip', 'monetization_disabled_reason', 'monetization_disabled_at',
+        // 5-star review / recommendation system
+        'rating_avg', 'rating_count', 'positive_review_count', 'is_recommendable',
     ];
 
     protected $hidden = [
@@ -69,6 +71,10 @@ class User extends Authenticatable implements JWTSubject
             'kyc_approved_at'      => 'datetime',
             'verification_valid_until' => 'datetime',
             'monetization_disabled_at' => 'datetime',
+            'rating_avg'             => 'decimal:2',
+            'rating_count'           => 'integer',
+            'positive_review_count'  => 'integer',
+            'is_recommendable'       => 'boolean',
         ];
     }
 
@@ -104,11 +110,6 @@ class User extends Authenticatable implements JWTSubject
     public function verificationBadge()
     {
         return $this->hasOne(VerificationBadge::class)->latestOfMany();
-    }
-
-    public function stories()
-    {
-        return $this->hasMany(Story::class);
     }
 
     public function sponsoredAds()
@@ -248,64 +249,6 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(BlogRate::class);
     }
 
-    /* ---------- Social Relationships ---------- */
-    public function socialPosts()
-    {
-        return $this->hasMany(SocialPost::class);
-    }
-
-    public function socialComments()
-    {
-        return $this->hasMany(SocialComment::class);
-    }
-
-    public function socialLikes()
-    {
-        return $this->hasMany(SocialLike::class);
-    }
-
-    // Followers = people following me
-    public function followers()
-    {
-        return $this->hasMany(Follow::class, 'following_id');
-    }
-
-    // Following = people I follow
-    public function following()
-    {
-        return $this->hasMany(Follow::class, 'follower_id');
-    }
-
-    public function isFollowing(User $other): bool
-    {
-        return $this->following()->where('following_id', $other->id)->exists();
-    }
-
-    public function isFollowedBy(User $other): bool
-    {
-        return $this->followers()->where('follower_id', $other->id)->exists();
-    }
-
-    public function socialPages()
-    {
-        return $this->hasMany(SocialPage::class, 'owner_id');
-    }
-
-    public function pageMemberships()
-    {
-        return $this->hasMany(SocialPageMember::class);
-    }
-
-    public function socialGroups()
-    {
-        return $this->hasMany(SocialGroup::class, 'owner_id');
-    }
-
-    public function groupMemberships()
-    {
-        return $this->hasMany(SocialGroupMember::class);
-    }
-
     /* ---------- Chat Relationships ---------- */
     public function conversations()
     {
@@ -318,37 +261,6 @@ class User extends Authenticatable implements JWTSubject
     public function chatMessages()
     {
         return $this->hasMany(ChatMessage::class, 'sender_id');
-    }
-
-    /* ---------- Monetization Relationships ---------- */
-    public function monetizationEligibility()
-    {
-        return $this->hasOne(MonetizationEligibility::class);
-    }
-
-    public function monetizationEarnings()
-    {
-        return $this->hasMany(MonetizationEarning::class);
-    }
-
-    public function contentSubscriptions()
-    {
-        return $this->hasMany(ContentSubscription::class, 'subscriber_id');
-    }
-
-    public function subscribers()
-    {
-        return $this->hasMany(ContentSubscription::class, 'creator_id')->where('status', 'active');
-    }
-
-    public function starsReceived()
-    {
-        return $this->hasMany(ContentStar::class, 'receiver_id');
-    }
-
-    public function starsSent()
-    {
-        return $this->hasMany(ContentStar::class, 'sender_id');
     }
 
     /* ---------- Helpers ---------- */
@@ -398,11 +310,11 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
-     * Full profile URL for the social system.
+     * Full profile URL (user dashboard profile, not the removed social profile).
      */
     public function profileUrl(): string
     {
-        return route('social.profile', $this->username);
+        return route('user.profile');
     }
 
     /**
@@ -419,6 +331,76 @@ class User extends Authenticatable implements JWTSubject
     public function creditedReferralsCount(): int
     {
         return $this->affiliateReferrals()->where('status', 'paid')->count();
+    }
+
+    /* ---------- 5-star profile review / recommendation ---------- */
+
+    /**
+     * Reviews written ABOUT this user (profile reviews by other users).
+     */
+    public function reviews()
+    {
+        return $this->morphMany(Review::class, 'reviewable');
+    }
+
+    public function approvedReviews()
+    {
+        return $this->reviews()->where('is_approved', true)->latest();
+    }
+
+    /**
+     * Reviews written BY this user.
+     */
+    public function writtenReviews()
+    {
+        return $this->hasMany(Review::class, 'user_id');
+    }
+
+    /**
+     * Cached average star rating (0..5). Falls back to a live query if the
+     * cached column is zero but reviews exist.
+     */
+    public function getStarsAttribute(): float
+    {
+        if ($this->rating_avg > 0) {
+            return (float) $this->rating_avg;
+        }
+        return (float) $this->approvedReviews()->avg('rating') ?: 0;
+    }
+
+    /**
+     * Cached review count.
+     */
+    public function getReviewCountAttribute(): int
+    {
+        if ($this->rating_count > 0) {
+            return (int) $this->rating_count;
+        }
+        return (int) $this->approvedReviews()->count();
+    }
+
+    /**
+     * A profile is "recommendable" once it has >= 10 positive (4-5 star) reviews.
+     */
+    public function isRecommendable(): bool
+    {
+        return (bool) $this->is_recommendable;
+    }
+
+    /**
+     * Recompute + persist the cached rating columns for this profile.
+     */
+    public function recomputeRating(): void
+    {
+        Review::recomputeUser($this->id);
+        $this->refresh();
+    }
+
+    /* ---------- Verification badge ---------- */
+
+    public function hasVerifiedBadge(): bool
+    {
+        return $this->verificationBadge()->exists();
     }
 
     public function affiliateEarnings(): string

@@ -69,6 +69,7 @@
     </script>
 </head>
 <body class="min-h-screen flex flex-col bg-white dark:bg-slate-900 transition-colors">
+    @include('partials.banners')
     {{-- PWA service worker registration --}}
     @php $pwaEnabled = \App\Models\SiteSetting::get('pwa_enabled', true); @endphp
     @if($pwaEnabled)
@@ -177,7 +178,7 @@
                     <li><a href="{{ route('register') }}" class="hover:text-white">Become a Worker</a></li>
                     <li><a href="{{ route('affiliate.info') }}" class="hover:text-white">Affiliate Program</a></li>
                     <li><a href="{{ route('blog.index') }}" class="hover:text-white">Blog</a></li>
-                    <li><a href="{{ route('social.feed') }}" class="hover:text-white">Community Feed</a></li>
+                    <li><a href="{{ route('ptc.index') }}" class="hover:text-white">PTC Ads</a></li>
                 </ul>
             </div>
             <div>

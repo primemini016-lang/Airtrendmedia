@@ -31,4 +31,39 @@ class MarketplaceListing extends Model
     {
         return $this->hasMany(MarketplaceInquiry::class, 'listing_id');
     }
+
+    public function reviews()
+    {
+        return $this->morphMany(Review::class, 'reviewable');
+    }
+
+    public function approvedReviews()
+    {
+        return $this->reviews()->where('is_approved', true)->latest();
+    }
+
+    public function comments()
+    {
+        return $this->morphMany(Comment::class, 'commentable')->whereNull('parent_id')->latest();
+    }
+
+    public function getRatingAvgAttribute(): float
+    {
+        return (float) $this->approvedReviews()->avg('rating') ?: 0;
+    }
+
+    public function getRatingCountAttribute(): int
+    {
+        return (int) $this->approvedReviews()->count();
+    }
+
+    public function getReviewCountAttribute(): int
+    {
+        return $this->rating_count;
+    }
+
+    public function getCommentCountAttribute(): int
+    {
+        return (int) $this->comments()->count();
+    }
 }
