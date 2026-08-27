@@ -1,0 +1,39 @@
+# ============================================================================
+# Airtrendmedia — Root .htaccess for shared hosting (cPanel / public_html)
+# ============================================================================
+# If your domain's document root points to THIS folder (the project root)
+# instead of the /public subfolder, this file rewrites all traffic into
+# /public/index.php so Laravel boots correctly.
+#
+# RECOMMENDED: set your domain document root to /public instead of using
+# this file. Use this only when you cannot change the document root.
+# ============================================================================
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Redirect everything to the public folder
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteRule ^(.*)$ public/$1 [L]
+
+    # Send all requests through the public front controller
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ public/index.php [L]
+</IfModule>
+
+# Protect sensitive files from direct web access
+<FilesMatch "^\.env">
+    Require all denied
+</FilesMatch>
+<FilesMatch "\.(env|lock|md|yml|yaml)$">
+    Require all denied
+</FilesMatch>
+
+# Protect sensitive directories
+<IfModule mod_rewrite.c>
+    RewriteRule ^(app|bootstrap|config|database|resources|routes|storage|tests|vendor)/.*$ - [F,L]
+</IfModule>
+
+# Disable directory listing
+Options -Indexes

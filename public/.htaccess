@@ -1,0 +1,46 @@
+# Apache configuration for shared/cPanel hosting
+<IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+        Options -MultiViews -Indexes
+    </IfModule>
+
+    RewriteEngine On
+
+    # Handle Authorization Header
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # Redirect Trailing Slashes If Not A Folder...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_URI} (.+)/$
+    RewriteRule ^ %1 [L,R=301]
+
+    # Send Requests To Front Controller...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ index.php [L]
+</IfModule>
+
+# Security headers
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+</IfModule>
+
+# Protect sensitive files (but allow manifest.json and sw.js for PWA)
+<FilesMatch "^(?!manifest\.json$|sw\.js$).*\.(env|lock|md|yml|yaml|gitignore)$">
+    Require all denied
+</FilesMatch>
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
+
+# Disable directory listing
+Options -Indexes
+
+# Upload/memory limits are intentionally not set with php_value here.
+# Some shared hosts disable PHP_INI_PERDIR directives and return HTTP 500.
+# The application validates upload sizes in its request rules instead.
