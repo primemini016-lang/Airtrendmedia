@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en" class="">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    @php $favSetting = app(\App\Services\SettingService::class)->all(); @endphp
+    @if(!empty($favSetting->favicon))<link rel="icon" href="{{ storage_asset($favSetting->favicon) }}">@endif
+    <title>@yield('title', 'Dashboard') — {{ $siteName ?? 'Airtrendmedia' }}</title>
+    <script>
+        if (localStorage.getItem('user-theme') === 'dark') {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>tailwind.config = { darkMode: 'class' }</script>
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    @php
+        $customCss = \App\Models\SiteSetting::get('custom_css', '');
+        $headerHtml = \App\Models\SiteSetting::get('header_html', '');
+        $bodyTopHtml = \App\Models\SiteSetting::get('body_top_html', '');
+        $bodyBottomHtml = \App\Models\SiteSetting::get('body_bottom_html', '');
+        $footerHtml = \App\Models\SiteSetting::get('footer_html', '');
+    @endphp
+    @if($customCss)<style>{!! site_injected_html($customCss) !!}</style>@endif
+    @if($headerHtml){!! site_injected_html($headerHtml) !!}@endif
+    @stack('styles')
+</head>
+<body class="min-h-screen bg-slate-100 dark:bg-slate-900 transition-colors">
+    @include('partials.banners')
+    @php
+        $settings = app(\App\Services\SettingService::class)->all();
+        $siteName = $settings->name ?? 'Airtrendmedia';
+        $user = auth('web')->user();  // CRITICAL: use 'web' guard, not default JWT guard
+        $logoUrl = null;
+        if (!empty($settings->logo)) { $logoUrl = storage_asset($settings->logo); }
+    @endphp
+
+    @if($bodyTopHtml){!! site_injected_html($bodyTopHtml) !!}@endif
+
+    <div class="flex min-h-screen">
+        <!-- Sidebar backdrop (mobile) -->
+        <div id="sidebar-backdrop" class="fixed inset-0 bg-black/40 z-40 lg:hidden hidden" onclick="document.getElementById('sidebar').classList.add('-translate-x-full');this.classList.add('hidden')"></div>
+
+        <!-- Sidebar -->
+        <aside id="sidebar" class="w-64 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 flex flex-col fixed lg:static inset-y-0 left-0 z-50 -translate-x-full lg:translate-x-0 transition-transform">
+            <div class="h-16 flex items-center gap-2 px-5 border-b border-slate-200 dark:border-slate-700">
+                @if($logoUrl)<img src="{{ $logoUrl }}" class="h-8 w-auto" alt="{{ $siteName }}">@else<div class="w-9 h-9 rounded-lg auth-gradient flex items-center justify-center text-white font-bold">{{ strtoupper(substr($siteName ?? 'M',0,1)) }}</div>@endif
+                <span class="font-bold text-slate-800 dark:text-slate-100">{{ $siteName }}</span>
+            </div>
+            <nav class="flex-1 overflow-y-auto p-3 space-y-1">
+                <a href="{{ route('user.dashboard') }}" class="nav-link {{ request()->routeIs('user.dashboard') ? 'active' : '' }}"><span><x-icon name="dashboard" class="w-4 h-4" /></span> Dashboard</a>
+                <a href="{{ route('user.tasks') }}" class="nav-link {{ request()->routeIs('user.tasks') || request()->routeIs('user.task') ? 'active' : '' }}"><span><x-icon name="browse" class="w-4 h-4" /></span> Browse Tasks</a>
+                <a href="{{ route('user.bookings') }}" class="nav-link {{ request()->routeIs('user.bookings') ? 'active' : '' }}"><span><x-icon name="bookings" class="w-4 h-4" /></span> My Bookings</a>
+                <a href="{{ route('user.offers') }}" class="nav-link {{ request()->routeIs('user.offers') || request()->routeIs('user.task.proofs') || request()->routeIs('user.task.create') ? 'active' : '' }}"><span><x-icon name="briefcase" class="w-4 h-4" /></span> My Offers</a>
+                <a href="{{ route('user.gigs.index') }}" class="nav-link {{ request()->routeIs('user.gigs.*') ? 'active' : '' }}"><span><x-icon name="gigs" class="w-4 h-4" /></span> My Gigs</a>
+                <a href="{{ route('user.marketplace.index') }}" class="nav-link {{ request()->routeIs('user.marketplace.*') ? 'active' : '' }}"><span><x-icon name="marketplace" class="w-4 h-4" /></span> My Listings</a>
+                <a href="{{ route('user.notifications') }}" class="nav-link {{ request()->routeIs('user.notifications') ? 'active' : '' }}"><span><x-icon name="notifications" class="w-4 h-4" /></span> Notifications</a>
+                <a href="{{ route('user.wallet') }}" class="nav-link {{ request()->routeIs('user.wallet') ? 'active' : '' }}"><span><x-icon name="wallet" class="w-4 h-4" /></span> Wallet</a>
+                <a href="{{ route('user.withdraw') }}" class="nav-link {{ request()->routeIs('user.withdraw') ? 'active' : '' }}"><span><x-icon name="withdraw" class="w-4 h-4" /></span> Withdraw</a>
+                <a href="{{ route('user.transactions') }}" class="nav-link {{ request()->routeIs('user.transactions') ? 'active' : '' }}"><span><x-icon name="transactions" class="w-4 h-4" /></span> Transactions</a>
+                <a href="{{ route('user.affiliate') }}" class="nav-link {{ request()->routeIs('user.affiliate') ? 'active' : '' }}"><span><x-icon name="affiliate" class="w-4 h-4" /></span> Affiliate</a>
+                <a href="{{ route('user.messages') }}" class="nav-link relative {{ request()->routeIs('user.messages') ? 'active' : '' }}"><span><x-icon name="messages" class="w-4 h-4" /></span> Support <span id="support-badge" class="ml-auto bg-red-500 text-white text-[10px] font-bold rounded-full min-w-5 h-5 px-1 flex items-center justify-center hidden">0</span></a>
+                <a href="{{ route('user.profile') }}" class="nav-link {{ request()->routeIs('user.profile') ? 'active' : '' }}"><span><x-icon name="profile" class="w-4 h-4" /></span> Profile</a>
+
+                {{-- Community --}}
+                <div class="px-3 py-2 text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Community & Publishing</div>
+                <a href="{{ route('messenger.chat') }}" class="nav-link {{ request()->routeIs('messenger.*') ? 'active' : '' }}"><span><x-icon name="messenger" class="w-4 h-4" /></span> Messenger</a>
+                <a href="{{ route('blog.index') }}" class="nav-link {{ request()->routeIs('blog.*') ? 'active' : '' }}"><span><x-icon name="document-text" class="w-4 h-4" /></span> Blog</a>
+                <a href="{{ route('user.blog.index') }}" class="nav-link {{ request()->routeIs('user.blog.*') ? 'active' : '' }}"><span><x-icon name="blog" class="w-4 h-4" /></span> My Blog</a>
+                <div class="px-3 py-2 text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Identity & Ads</div>
+                <a href="{{ route('user.kyc') }}" class="nav-link {{ request()->routeIs('user.kyc') ? 'active' : '' }}"><span><x-icon name="admin" class="w-4 h-4" /></span> KYC Verification</a>
+                <a href="{{ route('user.verification') }}" class="nav-link {{ request()->routeIs('user.verification') ? 'active' : '' }}"><span><x-icon name="star" class="w-4 h-4" /></span> Blue Badge</a>
+                <a href="{{ route('user.account-type') }}" class="nav-link {{ request()->routeIs('user.account-type') ? 'active' : '' }}"><span><x-icon name="settings" class="w-4 h-4" /></span> Account Type</a>
+                <a href="{{ route('user.sponsored-ads') }}" class="nav-link {{ request()->routeIs('user.sponsored-ads') || request()->routeIs('user.sponsored-ads.stats') ? 'active' : '' }}"><span><x-icon name="ads" class="w-4 h-4" /></span> Sponsored Ads</a>
+            </nav>
+            <div class="p-3 border-t border-slate-200 dark:border-slate-700">
+                <div class="flex items-center gap-3 px-2 py-2 mb-2">
+                    @if($user && $user->image)<img src="{{ storage_asset($user->image) }}" class="w-9 h-9 rounded-full object-cover">@else<div class="w-9 h-9 rounded-full auth-gradient flex items-center justify-center text-white font-bold text-sm">{{ strtoupper(substr($user?->name ?? 'U',0,1)) }}</div>@endif
+                    <div class="min-w-0">
+                        <p class="text-sm font-semibold text-slate-800 dark:text-slate-100 truncate">{{ $user?->name }}</p>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 truncate">{{ money((float)($user?->balance ?? 0)) }}</p>
+                    </div>
+                </div>
+                <a href="{{ route('user.affiliate') }}" class="block text-xs text-center text-blue-600 dark:text-blue-400 hover:underline mb-2">Referral code: {{ $user?->referral_code }}</a>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button class="nav-link w-full text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30"><span><x-icon name="logout" class="w-4 h-4" /></span> Logout</button>
+                </form>
+            </div>
+        </aside>
+
+        <!-- Main -->
+        <div class="flex-1 flex flex-col min-w-0">
+            <!-- Topbar -->
+            <header class="h-16 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between px-4 sm:px-6 sticky top-0 z-30 transition-colors">
+                <div class="flex items-center gap-3">
+                    <button class="lg:hidden p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300" onclick="document.getElementById('sidebar').classList.add('open');document.getElementById('sidebar').classList.remove('-translate-x-full');document.getElementById('sidebar-backdrop').classList.remove('hidden')">
+                        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+                    </button>
+                    <h1 class="text-lg font-bold text-slate-800 dark:text-slate-100">@yield('heading', 'Dashboard')</h1>
+                </div>
+                <div class="flex items-center gap-3">
+                    @if(session('impersonate'))
+                        <a href="{{ route('stop-impersonating') }}" class="btn btn-danger text-xs"><x-icon name="x" class="w-3 h-3" /> Stop Impersonating</a>
+                    @endif
+                    <div class="hidden sm:block px-3 py-1.5 rounded-lg bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-semibold text-sm">Balance: {{ money((float)($user?->balance ?? 0)) }}</div>
+                    <!-- Messenger / Messages Icon -->
+                    <div class="relative">
+                        <a href="{{ route('messenger.chat') }}" class="relative p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300" title="Messages">
+                            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                            <span id="msg-badge" class="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center hidden">0</span>
+                        </a>
+                    </div>
+                    <!-- Notification Bell -->
+                    <div class="relative">
+                        <a href="{{ route('user.notifications') }}" class="relative p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300" title="Notifications">
+                            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                            <span id="notif-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center hidden">0</span>
+                        </a>
+                    </div>
+                    <!-- Theme Toggle -->
+                    <button id="theme-toggle" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300" title="Toggle theme">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" class="hidden dark:block"><circle cx="12" cy="12" r="5"/><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" class="block dark:hidden"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                    </button>
+                    @if($user && !$user->is_active)
+                    <a href="{{ route('user.activate') }}" class="btn btn-primary text-xs">Activate Account</a>
+                    @endif
+                </div>
+            </header>
+
+            <main class="flex-1 p-4 sm:p-6 max-w-7xl w-full mx-auto dark:text-slate-200">
+                @include('partials.alerts')
+                @yield('content')
+            </main>
+        </div>
+    </div>
+
+    @if($bodyBottomHtml){!! site_injected_html($bodyBottomHtml) !!}@endif
+    @if($footerHtml){!! site_injected_html($footerHtml) !!}@endif
+
+    <style>
+    .dark .card { background:#1e293b; border-color:#334155; }
+    .dark .input { background:#0f172a; border-color:#334155; color:#e2e8f0; }
+    .dark .text-slate-800 { color:#f1f5f9 !important; }
+    .dark .bg-white { background:#1e293b !important; }
+    .dark .border-slate-200 { border-color:#334155 !important; }
+    .ai-assist-btn{border:1px solid #2563eb;color:#2563eb;border-radius:999px;padding:.35rem .65rem;font-size:.75rem;font-weight:700;background:#fff;} .ai-assist-btn:disabled{opacity:.6;} .fb-online-dot{display:inline-block;width:8px;height:8px;border-radius:999px;background:#16a34a;box-shadow:0 0 0 2px rgba(22,163,74,.14);}
+
+    </style>
+
+    @push('scripts')
+    <script>
+    // Prevent blank/crashed image areas and improve image loading.
+    document.querySelectorAll('img:not([data-no-atm-fallback])').forEach(function(img){ img.loading=img.loading||'lazy'; img.addEventListener('error',function(){ this.style.display='none'; },{once:true}); });
+
+    // Generic instant image preview / upload feedback. Uses FileReader only; no network request.
+    document.addEventListener('change', function (event) {
+        var input = event.target.closest && event.target.closest('[data-image-upload]');
+        if (!input || !input.files || !input.files[0]) return;
+        var file = input.files[0];
+        var maxMb = parseFloat(input.getAttribute('data-image-max-mb') || '5') || 5;
+        var maxBytes = maxMb * 1024 * 1024;
+        if (file.size > maxBytes) {
+            var st = input.closest('form')?.querySelector('[data-image-upload-status]');
+            if (st) st.textContent = 'Image is too large. Please choose a smaller file.';
+            input.value = '';
+            return;
+        }
+        if (!file.type.startsWith('image/')) return;
+        var form = input.closest('form');
+        var img = form?.querySelector('[data-image-upload-preview]');
+        var wrap = form?.querySelector('[data-image-upload-preview-wrap]');
+        var status = form?.querySelector('[data-image-upload-status]');
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            if (img) img.src = e.target.result;
+            if (wrap) wrap.classList.remove('hidden');
+            if (status) status.textContent = 'Image ready. Saving securely…';
+        };
+        reader.readAsDataURL(file);
+        // Profile photo historically submits immediately; retain that one-touch behavior.
+        if (form?.hasAttribute('data-image-upload-form')) {
+            setTimeout(function(){ if(form) form.submit(); }, 80);
+        }
+    });
+
+    // AI assist for blog/gig/marketplace creation forms. The user reviews output before saving.
+    document.addEventListener('click', async function(e){
+        const btn=e.target.closest('.ai-assist-btn'); if(!btn)return;
+        const target=document.getElementById(btn.dataset.aiTarget); if(!target)return;
+        btn.disabled=true; const old=btn.textContent; btn.textContent='Writing…';
+        const context=Array.from(document.querySelectorAll('input[name=title],select[name=category_id],textarea[name=description],textarea[name=excerpt]')).map(x=>x.value).filter(Boolean).join('\n');
+        try{const r=await fetch('{{ route('user.ai.text') }}',{method:'POST',headers:{'Content-Type':'application/json','X-CSRF-TOKEN':'{{csrf_token()}}','Accept':'application/json'},body:JSON.stringify({prompt:'Create polished, accurate marketplace content for Airtrendmedia. Use no third-party brand names or trademarks. Context:\n'+context+'\nReturn only the requested draft.',max_tokens:3500})});const d=await r.json();if(d.text)target.value=d.text;else alert(d.error||'AI could not generate content.');}catch(err){alert('AI request failed. Please try again.');}finally{btn.disabled=false;btn.textContent=old;}
+    });
+
+    // Theme toggle
+    document.getElementById('theme-toggle')?.addEventListener('click', function() {
+        const isDark = document.documentElement.classList.toggle('dark');
+        localStorage.setItem('user-theme', isDark ? 'dark' : 'light');
+    });
+
+    // Message + notification badge polling
+    let __lastMsgCount = 0, __lastNotifCount = 0;
+    function atmPing(){ try{ const C=window.AudioContext||window.webkitAudioContext; if(!C)return; const c=new C(),o=c.createOscillator(),g=c.createGain(); o.frequency.value=880; g.gain.setValueAtTime(.0001,c.currentTime); g.gain.exponentialRampToValueAtTime(.05,c.currentTime+.01); g.gain.exponentialRampToValueAtTime(.0001,c.currentTime+.18); o.connect(g);g.connect(c.destination);o.start();o.stop(c.currentTime+.2);}catch(e){} }
+    function updateMsgCount() {
+        fetch('{{ route('user.messages.unread-count') }}', {headers:{'X-Requested-With':'XMLHttpRequest','Accept':'application/json'}}).then(r=>r.json()).then(data=>{const b=document.getElementById('msg-badge');if(!b)return;const n=Number(data.count||0);b.textContent=n>99?'99+':n;b.classList.toggle('hidden',n<=0);if(n>__lastMsgCount && __lastMsgCount>=0) atmPing();__lastMsgCount=n;}).catch(()=>{});
+    }
+    updateMsgCount(); setInterval(updateMsgCount,15000);
+    function updateSupportCount(){fetch('{{ route('user.support.unread-count') }}',{headers:{'X-Requested-With':'XMLHttpRequest','Accept':'application/json'}}).then(r=>r.json()).then(d=>{const b=document.getElementById('support-badge');if(!b)return;const n=Number(d.count||0);b.textContent=n>99?'99+':n;b.classList.toggle('hidden',n<=0);}).catch(()=>{});}
+    updateSupportCount();setInterval(updateSupportCount,15000);
+
+    // Notification count polling
+    function updateNotifCount() {
+        fetch('{{ route("user.notifications.unread-count") }}', { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(r => r.json())
+            .then(data => {
+                const badge = document.getElementById('notif-badge');
+                const n = Number(data.count || 0);
+                if (badge) { badge.textContent = n > 99 ? '99+' : n; badge.classList.toggle('hidden', n <= 0); }
+                if (n > __lastNotifCount && __lastNotifCount >= 0) atmPing();
+                __lastNotifCount = n;
+            })
+            .catch(() => {});
+    }
+    updateNotifCount();
+    setInterval(updateNotifCount, 30000); // Poll every 30 seconds
+    </script>
+    @endpush
+    @stack('scripts')
+</body>
+</html>

@@ -1,0 +1,13 @@
+<IfModule mod_headers.c>
+    <FilesMatch "\.(jpg|jpeg|png|gif|webp|svg|ico|avif)$">
+        Header set Cache-Control "public, max-age=259200, immutable"
+    </FilesMatch>
+</IfModule>
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType image/jpeg "access plus 3 days"
+    ExpiresByType image/png "access plus 3 days"
+    ExpiresByType image/webp "access plus 3 days"
+    ExpiresByType image/gif "access plus 3 days"
+    ExpiresByType image/avif "access plus 3 days"
+</IfModule>
